@@ -72,7 +72,7 @@ public class DownloadInfo {
         return arguments;
     }
     
-    public DownloadInfo setArguments(String[] arguments) {
+    public DownloadInfo setArguments(String... arguments) {
         this.arguments = arguments;
         return this;
     }
