@@ -1,3 +1,5 @@
 /.gradle/
 /.idea/
 /test/
+/youtube-dl.conf
+/build/
