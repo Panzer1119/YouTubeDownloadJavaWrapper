@@ -38,6 +38,7 @@ public class YouTubeDLTest {
         final DownloadInfo downloadInfo_2 = new DownloadInfo(DIRECTORY_YOUTUBE, args[0]);
         System.out.println("downloadInfo_2=" + downloadInfo_2);
         downloadInfo_2.setUseConfig(false);
+        downloadInfo_2.setArguments("-v");
         System.out.println("downloadInfo_2=" + downloadInfo_2);
         final DownloadProgress downloadProgress_2 = downloadManager.submitDownload(downloadInfo_2);
         System.out.println("downloadProgress_2=" + downloadProgress_2);
