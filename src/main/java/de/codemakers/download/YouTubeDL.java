@@ -133,7 +133,11 @@ public class YouTubeDL {
     }
     
     public static Process createProcess(AdvancedFile directory, String url) throws Exception {
-        return createProcess(new DownloadInfo(directory, url));
+        return createProcess(directory, url, null);
+    }
+    
+    public static Process createProcess(AdvancedFile directory, String url, AdvancedFile logFile) throws Exception {
+        return createProcess(new DownloadInfo(directory, url, logFile));
     }
     
     public static Process createProcess(DownloadInfo downloadInfo) throws Exception {
@@ -168,10 +172,10 @@ public class YouTubeDL {
     private static boolean downloadDirectIntern(DownloadProgress downloadProgress) throws Exception {
         final Process process = createProcess(downloadProgress.getDownloadInfo());
         //TODO Implement the progress Stuff (Read output and set the progress value accordingly)
-        return Misc.monitorProcessToFile(process, createLogFile(downloadProgress.getDownloadInfo().getUrl()), false) == 0;
+        return Misc.monitorProcessToFile(process, downloadProgress.getDownloadInfo().getLogFile(), false) == 0;
     }
     
-    private static AdvancedFile createLogFile(String url) {
+    protected static AdvancedFile createLogFile(String url) {
         LOGS_DIRECTORY.mkdirsWithoutException();
         final String id = getIdFromYouTubeUrl(url, UNKNOWN_YOUTUBE_ID);
         while (true) {
