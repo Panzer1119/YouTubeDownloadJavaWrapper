@@ -28,6 +28,12 @@ import java.util.concurrent.TimeUnit;
 
 public class DownloadManager implements Stoppable {
     
+    protected static final DownloadManager INSTANCE = new DownloadManager(CJP.getInstance());
+    
+    public static DownloadManager getInstance() {
+        return INSTANCE;
+    }
+    
     private final CJP cjp;
     
     public DownloadManager() {
