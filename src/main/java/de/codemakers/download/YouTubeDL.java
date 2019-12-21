@@ -161,8 +161,8 @@ public class YouTubeDL {
         if (downloadProgress.isStarted() || downloadProgress.isAlive()) {
             return false;
         }
-        downloadProgress.setStarted(true);
         downloadProgress.setAlive(true);
+        downloadProgress.setStarted(true);
         downloadProgress.setSuccessful(downloadDirectIntern(downloadProgress));
         downloadProgress.setAlive(false);
         System.out.println("FINISHED downloadProgress=" + downloadProgress + ", successful=" + downloadProgress.isSuccessful()); //TODO Debug only
