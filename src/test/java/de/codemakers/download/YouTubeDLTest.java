@@ -30,19 +30,18 @@ public class YouTubeDLTest {
         YouTubeDL.setLogFile(logFile);
         final AdvancedFile logsDirectory = new AdvancedFile(DIRECTORY_YOUTUBE, YouTubeDL.DEFAULT_LOGS_NAME);
         YouTubeDL.setLogsDirectory(logsDirectory);
-        final DownloadManager downloadManager = new DownloadManager();
         final DownloadInfo downloadInfo_1 = new DownloadInfo(DIRECTORY_YOUTUBE, args[0]);
         System.out.println("downloadInfo_1=" + downloadInfo_1);
-        final DownloadProgress downloadProgress_1 = downloadManager.submitDownload(downloadInfo_1);
+        final DownloadProgress downloadProgress_1 = DownloadManager.getInstance().submitDownload(downloadInfo_1);
         System.out.println("downloadProgress_1=" + downloadProgress_1);
         final DownloadInfo downloadInfo_2 = new DownloadInfo(DIRECTORY_YOUTUBE, args[0]);
         System.out.println("downloadInfo_2=" + downloadInfo_2);
         downloadInfo_2.setUseConfig(false);
         downloadInfo_2.setArguments("-v");
         System.out.println("downloadInfo_2=" + downloadInfo_2);
-        final DownloadProgress downloadProgress_2 = downloadManager.submitDownload(downloadInfo_2);
+        final DownloadProgress downloadProgress_2 = DownloadManager.getInstance().submitDownload(downloadInfo_2);
         System.out.println("downloadProgress_2=" + downloadProgress_2);
-        downloadManager.stop(3, TimeUnit.MINUTES);
+        DownloadManager.getInstance().stop(3, TimeUnit.MINUTES);
     }
     
 }
