@@ -17,28 +17,46 @@
 
 package de.codemakers.download;
 
+import de.codemakers.base.util.TimeUtil;
 import de.codemakers.io.file.AdvancedFile;
 
-import java.io.File;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class YouTubeDL {
     
+    public static final String PATTERN_YOUTUBE_URL_STRING = "(?:http|https|)(?::\\/\\/|)(?:www.|)(?:youtu\\.be\\/|youtube\\.com(?:\\/embed\\/|\\/v\\/|\\/watch\\?v=|\\/ytscreeningroom\\?v=|\\/feeds\\/api\\/videos\\/|\\/user\\\\S*[^\\w\\-\\s]|\\S*[^\\w\\-\\s]))([\\w\\-\\_]{11})[a-z0-9;:@#?&%=+\\/\\$_.-]*";
+    public static final Pattern PATTERN_YOUTUBE_URL = Pattern.compile(PATTERN_YOUTUBE_URL_STRING);
+    public static final String TEMPLATE_LOG_FILE_NAME = "log_%s_%s.txt";
+    public static final String UNKNOWN_YOUTUBE_ID = "UNKNOWN";
+    
     public static final String DEFAULT_CONFIG_NAME = "youtube-dl.conf";
-    private static File CONFIG_FILE = new File(DEFAULT_CONFIG_NAME);
+    private static AdvancedFile CONFIG_FILE = new AdvancedFile(DEFAULT_CONFIG_NAME);
     public static final String DEFAULT_PROGRAM_NAME = "youtube-dl";
     private static String PROGRAM_NAME = DEFAULT_PROGRAM_NAME;
     protected static final AdvancedFile DEFAULT_DIRECTORY = new AdvancedFile();
     private static AdvancedFile DIRECTORY = DEFAULT_DIRECTORY;
+    public static final String DEFAULT_LOG_NAME = "log.txt";
+    private static AdvancedFile LOG_FILE = new AdvancedFile(DEFAULT_LOG_NAME);
+    public static final String DEFAULT_LOGS_NAME = "logs";
+    private static AdvancedFile LOGS_DIRECTORY = new AdvancedFile(DEFAULT_LOGS_NAME);
     //Arguments
     public static String ARGUMENT_CONFIG_LOCATION = "--config-location";
     public static String ARGUMENT_OUTPUT_FORMAT = "-o";
     public static String ARGUMENT_FORMAT = "-f";
     
-    public static File getConfigFile() {
+    //Other
+    private static final Set<String> USED_LOG_NAMES = new HashSet<>();
+    
+    public static AdvancedFile getConfigFile() {
         return CONFIG_FILE;
     }
     
-    public static void setConfigFile(File configFile) {
+    public static void setConfigFile(AdvancedFile configFile) {
         CONFIG_FILE = configFile;
     }
     
@@ -64,6 +82,22 @@ public class YouTubeDL {
     
     public static void setDirectory(AdvancedFile directory) {
         DIRECTORY = directory;
+    }
+    
+    public static AdvancedFile getLogFile() {
+        return LOG_FILE;
+    }
+    
+    public static void setLogFile(AdvancedFile logFile) {
+        LOG_FILE = logFile;
+    }
+    
+    public static AdvancedFile getLogsDirectory() {
+        return LOGS_DIRECTORY;
+    }
+    
+    public static void setLogsDirectory(AdvancedFile logsDirectory) {
+        LOGS_DIRECTORY = logsDirectory;
     }
     
     public static String[] generateCommandStringArray(DownloadInfo downloadInfo) {
@@ -108,6 +142,8 @@ public class YouTubeDL {
     
     private static Process createProcessIntern(AdvancedFile directory, String[] command) throws Exception {
         final ProcessBuilder processBuilder = new ProcessBuilder(command);
+        System.out.println("command=" + Arrays.toString(command)); //TODO Debug only
+        System.out.println("processBuilder=" + processBuilder); //TODO Debug only
         directory.mkdirsWithoutException();
         processBuilder.directory(directory.toFile());
         return processBuilder.start();
@@ -125,13 +161,44 @@ public class YouTubeDL {
         downloadProgress.setAlive(true);
         downloadProgress.setSuccessful(downloadDirectIntern(downloadProgress));
         downloadProgress.setAlive(false);
+        System.out.println("FINISHED downloadProgress=" + downloadProgress + ", successful=" + downloadProgress.isSuccessful()); //TODO Debug only
         return downloadProgress.isSuccessful();
     }
     
     private static boolean downloadDirectIntern(DownloadProgress downloadProgress) throws Exception {
         final Process process = createProcess(downloadProgress.getDownloadInfo());
         //TODO Implement the progress Stuff (Read output and set the progress value accordingly)
-        return process.waitFor() == 0;
+        return Misc.monitorProcessToFile(process, createLogFile(downloadProgress.getDownloadInfo().getUrl()), false) == 0;
+    }
+    
+    private static AdvancedFile createLogFile(String url) {
+        LOGS_DIRECTORY.mkdirsWithoutException();
+        final String id = getIdFromYouTubeUrl(url, UNKNOWN_YOUTUBE_ID);
+        while (true) {
+            final String name = String.format(TEMPLATE_LOG_FILE_NAME, id, ZonedDateTime.now().format(TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES));
+            synchronized (USED_LOG_NAMES) {
+                if (USED_LOG_NAMES.contains(name)) {
+                    continue;
+                }
+                USED_LOG_NAMES.add(name);
+            }
+            return new AdvancedFile(LOGS_DIRECTORY, name);
+        }
+    }
+    
+    public static String getIdFromYouTubeUrl(String url) {
+        return getIdFromYouTubeUrl(url, "");
+    }
+    
+    public static String getIdFromYouTubeUrl(String url, String defaultValue) {
+        if (url == null || url.isEmpty()) {
+            return defaultValue;
+        }
+        final Matcher matcher = PATTERN_YOUTUBE_URL.matcher(url);
+        if (!matcher.matches()) {
+            return defaultValue;
+        }
+        return matcher.group(1);
     }
     
 }
