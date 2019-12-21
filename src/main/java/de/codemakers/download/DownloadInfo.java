@@ -26,17 +26,27 @@ public class DownloadInfo {
     
     private final AdvancedFile directory;
     private final String url;
+    private AdvancedFile logFile;
     //Temp
     private boolean useConfig = true;
     private String[] arguments = null;
     
     public DownloadInfo(String url) {
-        this(YouTubeDL.getDirectory(), url);
+        this(YouTubeDL.getDirectory(), url, null);
     }
     
     public DownloadInfo(AdvancedFile directory, String url) {
+        this(directory, url, null);
+    }
+    
+    public DownloadInfo(String url, AdvancedFile logFile) {
+        this(YouTubeDL.getDirectory(), url, logFile);
+    }
+    
+    public DownloadInfo(AdvancedFile directory, String url, AdvancedFile logFile) {
         this.directory = directory;
         this.url = url;
+        this.logFile = logFile;
     }
     
     public AdvancedFile getDirectory() {
@@ -53,6 +63,18 @@ public class DownloadInfo {
     
     public String getUrl() {
         return url;
+    }
+    
+    public AdvancedFile getLogFile() {
+        if (logFile == null) {
+            setLogFile(YouTubeDL.createLogFile(getUrl()));
+        }
+        return logFile;
+    }
+    
+    public DownloadInfo setLogFile(AdvancedFile log) {
+        this.logFile = log;
+        return this;
     }
     
     public boolean isUsingConfig() {
@@ -86,19 +108,19 @@ public class DownloadInfo {
             return false;
         }
         final DownloadInfo that = (DownloadInfo) other;
-        return useConfig == that.useConfig && Objects.equals(directory, that.directory) && Objects.equals(url, that.url) && Arrays.equals(arguments, that.arguments);
+        return useConfig == that.useConfig && Objects.equals(directory, that.directory) && Objects.equals(url, that.url) && Objects.equals(logFile, that.logFile) && Arrays.equals(arguments, that.arguments);
     }
     
     @Override
     public int hashCode() {
-        int result = Objects.hash(directory, url, useConfig);
+        int result = Objects.hash(directory, url, logFile, useConfig);
         result = 31 * result + Arrays.hashCode(arguments);
         return result;
     }
     
     @Override
     public String toString() {
-        return "DownloadInfo{" + "directory=" + directory + ", url='" + url + '\'' + ", useConfig=" + useConfig + ", arguments=" + Arrays.toString(arguments) + '}';
+        return "DownloadInfo{" + "directory=" + directory + ", url='" + url + '\'' + ", logFile=" + logFile + ", useConfig=" + useConfig + ", arguments=" + Arrays.toString(arguments) + '}';
     }
     
 }
