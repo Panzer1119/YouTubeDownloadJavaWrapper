@@ -24,6 +24,7 @@ import de.codemakers.base.util.tough.ToughSupplier;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class DownloadManager implements Stoppable {
     
@@ -41,6 +42,10 @@ public class DownloadManager implements Stoppable {
     public boolean stop() throws Exception {
         cjp.stopExecutorServiceNow();
         return true;
+    }
+    
+    public void stop(long timeout, TimeUnit timeUnit) {
+        cjp.stopExecutors(timeout, timeUnit);
     }
     
     protected Future<?> submit(ToughRunnable toughRunnable) {
