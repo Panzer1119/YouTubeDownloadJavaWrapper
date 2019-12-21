@@ -30,6 +30,10 @@ public class DownloadInfo {
     private boolean useConfig = true;
     private String[] arguments = null;
     
+    public DownloadInfo(String url) {
+        this(YouTubeDL.getDirectory(), url);
+    }
+    
     public DownloadInfo(AdvancedFile directory, String url) {
         this.directory = directory;
         this.url = url;

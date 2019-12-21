@@ -70,4 +70,9 @@ public class DownloadProgress {
         return this;
     }
     
+    @Override
+    public String toString() {
+        return "DownloadProgress{" + "downloadInfo=" + downloadInfo + ", started=" + started + ", alive=" + alive + ", successful=" + successful + ", progress=" + progress + '}';
+    }
+    
 }
