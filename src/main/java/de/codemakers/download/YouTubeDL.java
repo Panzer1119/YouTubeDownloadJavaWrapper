@@ -17,13 +17,13 @@
 
 package de.codemakers.download;
 
+import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,6 +48,7 @@ public class YouTubeDL {
     public static String ARGUMENT_CONFIG_LOCATION = "--config-location";
     public static String ARGUMENT_OUTPUT_FORMAT = "-o";
     public static String ARGUMENT_FORMAT = "-f";
+    public static String ARGUMENT_GET_ID = "--get-id";
     
     //Other
     private static final Set<String> USED_LOG_NAMES = new HashSet<>();
@@ -203,6 +204,24 @@ public class YouTubeDL {
             return defaultValue;
         }
         return matcher.group(1);
+    }
+    
+    public static List<String> downloadIdsDirect(String url) {
+        final DownloadInfo downloadInfo = new DownloadInfo(url);
+        downloadInfo.setUseConfig(false);
+        downloadInfo.setArguments(ARGUMENT_GET_ID);
+        final List<String> ids = new ArrayList<>();
+        try {
+            final AtomicBoolean errored = new AtomicBoolean(false);
+            final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), ids::add, (error) -> errored.set(true));
+            if (exitValue != 0) { //TODO What todo if "errored" is true?
+                return null;
+            }
+            return ids;
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
     }
     
 }

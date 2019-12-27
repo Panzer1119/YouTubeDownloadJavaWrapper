@@ -22,6 +22,7 @@ import de.codemakers.base.util.interfaces.Stoppable;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.base.util.tough.ToughSupplier;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -74,6 +75,10 @@ public class DownloadManager implements Stoppable {
         final DownloadProgress downloadProgress = new DownloadProgress(downloadInfo);
         submit(() -> YouTubeDL.downloadDirect(downloadProgress));
         return downloadProgress;
+    }
+    
+    public Future<List<String>> submitDownloadIds(String url) {
+        return submit(() -> YouTubeDL.downloadIdsDirect(url));
     }
     
 }
