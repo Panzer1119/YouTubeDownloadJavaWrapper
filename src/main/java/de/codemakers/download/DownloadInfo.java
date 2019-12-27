@@ -17,6 +17,8 @@
 
 package de.codemakers.download;
 
+import de.codemakers.download.sources.Source;
+import de.codemakers.download.sources.YouTubeSource;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.util.Arrays;
@@ -25,27 +27,43 @@ import java.util.Objects;
 public class DownloadInfo {
     
     private final AdvancedFile directory;
-    private final String url;
+    private final Source source;
     private AdvancedFile logFile;
     //Temp
     private boolean useConfig = true;
     private String[] arguments = null;
     
-    public DownloadInfo(String url) {
-        this(YouTubeDL.getDirectory(), url, null);
+    public DownloadInfo(String source) {
+        this(YouTubeSource.ofString(source));
     }
     
-    public DownloadInfo(AdvancedFile directory, String url) {
-        this(directory, url, null);
+    public DownloadInfo(Source source) {
+        this(YouTubeDL.getDirectory(), source, null);
     }
     
-    public DownloadInfo(String url, AdvancedFile logFile) {
-        this(YouTubeDL.getDirectory(), url, logFile);
+    public DownloadInfo(AdvancedFile directory, String source) {
+        this(directory, YouTubeSource.ofString(source));
     }
     
-    public DownloadInfo(AdvancedFile directory, String url, AdvancedFile logFile) {
+    public DownloadInfo(AdvancedFile directory, Source source) {
+        this(directory, source, null);
+    }
+    
+    public DownloadInfo(String source, AdvancedFile logFile) {
+        this(YouTubeSource.ofString(source), logFile);
+    }
+    
+    public DownloadInfo(Source source, AdvancedFile logFile) {
+        this(YouTubeDL.getDirectory(), source, logFile);
+    }
+    
+    public DownloadInfo(AdvancedFile directory, String source, AdvancedFile logFile) {
+        this(directory, YouTubeSource.ofString(source), logFile);
+    }
+    
+    public DownloadInfo(AdvancedFile directory, Source source, AdvancedFile logFile) {
         this.directory = directory;
-        this.url = url;
+        this.source = source;
         this.logFile = logFile;
     }
     
@@ -61,13 +79,17 @@ public class DownloadInfo {
         return "\"" + directory.getAbsolutePath() + "\"";
     }
     
+    public Source getSource() {
+        return source;
+    }
+    
     public String getUrl() {
-        return url;
+        return source.getSource();
     }
     
     public AdvancedFile getLogFile() {
         if (logFile == null) {
-            setLogFile(YouTubeDL.createLogFile(getUrl()));
+            setLogFile(YouTubeDL.createLogFile(getSource()));
         }
         return logFile;
     }
@@ -108,19 +130,19 @@ public class DownloadInfo {
             return false;
         }
         final DownloadInfo that = (DownloadInfo) other;
-        return useConfig == that.useConfig && Objects.equals(directory, that.directory) && Objects.equals(url, that.url) && Objects.equals(logFile, that.logFile) && Arrays.equals(arguments, that.arguments);
+        return useConfig == that.useConfig && Objects.equals(directory, that.directory) && Objects.equals(source, that.source) && Objects.equals(logFile, that.logFile) && Arrays.equals(arguments, that.arguments);
     }
     
     @Override
     public int hashCode() {
-        int result = Objects.hash(directory, url, logFile, useConfig);
+        int result = Objects.hash(directory, source, logFile, useConfig);
         result = 31 * result + Arrays.hashCode(arguments);
         return result;
     }
     
     @Override
     public String toString() {
-        return "DownloadInfo{" + "directory=" + directory + ", url='" + url + '\'' + ", logFile=" + logFile + ", useConfig=" + useConfig + ", arguments=" + Arrays.toString(arguments) + '}';
+        return "DownloadInfo{" + "directory=" + directory + ", source='" + source + '\'' + ", logFile=" + logFile + ", useConfig=" + useConfig + ", arguments=" + Arrays.toString(arguments) + '}';
     }
     
 }

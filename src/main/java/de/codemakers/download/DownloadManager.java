@@ -21,6 +21,8 @@ import de.codemakers.base.CJP;
 import de.codemakers.base.util.interfaces.Stoppable;
 import de.codemakers.base.util.tough.ToughRunnable;
 import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.sources.Source;
+import de.codemakers.download.sources.YouTubeSource;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -77,16 +79,28 @@ public class DownloadManager implements Stoppable {
         return downloadProgress;
     }
     
-    public Future<List<String>> submitDownloadIds(String url) {
-        return submit(() -> YouTubeDL.downloadIdsDirect(url));
+    public Future<List<String>> submitDownloadIds(String source) {
+        return submitDownloadIds(YouTubeSource.ofString(source));
     }
     
-    public Future<List<VideoInfo>> submitDownloadVideoInfos(String url) {
-        return submit(() -> YouTubeDL.downloadVideoInfosDirect(url));
+    public Future<List<String>> submitDownloadIds(Source source) {
+        return submit(() -> YouTubeDL.downloadIdsDirect(source));
     }
     
-    public Future<List<VideoInfo>> submitDownloadVideoInfos(String url, ToughSupplier<VideoInfo> videoInfoGenerator) {
-        return submit(() -> YouTubeDL.downloadVideoInfosDirect(url, videoInfoGenerator));
+    public Future<List<VideoInfo>> submitDownloadVideoInfos(String source) {
+        return submitDownloadVideoInfos(YouTubeSource.ofString(source));
+    }
+    
+    public Future<List<VideoInfo>> submitDownloadVideoInfos(Source source) {
+        return submit(() -> YouTubeDL.downloadVideoInfosDirect(source));
+    }
+    
+    public Future<List<VideoInfo>> submitDownloadVideoInfos(String source, ToughSupplier<VideoInfo> videoInfoGenerator) {
+        return submitDownloadVideoInfos(YouTubeSource.ofString(source), videoInfoGenerator);
+    }
+    
+    public Future<List<VideoInfo>> submitDownloadVideoInfos(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
+        return submit(() -> YouTubeDL.downloadVideoInfosDirect(source, videoInfoGenerator));
     }
     
 }

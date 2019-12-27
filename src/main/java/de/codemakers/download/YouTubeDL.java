@@ -20,6 +20,7 @@ package de.codemakers.download;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.sources.Source;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.time.ZonedDateTime;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class YouTubeDL {
     
@@ -133,16 +135,16 @@ public class YouTubeDL {
         }
     }
     
-    public static Process createProcess(String url) throws Exception {
-        return createProcess(DIRECTORY, url);
+    public static Process createProcess(Source source) throws Exception {
+        return createProcess(DIRECTORY, source);
     }
     
-    public static Process createProcess(AdvancedFile directory, String url) throws Exception {
-        return createProcess(directory, url, null);
+    public static Process createProcess(AdvancedFile directory, Source source) throws Exception {
+        return createProcess(directory, source, null);
     }
     
-    public static Process createProcess(AdvancedFile directory, String url, AdvancedFile logFile) throws Exception {
-        return createProcess(new DownloadInfo(directory, url, logFile));
+    public static Process createProcess(AdvancedFile directory, Source source, AdvancedFile logFile) throws Exception {
+        return createProcess(new DownloadInfo(directory, source, logFile));
     }
     
     public static Process createProcess(DownloadInfo downloadInfo) throws Exception {
@@ -152,6 +154,7 @@ public class YouTubeDL {
     private static Process createProcessIntern(AdvancedFile directory, String[] command) throws Exception {
         final ProcessBuilder processBuilder = new ProcessBuilder(command);
         System.out.println("command=" + Arrays.toString(command)); //TODO Debug only
+        System.out.println("command=" + Arrays.asList(command).stream().collect(Collectors.joining(" ", "\"", "\""))); //TODO Debug only
         System.out.println("processBuilder=" + processBuilder); //TODO Debug only
         directory.mkdirsWithoutException();
         processBuilder.directory(directory.toFile());
@@ -180,9 +183,9 @@ public class YouTubeDL {
         return Misc.monitorProcessToFile(process, downloadProgress.getDownloadInfo().getLogFile(), false) == 0;
     }
     
-    protected static AdvancedFile createLogFile(String url) {
+    protected static AdvancedFile createLogFile(Source source) {
         LOGS_DIRECTORY.mkdirsWithoutException();
-        final String id = getIdFromYouTubeUrl(url, UNKNOWN_YOUTUBE_ID);
+        final String id = source.getId();
         while (true) {
             final String name = String.format(TEMPLATE_LOG_FILE_NAME, id, ZonedDateTime.now().format(TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES));
             synchronized (USED_LOG_NAMES) {
@@ -195,7 +198,7 @@ public class YouTubeDL {
         }
     }
     
-    public static String getIdFromYouTubeUrl(String url) {
+    public static String getIdFromYouTubeUrl(String url) { //FIXME What if i just supply the id? Maybe add an option to (direct) download by id?
         return getIdFromYouTubeUrl(url, "");
     }
     
@@ -210,8 +213,8 @@ public class YouTubeDL {
         return matcher.group(1);
     }
     
-    public static List<String> downloadIdsDirect(String url) {
-        final DownloadInfo downloadInfo = new DownloadInfo(url);
+    public static List<String> downloadIdsDirect(Source source) {
+        final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
         downloadInfo.setArguments(ARGUMENT_GET_ID);
         final List<String> ids = new ArrayList<>();
@@ -228,12 +231,12 @@ public class YouTubeDL {
         }
     }
     
-    public static List<VideoInfo> downloadVideoInfosDirect(String url) {
-        return downloadVideoInfosDirect(url, VideoInfo::new);
+    public static List<VideoInfo> downloadVideoInfosDirect(Source source) {
+        return downloadVideoInfosDirect(source, VideoInfo::new);
     }
     
-    public static List<VideoInfo> downloadVideoInfosDirect(String url, ToughSupplier<VideoInfo> videoInfoGenerator) {
-        final DownloadInfo downloadInfo = new DownloadInfo(url);
+    public static List<VideoInfo> downloadVideoInfosDirect(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
+        final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
         downloadInfo.setArguments(ARGUMENT_GET_TITLE, ARGUMENT_GET_ID, ARGUMENT_GET_DURATION);
         final List<VideoInfo> videoInfos = new ArrayList<>();
