@@ -33,7 +33,9 @@ import java.util.stream.Collectors;
 
 public class YouTubeDL {
     
-    public static final String PATTERN_YOUTUBE_URL_STRING = "(?:http|https|)(?::\\/\\/|)(?:www.|)(?:youtu\\.be\\/|youtube\\.com(?:\\/embed\\/|\\/v\\/|\\/watch\\?v=|\\/ytscreeningroom\\?v=|\\/feeds\\/api\\/videos\\/|\\/user\\\\S*[^\\w\\-\\s]|\\S*[^\\w\\-\\s]))([\\w\\-\\_]{11})[a-z0-9;:@#?&%=+\\/\\$_.-]*";
+    public static final String PATTERN_OLD_YOUTUBE_URL_STRING = "(?:http|https|)(?::\\/\\/|)(?:www.|)(?:youtu\\.be\\/|youtube\\.com(?:\\/embed\\/|\\/v\\/|\\/watch\\?v=|\\/ytscreeningroom\\?v=|\\/feeds\\/api\\/videos\\/|\\/user\\\\S*[^\\w\\-\\s]|\\S*[^\\w\\-\\s]))([\\w\\-\\_]{11})[a-z0-9;:@#?&%=+\\/\\$_.-]*";
+    public static final Pattern PATTERN_OLD_YOUTUBE_URL = Pattern.compile(PATTERN_OLD_YOUTUBE_URL_STRING);
+    public static final String PATTERN_YOUTUBE_URL_STRING = "(?:http(?:s)?:\\/\\/)?(?:www.)?(?:youtube\\.com\\/(?:channel\\/|playlist\\?list=)([a-zA-Z0-9_-]+)|(?:youtu\\.be\\/|youtube\\.com(?:\\/embed\\/|\\/v\\/|\\/watch\\?v=|\\/ytscreeningroom\\?v=|\\/feeds\\/api\\/videos\\/|\\/user\\\\S*[^\\w\\-\\s]|\\S*[^\\w\\-\\s]))([\\w\\-\\_]{11}))[a-z0-9;:@#?&%=+\\/\\$_.-]*";
     public static final Pattern PATTERN_YOUTUBE_URL = Pattern.compile(PATTERN_YOUTUBE_URL_STRING);
     public static final String TEMPLATE_LOG_FILE_NAME = "log_%s_%s.txt";
     public static final String UNKNOWN_YOUTUBE_ID = "UNKNOWN";
@@ -259,7 +261,7 @@ public class YouTubeDL {
                 }
                 counter.incrementAndGet();
             }, (error) -> errored.set(true));
-            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
+            if (exitValue != 0/* || errored.get()*/) { //TODO What todo if "errored" is true?
                 return null;
             }
             return videoInfos;
