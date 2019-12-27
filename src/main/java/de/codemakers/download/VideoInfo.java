@@ -64,16 +64,16 @@ public class VideoInfo {
     }
     
     public VideoInfo setDuration(String duration) {
-        final Duration duration_ = Duration.ZERO;
         final String[] split = duration.split(":");
+        Duration duration_ = Duration.ZERO;
         if (split.length > 0) {
-            duration_.plusSeconds(Long.parseLong(split[split.length - 1]));
+            duration_ = duration_.plusSeconds(Long.parseLong(split[split.length - 1]));
         }
         if (split.length > 1) {
-            duration_.plusMinutes(Long.parseLong(split[split.length - 2]));
+            duration_ = duration_.plusMinutes(Long.parseLong(split[split.length - 2]));
         }
         if (split.length > 2) {
-            duration_.plusHours(Long.parseLong(split[split.length - 3]));
+            duration_ = duration_.plusHours(Long.parseLong(split[split.length - 3]));
         }
         return setDuration(duration_.toMillis());
     }
