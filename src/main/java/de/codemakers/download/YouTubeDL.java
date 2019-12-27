@@ -49,6 +49,7 @@ public class YouTubeDL {
     public static final String DEFAULT_LOGS_NAME = "logs";
     private static AdvancedFile LOGS_DIRECTORY = new AdvancedFile(DEFAULT_LOGS_NAME);
     //Arguments
+    public static String ARGUMENT_IGNORE_ERRORS = "-i";
     public static String ARGUMENT_CONFIG_LOCATION = "--config-location";
     public static String ARGUMENT_OUTPUT_FORMAT = "-o";
     public static String ARGUMENT_FORMAT = "-f";
@@ -154,7 +155,7 @@ public class YouTubeDL {
     private static Process createProcessIntern(AdvancedFile directory, String[] command) throws Exception {
         final ProcessBuilder processBuilder = new ProcessBuilder(command);
         System.out.println("command=" + Arrays.toString(command)); //TODO Debug only
-        System.out.println("command=" + Arrays.asList(command).stream().collect(Collectors.joining(" ", "\"", "\""))); //TODO Debug only
+        System.out.println("Full command: " + Arrays.asList(command).stream().collect(Collectors.joining(" ", "\"", "\""))); //TODO Debug only
         System.out.println("processBuilder=" + processBuilder); //TODO Debug only
         directory.mkdirsWithoutException();
         processBuilder.directory(directory.toFile());
@@ -238,7 +239,7 @@ public class YouTubeDL {
     public static List<VideoInfo> downloadVideoInfosDirect(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
-        downloadInfo.setArguments(ARGUMENT_GET_TITLE, ARGUMENT_GET_ID, ARGUMENT_GET_DURATION);
+        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_GET_TITLE, ARGUMENT_GET_ID, ARGUMENT_GET_DURATION);
         final List<VideoInfo> videoInfos = new ArrayList<>();
         try {
             final AtomicBoolean errored = new AtomicBoolean(false);
