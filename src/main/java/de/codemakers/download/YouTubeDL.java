@@ -19,6 +19,7 @@ package de.codemakers.download;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.TimeUtil;
+import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.time.ZonedDateTime;
@@ -228,6 +229,10 @@ public class YouTubeDL {
     }
     
     public static List<VideoInfo> downloadVideoInfosDirect(String url) {
+        return downloadVideoInfosDirect(url, VideoInfo::new);
+    }
+    
+    public static List<VideoInfo> downloadVideoInfosDirect(String url, ToughSupplier<VideoInfo> videoInfoGenerator) {
         final DownloadInfo downloadInfo = new DownloadInfo(url);
         downloadInfo.setUseConfig(false);
         downloadInfo.setArguments(ARGUMENT_GET_TITLE, ARGUMENT_GET_ID, ARGUMENT_GET_DURATION);
@@ -238,7 +243,7 @@ public class YouTubeDL {
             final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), (normal) -> {
                 switch (counter.get()) {
                     case 0: //Title
-                        videoInfos.add(new VideoInfo().setTitle(normal));
+                        videoInfos.add(videoInfoGenerator.getWithoutException().setTitle(normal));
                         break;
                     case 1: //ID
                         videoInfos.get(videoInfos.size() - 1).setId(normal);

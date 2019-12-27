@@ -59,23 +59,24 @@ public class VideoInfo {
         return this;
     }
     
-    public long getDuration() {
+    public String getDurationAsString() {
+        return Misc.durationToString(getDuration());
+    }
+    
+    public Duration getDuration() {
+        return Duration.ofMillis(getDurationAsMillis());
+    }
+    
+    public long getDurationAsMillis() {
         return duration;
     }
     
     public VideoInfo setDuration(String duration) {
-        final String[] split = duration.split(":");
-        Duration duration_ = Duration.ZERO;
-        if (split.length > 0) {
-            duration_ = duration_.plusSeconds(Long.parseLong(split[split.length - 1]));
-        }
-        if (split.length > 1) {
-            duration_ = duration_.plusMinutes(Long.parseLong(split[split.length - 2]));
-        }
-        if (split.length > 2) {
-            duration_ = duration_.plusHours(Long.parseLong(split[split.length - 3]));
-        }
-        return setDuration(duration_.toMillis());
+        return setDuration(Misc.stringToDuration(duration));
+    }
+    
+    public VideoInfo setDuration(Duration duration) {
+        return setDuration(duration.toMillis());
     }
     
     public VideoInfo setDuration(long duration) {

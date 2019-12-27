@@ -23,6 +23,7 @@ import de.codemakers.io.file.AdvancedFile;
 
 import java.io.BufferedWriter;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.Scanner;
 
 public class Misc {
@@ -95,6 +96,32 @@ public class Misc {
             }
         }
         scanner.close();
+    }
+    
+    public static String durationToString(Duration duration) {
+        if (duration.toHours() > 0) {
+            return String.format("%02d:%02d:%02d", duration.toHours(), duration.toMinutes() % 60, duration.getSeconds() % 60);
+        } else if (duration.toMinutes() > 0) {
+            return String.format("%02d:%02d", duration.toMinutes(), duration.getSeconds() % 60);
+        } else if (duration.getSeconds() > 9) {
+            return "" + duration.getSeconds();
+        }
+        return "0" + duration.getSeconds();
+    }
+    
+    public static Duration stringToDuration(String duration) {
+        final String[] split = duration.split(":");
+        Duration duration_ = Duration.ZERO;
+        if (split.length > 0) {
+            duration_ = duration_.plusSeconds(Long.parseLong(split[split.length - 1]));
+        }
+        if (split.length > 1) {
+            duration_ = duration_.plusMinutes(Long.parseLong(split[split.length - 2]));
+        }
+        if (split.length > 2) {
+            duration_ = duration_.plusHours(Long.parseLong(split[split.length - 3]));
+        }
+        return duration_;
     }
     
 }
