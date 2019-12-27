@@ -213,6 +213,9 @@ public class YouTubeDL {
         if (!matcher.matches()) {
             return defaultValue;
         }
+        if (matcher.group(1).isEmpty()) {
+            return matcher.group(2);
+        }
         return matcher.group(1);
     }
     
@@ -261,8 +264,9 @@ public class YouTubeDL {
                 }
                 counter.incrementAndGet();
             }, (error) -> errored.set(true));
-            if (exitValue != 0/* || errored.get()*/) { //TODO What todo if "errored" is true?
-                return null;
+            System.out.println("downloadVideoInfosDirect: exitValue=" + exitValue);
+            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
+                return videoInfos;
             }
             return videoInfos;
         } catch (Exception ex) {
