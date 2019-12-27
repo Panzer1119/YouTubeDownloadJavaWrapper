@@ -81,4 +81,8 @@ public class DownloadManager implements Stoppable {
         return submit(() -> YouTubeDL.downloadIdsDirect(url));
     }
     
+    public Future<List<VideoInfo>> submitDownloadVideoInfos(String url) {
+        return submit(() -> YouTubeDL.downloadVideoInfosDirect(url));
+    }
+    
 }

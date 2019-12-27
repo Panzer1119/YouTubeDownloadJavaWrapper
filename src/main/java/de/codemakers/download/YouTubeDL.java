@@ -24,6 +24,7 @@ import de.codemakers.io.file.AdvancedFile;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +49,9 @@ public class YouTubeDL {
     public static String ARGUMENT_CONFIG_LOCATION = "--config-location";
     public static String ARGUMENT_OUTPUT_FORMAT = "-o";
     public static String ARGUMENT_FORMAT = "-f";
+    public static String ARGUMENT_GET_TITLE = "--get-title";
     public static String ARGUMENT_GET_ID = "--get-id";
+    public static String ARGUMENT_GET_DURATION = "--get-duration";
     
     //Other
     private static final Set<String> USED_LOG_NAMES = new HashSet<>();
@@ -218,6 +221,39 @@ public class YouTubeDL {
                 return null;
             }
             return ids;
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    public static List<VideoInfo> downloadVideoInfosDirect(String url) {
+        final DownloadInfo downloadInfo = new DownloadInfo(url);
+        downloadInfo.setUseConfig(false);
+        downloadInfo.setArguments(ARGUMENT_GET_TITLE, ARGUMENT_GET_ID, ARGUMENT_GET_DURATION);
+        final List<VideoInfo> videoInfos = new ArrayList<>();
+        try {
+            final AtomicBoolean errored = new AtomicBoolean(false);
+            final AtomicInteger counter = new AtomicInteger(0);
+            final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), (normal) -> {
+                switch (counter.get()) {
+                    case 0: //Title
+                        videoInfos.add(new VideoInfo().setTitle(normal));
+                        break;
+                    case 1: //ID
+                        videoInfos.get(videoInfos.size() - 1).setId(normal);
+                        break;
+                    case 2: //Duration
+                        videoInfos.get(videoInfos.size() - 1).setDuration(normal);
+                        counter.set(-1);
+                        break;
+                }
+                counter.incrementAndGet();
+            }, (error) -> errored.set(true));
+            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
+                return null;
+            }
+            return videoInfos;
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
