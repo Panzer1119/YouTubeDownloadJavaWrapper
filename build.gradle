@@ -14,6 +14,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Panzer1119:CJP-Base:50bddc2f' //28.12.2019 13:06
+    implementation 'com.github.Panzer1119:CJP-Base:efdec8ef' //28.12.2019 13:29
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
