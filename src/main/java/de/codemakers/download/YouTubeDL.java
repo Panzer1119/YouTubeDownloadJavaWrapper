@@ -213,7 +213,7 @@ public class YouTubeDL {
         if (!matcher.matches()) {
             return defaultValue;
         }
-        if (matcher.group(1).isEmpty()) {
+        if (matcher.group(1) == null || matcher.group(1).isEmpty()) {
             return matcher.group(2);
         }
         return matcher.group(1);
