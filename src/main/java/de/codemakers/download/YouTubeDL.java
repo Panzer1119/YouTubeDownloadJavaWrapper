@@ -33,10 +33,46 @@ import java.util.stream.Collectors;
 
 public class YouTubeDL {
     
-    public static final String PATTERN_OLD_YOUTUBE_URL_STRING = "(?:http|https|)(?::\\/\\/|)(?:www.|)(?:youtu\\.be\\/|youtube\\.com(?:\\/embed\\/|\\/v\\/|\\/watch\\?v=|\\/ytscreeningroom\\?v=|\\/feeds\\/api\\/videos\\/|\\/user\\\\S*[^\\w\\-\\s]|\\S*[^\\w\\-\\s]))([\\w\\-\\_]{11})[a-z0-9;:@#?&%=+\\/\\$_.-]*";
-    public static final Pattern PATTERN_OLD_YOUTUBE_URL = Pattern.compile(PATTERN_OLD_YOUTUBE_URL_STRING);
+    // // YouTube URL Pattern
+    // All YouTube URL Pattern
+    /**
+     * Group 1: Maybe Playlist ID
+     * Group 2: Maybe Video ID
+     */
     public static final String PATTERN_YOUTUBE_URL_STRING = "(?:http(?:s)?:\\/\\/)?(?:www.)?(?:youtube\\.com\\/(?:channel\\/|playlist\\?list=)([a-zA-Z0-9_-]+)|(?:youtu\\.be\\/|youtube\\.com(?:\\/embed\\/|\\/v\\/|\\/watch\\?v=|\\/ytscreeningroom\\?v=|\\/feeds\\/api\\/videos\\/|\\/user\\\\S*[^\\w\\-\\s]|\\S*[^\\w\\-\\s]))([\\w\\-\\_]{11}))[a-z0-9;:@#?&%=+\\/\\$_.-]*";
     public static final Pattern PATTERN_YOUTUBE_URL = Pattern.compile(PATTERN_YOUTUBE_URL_STRING);
+    // YouTube Video URL Pattern
+    public static final String PATTERN_YOUTUBE_VIDEO_URL_STRING = "(?:http(?:s)?:\\/\\/)?(?:www.)?(?:youtu\\.be\\/|youtube\\.com(?:\\/embed\\/|\\/v\\/|\\/watch\\?v=|\\/ytscreeningroom\\?v=|\\/feeds\\/api\\/videos\\/|\\/user\\\\S*[^\\w\\-\\s]|\\S*[^\\w\\-\\s]))([\\w\\-\\_]{11})[a-z0-9;:@#?&%=+\\/\\$_.-]*";
+    /**
+     * Group 1: Video ID
+     */
+    public static final Pattern PATTERN_YOUTUBE_VIDEO_URL = Pattern.compile(PATTERN_YOUTUBE_VIDEO_URL_STRING);
+    // YouTube Playlist URL Pattern
+    public static final String PATTERN_YOUTUBE_PLAYLIST_URL_STRING = "(?:http|https|)(?::\\/\\/|)(?:www.|)youtube.com\\/playlist\\?list=([a-zA-Z0-9_-]+)[a-z0-9;:@#?&%=+\\/\\$_.-]*";
+    /**
+     * Group 1: Playlist ID
+     */
+    public static final Pattern PATTERN_YOUTUBE_PLAYLIST_URL = Pattern.compile(PATTERN_YOUTUBE_PLAYLIST_URL_STRING);
+    // YouTube Video in Playlist URL Pattern
+    public static final String PATTERN_YOUTUBE_VIDEO_IN_PLAYLIST_URL_STRING = "(?:http|https|)(?::\\/\\/|)(?:www.|)youtube.com\\/watch\\?v=([\\w\\-\\_]{11})&list=([a-zA-Z0-9_-]+)(?:&index=(\\d+))?(?:&t=(\\d+)s)?[a-z0-9;:@#?&%=+\\/\\$_.-]*";
+    /**
+     * Group 1: Video ID
+     * Group 2: Playlist ID
+     */
+    public static final Pattern PATTERN_YOUTUBE_VIDEO_IN_PLAYLIST_URL = Pattern.compile(PATTERN_YOUTUBE_VIDEO_IN_PLAYLIST_URL_STRING);
+    // YouTube User URL Pattern
+    public static final String PATTERN_YOUTUBE_USER_URL_STRING = "(?:http|https|)(?::\\/\\/|)(?:www.|)youtube.com\\/user\\/([a-zA-Z0-9]+)[a-z0-9;:@#?&%=+\\/\\$_.-]*";
+    /**
+     * Group 1: Username
+     */
+    public static final Pattern PATTERN_YOUTUBE_USER_URL = Pattern.compile(PATTERN_YOUTUBE_USER_URL_STRING);
+    // YouTube Channel URL Pattern
+    public static final String PATTERN_YOUTUBE_CHANNEL_URL_STRING = "(?:http|https|)(?::\\/\\/|)(?:www.|)youtube.com\\/channel\\/([a-zA-Z0-9]+)[a-z0-9;:@#?&%=+\\/\\$_.-]*";
+    /**
+     * Group 1: Channel ID
+     */
+    public static final Pattern PATTERN_YOUTUBE_CHANNEL_URL = Pattern.compile(PATTERN_YOUTUBE_CHANNEL_URL_STRING);
+    // //
     public static final String TEMPLATE_LOG_FILE_NAME = "log_%s_%s.txt";
     public static final String UNKNOWN_YOUTUBE_ID = "UNKNOWN";
     
