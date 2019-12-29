@@ -516,6 +516,7 @@ public class YouTubeDL {
                         break;
                     case 1: //ID
                         videoInfos.get(videoInfos.size() - 1).setId(normal);
+                        counter.set(-1); //FIXME Duration is not downloaded, when using --flat-playlist
                         break;
                     case 2: //Duration
                         videoInfos.get(videoInfos.size() - 1).setDuration(normal);
