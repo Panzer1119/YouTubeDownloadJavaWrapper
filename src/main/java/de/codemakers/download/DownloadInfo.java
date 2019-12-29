@@ -30,6 +30,7 @@ public class DownloadInfo {
     private final Source source;
     private AdvancedFile logFile;
     //Temp
+    private int expectedDownloads = 2;
     private boolean useConfig = true;
     private String[] arguments = null;
     
@@ -99,6 +100,15 @@ public class DownloadInfo {
         return this;
     }
     
+    public int getExpectedDownloads() {
+        return expectedDownloads;
+    }
+    
+    public DownloadInfo setExpectedDownloads(int expectedDownloads) {
+        this.expectedDownloads = expectedDownloads;
+        return this;
+    }
+    
     public boolean isUsingConfig() {
         return useConfig;
     }
@@ -130,19 +140,19 @@ public class DownloadInfo {
             return false;
         }
         final DownloadInfo that = (DownloadInfo) other;
-        return useConfig == that.useConfig && Objects.equals(directory, that.directory) && Objects.equals(source, that.source) && Objects.equals(logFile, that.logFile) && Arrays.equals(arguments, that.arguments);
+        return expectedDownloads == that.expectedDownloads && useConfig == that.useConfig && Objects.equals(directory, that.directory) && Objects.equals(source, that.source) && Objects.equals(logFile, that.logFile) && Arrays.equals(arguments, that.arguments);
     }
     
     @Override
     public int hashCode() {
-        int result = Objects.hash(directory, source, logFile, useConfig);
+        int result = Objects.hash(directory, source, logFile, expectedDownloads, useConfig);
         result = 31 * result + Arrays.hashCode(arguments);
         return result;
     }
     
     @Override
     public String toString() {
-        return "DownloadInfo{" + "directory=" + directory + ", source='" + source + '\'' + ", logFile=" + logFile + ", useConfig=" + useConfig + ", arguments=" + Arrays.toString(arguments) + '}';
+        return "DownloadInfo{" + "directory=" + directory + ", source=" + source + ", logFile=" + logFile + ", expectedDownloads=" + expectedDownloads + ", useConfig=" + useConfig + ", arguments=" + Arrays.toString(arguments) + '}';
     }
     
 }

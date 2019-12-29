@@ -17,6 +17,8 @@
 
 package de.codemakers.download;
 
+import java.util.Arrays;
+
 public class DownloadProgress {
     
     private final DownloadInfo downloadInfo;
@@ -24,7 +26,7 @@ public class DownloadProgress {
     private transient boolean started = false;
     private transient boolean alive = false;
     private transient boolean successful = false;
-    private transient double progress = 0.0;
+    private transient volatile float[] progresses = null;
     
     public DownloadProgress(DownloadInfo downloadInfo) {
         this.downloadInfo = downloadInfo;
@@ -32,6 +34,12 @@ public class DownloadProgress {
     
     public DownloadInfo getDownloadInfo() {
         return downloadInfo;
+    }
+    
+    public float[] start() {
+        setStarted(true);
+        setProgresses(new float[downloadInfo.getExpectedDownloads()]);
+        return getProgresses();
     }
     
     public boolean isStarted() {
@@ -61,18 +69,26 @@ public class DownloadProgress {
         return this;
     }
     
-    public double getProgress() {
-        return progress;
+    public float[] getProgresses() {
+        return progresses;
     }
     
-    protected DownloadProgress setProgress(double progress) {
-        this.progress = progress;
+    public DownloadProgress setProgresses(float[] progresses) {
+        this.progresses = progresses;
         return this;
+    }
+    
+    public double getProgressOverall() {
+        double sum = 0.0;
+        for (float f : progresses) {
+            sum += f;
+        }
+        return sum / progresses.length;
     }
     
     @Override
     public String toString() {
-        return "DownloadProgress{" + "downloadInfo=" + downloadInfo + ", started=" + started + ", alive=" + alive + ", successful=" + successful + ", progress=" + progress + '}';
+        return "DownloadProgress{" + "downloadInfo=" + downloadInfo + ", started=" + started + ", alive=" + alive + ", successful=" + successful + ", progresses=" + Arrays.toString(progresses) + '}';
     }
     
 }
