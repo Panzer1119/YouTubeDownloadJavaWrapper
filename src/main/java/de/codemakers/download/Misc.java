@@ -24,9 +24,35 @@ import de.codemakers.io.file.AdvancedFile;
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Misc {
+    
+    private static final Pattern PATTERN_DOWNLOAD_PROGRESS = Pattern.compile("\\[download\\] +(\\d+(?:,|.\\d*)?)% of [0-9.,]+[a-zA-Z]+ at [0-9.,]+[a-zA-Z]+\\/s ETA.*");
+    
+    public static int monitorProcess(Process process, DownloadProgress downloadProgress) {
+        Objects.requireNonNull(downloadProgress, "downloadProgress");
+        final int exitValue = monitorProcess(process, (normal) -> {
+            //System.out.println("[INFO ]: " + normal); //TODO Debug only
+            final Matcher matcher = PATTERN_DOWNLOAD_PROGRESS.matcher(normal);
+            if (matcher.matches()) {
+                final int index = downloadProgress.getNextProgressIndex();
+                if (index == -1) {
+                    System.err.println("Index == -1 ?!" + ", rejected: \"" + normal + "\""); //TODO Debug only
+                    return;
+                }
+                final float progress = Float.parseFloat(matcher.group(1)) / 100.0F;
+                downloadProgress.setProgress(index, progress);
+                //System.out.println(String.format("Progress [%d]: %f", index, progress)); //TODO Debug only
+            }
+        }, (error) -> {
+            System.err.println("[ERROR]: " + error); //TODO Debug only
+        });
+        return exitValue;
+    }
     
     public static int monitorProcessDefault(Process process) {
         return monitorProcessNothing(process);

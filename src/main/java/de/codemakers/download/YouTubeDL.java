@@ -429,8 +429,7 @@ public class YouTubeDL {
         if (downloadProgress.isStarted() || downloadProgress.isAlive()) {
             return false;
         }
-        downloadProgress.setAlive(true);
-        downloadProgress.setStarted(true);
+        downloadProgress.start();
         downloadProgress.setSuccessful(downloadDirectIntern(downloadProgress));
         downloadProgress.setAlive(false);
         System.out.println("FINISHED downloadProgress=" + downloadProgress + ", successful=" + downloadProgress.isSuccessful()); //TODO Debug only
@@ -440,7 +439,11 @@ public class YouTubeDL {
     private static boolean downloadDirectIntern(DownloadProgress downloadProgress) throws Exception {
         final Process process = createProcess(downloadProgress.getDownloadInfo());
         //TODO Implement the progress Stuff (Read output and set the progress value accordingly)
-        return Misc.monitorProcessToFile(process, downloadProgress.getDownloadInfo().getLogFile(), false) == 0;
+        
+        if (true) {
+            return Misc.monitorProcess(process, downloadProgress) == 0;
+        }
+        return Misc.monitorProcessToFile(process, downloadProgress.getDownloadInfo().getLogFile(), false) == 0; //FIXME Remove the old thing
     }
     
     protected static AdvancedFile createLogFile(Source source) {

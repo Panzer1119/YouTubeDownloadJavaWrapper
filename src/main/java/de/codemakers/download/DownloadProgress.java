@@ -36,10 +36,11 @@ public class DownloadProgress {
         return downloadInfo;
     }
     
-    public float[] start() {
+    public DownloadProgress start() {
+        setAlive(true);
         setStarted(true);
         setProgresses(new float[downloadInfo.getExpectedDownloads()]);
-        return getProgresses();
+        return this;
     }
     
     public boolean isStarted() {
@@ -76,6 +77,24 @@ public class DownloadProgress {
     public DownloadProgress setProgresses(float[] progresses) {
         this.progresses = progresses;
         return this;
+    }
+    
+    public int getNextProgressIndex() {
+        for (int i = 0; i < progresses.length; i++) {
+            if (progresses[i] < 1.0F) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public DownloadProgress setProgress(int index, float progress) {
+        this.progresses[index] = progress;
+        return this;
+    }
+    
+    public float getProgress(int index) {
+        return progresses[index];
     }
     
     public double getProgressOverall() {
