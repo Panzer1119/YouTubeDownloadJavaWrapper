@@ -86,14 +86,235 @@ public class YouTubeDL {
     private static AdvancedFile LOG_FILE = new AdvancedFile(DEFAULT_LOG_NAME);
     public static final String DEFAULT_LOGS_NAME = "logs";
     private static AdvancedFile LOGS_DIRECTORY = new AdvancedFile(DEFAULT_LOGS_NAME);
-    //Arguments
-    public static String ARGUMENT_IGNORE_ERRORS = "-i";
-    public static String ARGUMENT_CONFIG_LOCATION = "--config-location";
-    public static String ARGUMENT_OUTPUT_FORMAT = "-o";
-    public static String ARGUMENT_FORMAT = "-f";
-    public static String ARGUMENT_GET_TITLE = "--get-title";
-    public static String ARGUMENT_GET_ID = "--get-id";
-    public static String ARGUMENT_GET_DURATION = "--get-duration";
+    // // Arguments
+    // Source: https://github.com/ytdl-org/youtube-dl/
+    // Options
+    /**
+     * Print this help text and exit
+     */
+    public static final String ARGUMENT_HELP = "--help";
+    /**
+     * Print program version and exit
+     */
+    public static final String ARGUMENT_VERSION = "--version";
+    /**
+     * Update this program to latest version. Make
+     * sure that you have sufficient permissions
+     * (run with sudo if needed)
+     */
+    public static final String ARGUMENT_UPDATE = "--update";
+    /**
+     * Continue on download errors, for example to
+     * skip unavailable videos in a playlist
+     */
+    public static final String ARGUMENT_IGNORE_ERRORS = "--ignore-errors";
+    /**
+     * Abort downloading of further videos (in the
+     * playlist or the command line) if an error
+     * occurs
+     */
+    public static final String ARGUMENT_ABORT_ON_ERROR = "--abort-on-error";
+    /**
+     * Display the current browser identification
+     */
+    public static final String ARGUMENT_DUMP_USER_AGENT = "--dump-user-agent";
+    /**
+     * List all supported extractors
+     */
+    public static final String ARGUMENT_LIST_EXTRACTORS = "--list-extractors";
+    /**
+     * Output descriptions of all supported
+     * extractors
+     */
+    public static final String ARGUMENT_EXTRACTOR_DESCRIPTIONS = "--extractor-descriptions";
+    /**
+     * Force extraction to use the generic
+     * extractor
+     */
+    public static final String ARGUMENT_FORCE_GENERIC_EXTRACTOR = "--force-generic-extractor";
+    /**
+     * Use this prefix for unqualified URLs. For
+     * example "gvsearch2:" downloads two videos
+     * from google videos for youtube-dl "large
+     * apple". Use the value "auto" to let
+     * youtube-dl guess ("auto_warning" to emit a
+     * warning when guessing). "error" just throws
+     * an error. The default value "fixup_error"
+     * repairs broken URLs, but emits an error if
+     * this is not possible instead of searching.
+     * <p>
+     * Needs one sub argument: PREFIX
+     */
+    public static final String ARGUMENT_DEFAULT_SEARCH = "--default-search";
+    /**
+     * Do not read configuration files. When given
+     * in the global configuration file
+     * /etc/youtube-dl.conf: Do not read the user
+     * configuration in ~/.config/youtube-
+     * dl/config (%APPDATA%/youtube-dl/config.txt
+     * on Windows)
+     */
+    public static final String ARGUMENT_IGNORE_CONFIG = "--ignore-config";
+    /**
+     * Location of the configuration file; either
+     * the path to the config or its containing
+     * directory.
+     * <p>
+     * Needs one sub argument: PATH
+     */
+    public static final String ARGUMENT_CONFIG_LOCATION = "--config-location";
+    /**
+     * Do not extract the videos of a playlist,
+     * only list them.
+     */
+    public static final String ARGUMENT_FLAT_PLAYLIST = "--flat-playlist";
+    /**
+     * Mark videos watched (YouTube only)
+     */
+    public static final String ARGUMENT_MART_WATCHED = "--mark-watched";
+    /**
+     * Do not mark videos watched (YouTube only)
+     */
+    public static final String ARGUMENT_NO_MARK_WATCHED = "--no-mark-watched";
+    /**
+     * Do not emit color codes in output
+     */
+    public static final String ARGUMENT_NO_COLOR = "--no-color";
+    // Network Options
+    /**
+     * Use the specified HTTP/HTTPS/SOCKS proxy.
+     * To enable SOCKS proxy, specify a proper
+     * scheme. For example
+     * socks5://127.0.0.1:1080/. Pass in an empty
+     * string (--proxy "") for direct connection
+     * <p>
+     * Needs one sub argument: URL
+     */
+    public static final String ARGUMENT_PROXY = "--proxy";
+    /**
+     * Time to wait before giving up, in seconds
+     * <p>
+     * Needs one sub argument: SECONDS
+     */
+    public static final String ARGUMENT_SOCKET_TIMEOUT = "--socket-timeout";
+    /**
+     * Client-side IP address to bind to
+     * <p>
+     * Needs one sub argument: IP
+     */
+    public static final String ARGUMENT_SOURCE_ADDRESS = "--source-address";
+    /**
+     * Make all connections via IPv4
+     */
+    public static final String ARGUMENT_FORCE_IPv4 = "--force-ipv4";
+    /**
+     * Make all connections via IPv6
+     */
+    public static final String ARGUMENT_FORCE_IPv6 = "--force-ipv6";
+    // Geo Restriction
+    /**
+     * Use this proxy to verify the IP address for
+     * some geo-restricted sites. The default
+     * proxy specified by --proxy (or none, if the
+     * option is not present) is used for the
+     * actual downloading.
+     * <p>
+     * Needs one sub argument: URL
+     */
+    public static final String ARGUMENT_GEO_VERIFICATION_PROXY = "--geo-verification-proxy";
+    /**
+     * Bypass geographic restriction via faking
+     * X-Forwarded-For HTTP header
+     */
+    public static final String ARGUMENT_GEO_BYPASS = "--geo-bypass";
+    /**
+     * Do not bypass geographic restriction via
+     * faking X-Forwarded-For HTTP header
+     */
+    public static final String ARGUMENT_NO_GEO_BYPASS = "--no-geo-bypass";
+    /**
+     * Force bypass geographic restriction with
+     * explicitly provided two-letter ISO 3166-2
+     * country code
+     * <p>
+     * Needs one sub argument: CODE
+     */
+    public static final String ARGUMENT_GEO_BYPASS_COUNTRY = "--geo-bypass-country";
+    /**
+     * Force bypass geographic restriction with
+     * explicitly provided IP block in CIDR
+     * notation
+     * <p>
+     * Needs one sub argument: IP_BLOCK
+     */
+    public static final String ARGUMENT_GEO_BYPASS_IP_BLOCK = "--geo-bypass-ip-block";
+    // Video selection
+    //TODO
+    
+    // Download Options
+    //TODO
+    
+    // Filesystem Options
+    //TODO
+    /**
+     * Output filename template, see the "OUTPUT
+     * TEMPLATE" for all the info
+     * <p>
+     * Needs one sub argument: TEMPLATE
+     */
+    public static final String ARGUMENT_OUTPUT = "--output";
+    //TODO
+    
+    // Thumbnail images
+    //TODO
+    
+    // Verbosity / Simulation Options
+    //TODO
+    /**
+     * Simulate, quiet but print title
+     */
+    public static final String ARGUMENT_GET_TITLE = "--get-title";
+    /**
+     * Simulate, quiet but print id
+     */
+    public static final String ARGUMENT_GET_ID = "--get-id";
+    //TODO
+    /**
+     * Simulate, quiet but print video length
+     */
+    public static final String ARGUMENT_GET_DURATION = "--get-duration";
+    //TODO
+    
+    // Workarounds
+    //TODO
+    
+    // Video Format Options
+    /**
+     * Video format code, see the "FORMAT
+     * SELECTION" for all the info
+     * <p>
+     * Needs one sub argument: FORMAT
+     */
+    public static final String ARGUMENT_FORMAT = "--format";
+    //TODO
+    
+    // Subtitle Options
+    //TODO
+    
+    // Authentication Options
+    //TODO
+    
+    // Adobe Pass Options
+    //TODO
+    
+    // Post-processing Options
+    //TODO
+    
+    /**
+     *
+     */
+    public static final String ARGUMENT_ = "";
+    // //
     
     //Other
     private static final Set<String> USED_LOG_NAMES = new HashSet<>();
