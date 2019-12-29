@@ -23,8 +23,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum YouTubeSourceType {
-    INVALID(null),
-    UNKNOWN(YouTubeDL.PATTERN_YOUTUBE_URL),
+    INVALID(null) {
+        @Override
+        public boolean isKnown() {
+            return false;
+        }
+        
+        @Override
+        public boolean isValid() {
+            return false;
+        }
+    },
+    UNKNOWN(YouTubeDL.PATTERN_YOUTUBE_URL) {
+        @Override
+        public boolean isKnown() {
+            return false;
+        }
+    },
     VIDEO(YouTubeDL.PATTERN_YOUTUBE_VIDEO_URL) {
         @Override
         public boolean providesVideoId() {
@@ -68,7 +83,7 @@ public enum YouTubeSourceType {
             }
             return matcher.group(2);
         }
-    
+        
         @Override
         public boolean providesMultipleVideos() {
             return true;
@@ -88,7 +103,7 @@ public enum YouTubeSourceType {
             }
             return matcher.group(1);
         }
-    
+        
         @Override
         public boolean providesMultipleVideos() {
             return true;
@@ -108,7 +123,7 @@ public enum YouTubeSourceType {
             }
             return matcher.group(1);
         }
-    
+        
         @Override
         public boolean providesMultipleVideos() {
             return true;
@@ -128,7 +143,7 @@ public enum YouTubeSourceType {
             }
             return matcher.group(1);
         }
-    
+        
         @Override
         public boolean providesMultipleVideos() {
             return true;
@@ -147,6 +162,14 @@ public enum YouTubeSourceType {
     
     public Matcher matcher(String text) {
         return pattern.matcher(text);
+    }
+    
+    public boolean isValid() {
+        return true;
+    }
+    
+    public boolean isKnown() {
+        return true;
     }
     
     public boolean providesMultipleVideos() {
