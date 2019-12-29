@@ -26,6 +26,7 @@ public class YouTubeSource implements Source {
     
     private final String id;
     private transient String url;
+    private transient YouTubeSourceType youTubeSourceType = null;
     
     protected YouTubeSource(String id) {
         this(id, null);
@@ -33,7 +34,7 @@ public class YouTubeSource implements Source {
     
     protected YouTubeSource(String id, String url) {
         this.id = id;
-        this.url = url;
+        setUrl(url);
         System.out.println("I have been created: " + this);
     }
     
@@ -55,7 +56,16 @@ public class YouTubeSource implements Source {
     
     public YouTubeSource setUrl(String url) {
         this.url = url;
+        if (url == null) {
+            this.youTubeSourceType = YouTubeSourceType.UNKNOWN;
+        } else {
+            this.youTubeSourceType = YouTubeSourceType.ofURL(url);
+        }
         return this;
+    }
+    
+    public YouTubeSourceType getYouTubeSourceType() {
+        return youTubeSourceType;
     }
     
     @Override
@@ -69,7 +79,7 @@ public class YouTubeSource implements Source {
     
     @Override
     public String toString() {
-        return "YouTubeSource{" + "id='" + id + '\'' + ", url='" + url + '\'' + '}';
+        return "YouTubeSource{" + "id='" + id + '\'' + ", url='" + url + '\'' + ", youTubeSourceType=" + youTubeSourceType + '}';
     }
     
     public static YouTubeSource ofId(String id) {
