@@ -24,6 +24,7 @@ import de.codemakers.io.file.AdvancedFile;
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -51,6 +52,7 @@ public class Misc {
         }, (error) -> {
             System.err.println("[ERROR]: " + error); //TODO Debug only
         });
+        Arrays.fill(downloadProgress.getProgresses(), 1.0F); //FIXME Good? Because what if something failed and has not finished? Than this overrides it...
         return exitValue;
     }
     

@@ -504,7 +504,7 @@ public class YouTubeDL {
     public static List<VideoInfo> downloadVideoInfosDirect(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
-        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_GET_TITLE, ARGUMENT_GET_ID, ARGUMENT_GET_DURATION);
+        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_TITLE, ARGUMENT_GET_ID, ARGUMENT_GET_DURATION);
         final List<VideoInfo> videoInfos = new ArrayList<>();
         try {
             final AtomicBoolean errored = new AtomicBoolean(false);
@@ -523,7 +523,7 @@ public class YouTubeDL {
                         break;
                 }
                 counter.incrementAndGet();
-            }, (error) -> errored.set(true));
+            }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
             System.out.println("downloadVideoInfosDirect: exitValue=" + exitValue);
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 return videoInfos;
