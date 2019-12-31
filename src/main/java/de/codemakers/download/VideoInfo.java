@@ -20,10 +20,13 @@ package de.codemakers.download;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import de.codemakers.io.file.AdvancedFile;
 
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -37,6 +40,7 @@ public class VideoInfo implements Serializable {
     private long duration;
     //Temp
     private String url = null;
+    private final List<AdvancedFile> files = new ArrayList<>();
     //Extra
     private String uploader = null;
     private ZonedDateTime uploadDate = null;
@@ -113,6 +117,10 @@ public class VideoInfo implements Serializable {
         return this;
     }
     
+    public List<AdvancedFile> getFiles() {
+        return files;
+    }
+    
     //Extra
     
     public String getUploader() {
@@ -152,15 +160,25 @@ public class VideoInfo implements Serializable {
     
     @Override
     public String toString() {
-        return "VideoInfo{" + "id='" + id + '\'' + ", title='" + title + '\'' + ", duration=" + duration + ", url='" + url + '\'' + ", uploader='" + uploader + '\'' + ", uploadDate=" + uploadDate + ", information=" + information + '}';
+        return "VideoInfo{" + "id='" + id + '\'' + ", title='" + title + '\'' + ", duration=" + duration + ", url='" + url + '\'' + ", files=" + files + ", uploader='" + uploader + '\'' + ", uploadDate=" + uploadDate + ", information=" + information + '}';
     }
     
-    public static VideoInfo fromJsonString(String json) {
+    public static JsonArray toJsonArray(Collection<VideoInfo> videoInfos) {
+        final JsonArray jsonArray = new JsonArray();
+        videoInfos.stream().map(VideoInfo::toJsonObject).forEach(jsonArray::add);
+        return jsonArray;
+    }
+    
+    public static VideoInfo fromJsonObjectString(String json) {
         return Misc.GSON.fromJson(json, VideoInfo.class);
     }
     
     public static VideoInfo fromJsonElement(JsonElement jsonElement) {
         return Misc.GSON.fromJson(jsonElement, VideoInfo.class);
+    }
+    
+    public static List<VideoInfo> fromJsonArrayString(String json) {
+        return fromJsonArray(Misc.GSON.fromJson(json, JsonArray.class));
     }
     
     public static List<VideoInfo> fromJsonArray(JsonArray jsonArray) {
