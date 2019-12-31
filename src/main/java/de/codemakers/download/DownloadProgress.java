@@ -17,9 +17,10 @@
 
 package de.codemakers.download;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class DownloadProgress {
+public class DownloadProgress implements Serializable {
     
     private final DownloadInfo downloadInfo;
     //Temp

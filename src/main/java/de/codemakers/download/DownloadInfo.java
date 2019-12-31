@@ -21,10 +21,11 @@ import de.codemakers.download.sources.Source;
 import de.codemakers.download.sources.YouTubeSource;
 import de.codemakers.io.file.AdvancedFile;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class DownloadInfo {
+public class DownloadInfo implements Serializable {
     
     private final AdvancedFile directory;
     private final Source source;

@@ -17,15 +17,16 @@
 
 package de.codemakers.download;
 
+import java.io.Serializable;
 import java.time.Duration;
 
-public class VideoInfo {
+public class VideoInfo implements Serializable {
     
     private String id;
     private String title;
     private long duration;
     //Temp
-    private transient String url = null;
+    private String url = null;
     
     public VideoInfo() {
         this(null);

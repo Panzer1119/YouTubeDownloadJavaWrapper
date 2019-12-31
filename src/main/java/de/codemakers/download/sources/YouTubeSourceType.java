@@ -19,10 +19,11 @@ package de.codemakers.download.sources;
 
 import de.codemakers.download.YouTubeDL;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public enum YouTubeSourceType {
+public enum YouTubeSourceType implements Serializable {
     INVALID(null) {
         @Override
         public boolean isKnown() {

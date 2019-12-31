@@ -17,8 +17,10 @@
 
 package de.codemakers.download.sources;
 
+import java.io.Serializable;
+
 @FunctionalInterface
-public interface Source {
+public interface Source extends Serializable {
     
     String getSource();
     
