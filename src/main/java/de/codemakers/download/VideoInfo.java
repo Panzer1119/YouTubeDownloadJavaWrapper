@@ -20,7 +20,6 @@ package de.codemakers.download;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.codemakers.io.file.AdvancedFile;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -40,7 +39,7 @@ public class VideoInfo implements Serializable {
     private long duration;
     //Temp
     private String url = null;
-    private final List<AdvancedFile> files = new ArrayList<>();
+    private final List<String> files = new ArrayList<>();
     //Extra
     private String uploader = null;
     private ZonedDateTime uploadDate = null;
@@ -117,7 +116,7 @@ public class VideoInfo implements Serializable {
         return this;
     }
     
-    public List<AdvancedFile> getFiles() {
+    public List<String> getFiles() {
         return files;
     }
     
