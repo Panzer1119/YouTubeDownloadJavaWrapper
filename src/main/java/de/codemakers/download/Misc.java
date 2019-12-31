@@ -17,6 +17,8 @@
 
 package de.codemakers.download;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.file.AdvancedFile;
@@ -31,6 +33,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Misc {
+    
+    public static final Gson GSON = new GsonBuilder().create();
+    public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
     
     private static final Pattern PATTERN_DOWNLOAD_PROGRESS = Pattern.compile("\\[download\\] +(\\d+(?:,|.\\d*)?)% of [0-9.,]+[a-zA-Z]+ at [0-9.,]+[a-zA-Z]+\\/s ETA.*");
     

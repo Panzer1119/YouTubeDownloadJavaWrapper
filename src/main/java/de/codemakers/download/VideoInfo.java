@@ -17,16 +17,30 @@
 
 package de.codemakers.download;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import java.io.Serializable;
 import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class VideoInfo implements Serializable {
+    
+    public static final String PREFIX_YOUTUBE_VIDEO_URL = "https://youtube.com/watch?v=";
     
     private String id;
     private String title;
     private long duration;
     //Temp
     private String url = null;
+    //Extra
+    private String uploader = null;
+    private ZonedDateTime uploadDate = null;
+    private JsonObject information = null;
     
     public VideoInfo() {
         this(null);
@@ -85,7 +99,12 @@ public class VideoInfo implements Serializable {
         return this;
     }
     
+    //Temp
+    
     public String getUrl() {
+        if (url == null) {
+            return PREFIX_YOUTUBE_VIDEO_URL + getId();
+        }
         return url;
     }
     
@@ -94,9 +113,58 @@ public class VideoInfo implements Serializable {
         return this;
     }
     
+    //Extra
+    
+    public String getUploader() {
+        return uploader;
+    }
+    
+    public VideoInfo setUploader(String uploader) {
+        this.uploader = uploader;
+        return this;
+    }
+    
+    public ZonedDateTime getUploadDate() {
+        return uploadDate;
+    }
+    
+    public VideoInfo setUploadDate(ZonedDateTime uploadDate) {
+        this.uploadDate = uploadDate;
+        return this;
+    }
+    
+    public JsonObject getInformation() {
+        return information;
+    }
+    
+    public VideoInfo setInformation(JsonObject information) {
+        this.information = information;
+        return this;
+    }
+    
+    public String toJsonString() {
+        return Misc.GSON.toJson(this);
+    }
+    
+    public JsonObject toJsonObject() {
+        return (JsonObject) Misc.GSON.toJsonTree(this);
+    }
+    
     @Override
     public String toString() {
-        return "VideoInfo{" + "id='" + id + '\'' + ", title='" + title + '\'' + ", duration=" + duration + ", url='" + url + '\'' + '}';
+        return "VideoInfo{" + "id='" + id + '\'' + ", title='" + title + '\'' + ", duration=" + duration + ", url='" + url + '\'' + ", uploader='" + uploader + '\'' + ", uploadDate=" + uploadDate + ", information=" + information + '}';
+    }
+    
+    public static VideoInfo fromJsonString(String json) {
+        return Misc.GSON.fromJson(json, VideoInfo.class);
+    }
+    
+    public static VideoInfo fromJsonElement(JsonElement jsonElement) {
+        return Misc.GSON.fromJson(jsonElement, VideoInfo.class);
+    }
+    
+    public static List<VideoInfo> fromJsonArray(JsonArray jsonArray) {
+        return StreamSupport.stream(jsonArray.spliterator(), true).map(VideoInfo::fromJsonElement).collect(Collectors.toList()); //TODO is parallel=true good?
     }
     
 }
