@@ -42,6 +42,7 @@ public class Misc {
     public static final AdvancedFile DEFAULT_APP_DATA_DIRECTORY = OSUtil.getAppDataSubDirectory(DEFAULT_APP_DATA_DIRECTORY_NAME);
     public static final String DEFAULT_APP_DATA_DATABASES_DIRECTORY_NAME = "databases";
     public static final AdvancedFile DEFAULT_APP_DATA_DATABASES_DIRECTORY = OSUtil.getAppDataSubDirectory(DEFAULT_APP_DATA_DATABASES_DIRECTORY_NAME);
+    public static final String DEFAULT_SETTINGS_FILE_NAME = "settings.txt";
     
     static {
         DEFAULT_APP_DATA_DIRECTORY.mkdirsWithoutException();

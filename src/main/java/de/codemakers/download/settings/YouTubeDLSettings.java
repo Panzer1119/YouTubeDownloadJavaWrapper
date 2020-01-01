@@ -19,6 +19,7 @@ package de.codemakers.download.settings;
 
 import de.codemakers.base.util.DefaultSettings;
 import de.codemakers.base.util.Settings;
+import de.codemakers.download.Misc;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.util.Properties;
@@ -80,6 +81,23 @@ public class YouTubeDLSettings extends DefaultSettings {
     @Override
     public String toString() {
         return "YouTubeDLSettings{" + "properties=" + properties + ", advancedFile=" + advancedFile + ", autoSave=" + autoSave + '}';
+    }
+    
+    public static final YouTubeDLSettings getOrCreateNewSettingsInDirectory(String subProgramName) {
+        return getOrCreateNewSettings(Misc.getSubAppDataProgramDirectory(subProgramName, Misc.DEFAULT_SETTINGS_FILE_NAME));
+    }
+    
+    public static final YouTubeDLSettings getOrCreateNewSettingsInDirectory(AdvancedFile directory) {
+        return getOrCreateNewSettings(new AdvancedFile(directory, Misc.DEFAULT_SETTINGS_FILE_NAME));
+    }
+    
+    public static final YouTubeDLSettings getOrCreateNewSettings(AdvancedFile advancedFile) {
+        if (advancedFile.exists()) {
+            final YouTubeDLSettings youTubeDLSettings = new YouTubeDLSettings(advancedFile);
+            youTubeDLSettings.loadSettings();
+            return youTubeDLSettings;
+        }
+        return createNewSettings(advancedFile);
     }
     
     public static final YouTubeDLSettings createNewSettings(AdvancedFile advancedFile) {
