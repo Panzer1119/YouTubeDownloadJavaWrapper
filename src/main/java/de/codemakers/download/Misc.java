@@ -20,6 +20,7 @@ package de.codemakers.download;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.io.file.AdvancedFile;
 
@@ -36,6 +37,24 @@ public class Misc {
     
     public static final Gson GSON = new GsonBuilder().create();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
+    
+    public static final String DEFAULT_APP_DATA_DIRECTORY_NAME = YouTubeDL.getProgramName();
+    public static final AdvancedFile DEFAULT_APP_DATA_DIRECTORY = OSUtil.getAppDataSubDirectory(DEFAULT_APP_DATA_DIRECTORY_NAME);
+    public static final String DEFAULT_APP_DATA_DATABASES_DIRECTORY_NAME = "databases";
+    public static final AdvancedFile DEFAULT_APP_DATA_DATABASES_DIRECTORY = OSUtil.getAppDataSubDirectory(DEFAULT_APP_DATA_DATABASES_DIRECTORY_NAME);
+    
+    static {
+        DEFAULT_APP_DATA_DIRECTORY.mkdirsWithoutException();
+        DEFAULT_APP_DATA_DATABASES_DIRECTORY.mkdirsWithoutException();
+    }
+    
+    public static AdvancedFile getSubAppDataProgramDirectory(String... names) {
+        return new AdvancedFile(DEFAULT_APP_DATA_DIRECTORY, names);
+    }
+    
+    public static AdvancedFile getSubAppDataProgramDatabasesDirectory(String... names) {
+        return new AdvancedFile(DEFAULT_APP_DATA_DATABASES_DIRECTORY, names);
+    }
     
     private static final Pattern PATTERN_DOWNLOAD_PROGRESS = Pattern.compile("\\[download\\] +(\\d+(?:,|.\\d*)?)% of [0-9.,]+[a-zA-Z]+ at [0-9.,]+[a-zA-Z]+\\/s ETA.*");
     
