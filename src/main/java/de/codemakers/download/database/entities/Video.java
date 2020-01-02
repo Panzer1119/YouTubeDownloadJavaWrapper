@@ -22,6 +22,7 @@ import de.codemakers.download.Misc;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 
 public class Video extends AbstractEntity {
@@ -135,6 +136,18 @@ public class Video extends AbstractEntity {
     public Video setUploadDate(LocalDate uploadDate) {
         this.uploadDate = uploadDate;
         return this;
+    }
+    
+    public List<Playlist> getPlaylists() {
+        return getDatabase().getPlaylistsContainingVideo(getId());
+    }
+    
+    public List<MediaFile> getMediaFiles() {
+        return getDatabase().getMediaFilesForVideo(getId());
+    }
+    
+    public List<ExtraFile> getExtraFiles() {
+        return getDatabase().getExtraFilesForVideo(getId());
     }
     
     @Override

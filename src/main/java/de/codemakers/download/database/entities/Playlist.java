@@ -17,6 +17,7 @@
 
 package de.codemakers.download.database.entities;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Playlist extends AbstractEntity {
@@ -82,6 +83,18 @@ public class Playlist extends AbstractEntity {
     public Playlist setUploaderId(String uploaderId) {
         this.uploaderId = uploaderId;
         return this;
+    }
+    
+    public List<Video> getVideos() {
+        return getDatabase().getVideosInPlaylist(getId());
+    }
+    
+    public boolean containsVideo(String videoId) {
+        return getDatabase().isVideoInPlaylist(videoId);
+    }
+    
+    public int getIndexOfVideo(String videoId) {
+        return getDatabase().getIndexOfVideoInPlaylist(videoId);
     }
     
     @Override
