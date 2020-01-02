@@ -132,4 +132,31 @@ public class MediaFile extends AbstractFile<MediaFile> {
         return Objects.hash(super.hashCode(), format, vcodec, acodec, width, height, fps, asr);
     }
     
+    @Override
+    protected MediaFile getFromDatabase() {
+        return getDatabase().getMediaFileByVideoIdAndFile(getVideoId(), getFile());
+    }
+    
+    @Override
+    public boolean save() {
+        return getDatabase().saveMediaFile(this);
+    }
+    
+    @Override
+    public void set(MediaFile mediaFile) {
+        if (mediaFile == null) {
+            return;
+        }
+        setVideoId(mediaFile.getVideoId());
+        setFile(mediaFile.getFile());
+        setFileType(mediaFile.getFileType());
+        setFormat(mediaFile.getFormat());
+        setVcodec(mediaFile.getVcodec());
+        setAcodec(mediaFile.getAcodec());
+        setWidth(mediaFile.getWidth());
+        setHeight(mediaFile.getHeight());
+        setFps(mediaFile.getFps());
+        setAsr(mediaFile.getAsr());
+    }
+    
 }

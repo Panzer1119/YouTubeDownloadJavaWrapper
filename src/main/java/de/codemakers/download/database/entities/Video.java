@@ -188,4 +188,28 @@ public class Video extends AbstractEntity<Video> {
         return Objects.hash(id, uploader, uploaderId, title, altTitle, duration, uploadDate);
     }
     
+    @Override
+    protected Video getFromDatabase() {
+        return getDatabase().getVideoById(getId());
+    }
+    
+    @Override
+    public boolean save() {
+        return getDatabase().saveVideo(this);
+    }
+    
+    @Override
+    public void set(Video video) {
+        if (video == null) {
+            return;
+        }
+        setId(video.getId());
+        setUploader(video.getUploader());
+        setUploaderId(video.getUploaderId());
+        setTitle(video.getTitle());
+        setAltTitle(video.getAltTitle());
+        setDuration(video.getDurationAsMillis());
+        setUploadDate(video.getUploadDate());
+    }
+    
 }

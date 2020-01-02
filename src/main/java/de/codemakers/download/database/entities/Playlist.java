@@ -119,4 +119,26 @@ public class Playlist extends AbstractEntity<Playlist> {
         return Objects.hash(id, title, playlist, uploader, uploaderId);
     }
     
+    @Override
+    protected Playlist getFromDatabase() {
+        return getDatabase().getPlaylistById(getId());
+    }
+    
+    @Override
+    public boolean save() {
+        return getDatabase().savePlaylist(this);
+    }
+    
+    @Override
+    public void set(Playlist playlist) {
+        if (playlist == null) {
+            return;
+        }
+        setId(playlist.getId());
+        setTitle(playlist.getTitle());
+        setPlaylist(playlist.getPlaylist());
+        setUploader(playlist.getUploader());
+        setUploaderId(playlist.getUploaderId());
+    }
+    
 }

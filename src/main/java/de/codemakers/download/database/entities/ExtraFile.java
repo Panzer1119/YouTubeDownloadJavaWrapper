@@ -32,4 +32,24 @@ public class ExtraFile extends AbstractFile<ExtraFile> {
         return "ExtraFile{" + "videoId='" + videoId + '\'' + ", file='" + file + '\'' + ", fileType='" + fileType + '\'' + '}';
     }
     
+    @Override
+    protected ExtraFile getFromDatabase() {
+        return getDatabase().getExtraFileByVideoIdAndFile(getVideoId(), getFile());
+    }
+    
+    @Override
+    public boolean save() {
+        return getDatabase().saveExtraFile(this);
+    }
+    
+    @Override
+    public void set(ExtraFile extraFile) {
+        if (extraFile == null) {
+            return;
+        }
+        setVideoId(extraFile.getVideoId());
+        setFile(extraFile.getFile());
+        setFileType(extraFile.getFileType());
+    }
+    
 }
