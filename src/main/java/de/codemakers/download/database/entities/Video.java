@@ -126,6 +126,13 @@ public class Video extends AbstractEntity<Video> {
         return this;
     }
     
+    public long getUploadDateAsLong() {
+        if (uploadDate == null) {
+            return -1;
+        }
+        return Long.parseLong(getUploadDate().format(DATE_TIME_FORMATTER_UPLOAD_DATE));
+    }
+    
     public LocalDate getUploadDate() {
         return uploadDate;
     }

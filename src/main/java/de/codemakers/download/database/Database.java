@@ -97,15 +97,15 @@ public class Database {
     public static final String TABLE_EXTRA_FILES_QUERY_GET_BY_VIDEO_ID_AND_FILE = String.format("SELECT * FROM %s WHERE %s = ? AND WHERE %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, TABLE_EXTRA_FILES_COLUMN_FILE);
     // // Updates
     // Table: videos
-    public static final String TABLE_VIDEOS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_VIDEOS, TABLE_VIDEOS_COLUMN_UPLOADER, TABLE_VIDEOS_COLUMN_UPLOADER_ID, TABLE_VIDEOS_COLUMN_TITLE, TABLE_VIDEOS_COLUMN_ALT_TITLE, TABLE_VIDEOS_COLUMN_DURATION, TABLE_VIDEOS_COLUMN_UPLOAD_DATE, TABLE_VIDEOS_COLUMN_ID);
+    public static final String TABLE_VIDEOS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_VIDEOS, TABLE_VIDEOS_COLUMN_ID, TABLE_VIDEOS_COLUMN_UPLOADER, TABLE_VIDEOS_COLUMN_UPLOADER_ID, TABLE_VIDEOS_COLUMN_TITLE, TABLE_VIDEOS_COLUMN_ALT_TITLE, TABLE_VIDEOS_COLUMN_DURATION, TABLE_VIDEOS_COLUMN_UPLOAD_DATE, TABLE_VIDEOS_COLUMN_ID);
     // Table: playlists
-    public static final String TABLE_PLAYLISTS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_PLAYLISTS, TABLE_PLAYLISTS_COLUMN_TITLE, TABLE_PLAYLISTS_COLUMN_PLAYLIST, TABLE_PLAYLISTS_COLUMN_UPLOADER, TABLE_PLAYLISTS_COLUMN_UPLOADER_ID, TABLE_PLAYLISTS_COLUMN_ID);
+    public static final String TABLE_PLAYLISTS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_PLAYLISTS, TABLE_PLAYLISTS_COLUMN_ID, TABLE_PLAYLISTS_COLUMN_TITLE, TABLE_PLAYLISTS_COLUMN_PLAYLIST, TABLE_PLAYLISTS_COLUMN_UPLOADER, TABLE_PLAYLISTS_COLUMN_UPLOADER_ID, TABLE_PLAYLISTS_COLUMN_ID);
     // Table: playlistVideos
-    public static final String TABLE_PLAYLIST_VIDEOS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ? WHERE %s = ? AND %s = ?;", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_INDEX, TABLE_PLAYLISTS_COLUMN_UPLOADER_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
+    public static final String TABLE_PLAYLIST_VIDEOS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ? WHERE %s = ? AND %s = ?;", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_INDEX, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
     // Table: mediaFiles
-    public static final String TABLE_MEDIA_FILES_UPDATE = String.format("UPDATE %s SET %s = ? WHERE %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? AND %s = ?;", TABLE_MEDIA_FILES, TABLE_MEDIA_FILES_COLUMN_FILE, TABLE_MEDIA_FILES_COLUMN_FORMAT, TABLE_MEDIA_FILES_COLUMN_VCODEC, TABLE_MEDIA_FILES_COLUMN_ACODEC, TABLE_MEDIA_FILES_COLUMN_WIDTH, TABLE_MEDIA_FILES_COLUMN_HEIGHT, TABLE_MEDIA_FILES_COLUMN_FPS, TABLE_MEDIA_FILES_COLUMN_ASR, TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, TABLE_MEDIA_FILES_COLUMN_FILE);
+    public static final String TABLE_MEDIA_FILES_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? AND %s = ?;", TABLE_MEDIA_FILES, TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, TABLE_MEDIA_FILES_COLUMN_FILE, TABLE_MEDIA_FILES_COLUMN_FORMAT, TABLE_MEDIA_FILES_COLUMN_VCODEC, TABLE_MEDIA_FILES_COLUMN_ACODEC, TABLE_MEDIA_FILES_COLUMN_WIDTH, TABLE_MEDIA_FILES_COLUMN_HEIGHT, TABLE_MEDIA_FILES_COLUMN_FPS, TABLE_MEDIA_FILES_COLUMN_ASR, TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, TABLE_MEDIA_FILES_COLUMN_FILE);
     // Table: extraFiles
-    public static final String TABLE_EXTRA_FILES_UPDATE = String.format("UPDATE %s SET %s = ? WHERE %s = ?, %s = ? AND %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_FILE, TABLE_EXTRA_FILES_COLUMN_FILE_TYPE, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, TABLE_EXTRA_FILES_COLUMN_FILE);
+    public static final String TABLE_EXTRA_FILES_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ? WHERE %s = ? AND %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, TABLE_EXTRA_FILES_COLUMN_FILE, TABLE_EXTRA_FILES_COLUMN_FILE_TYPE, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, TABLE_EXTRA_FILES_COLUMN_FILE);
     // // //
     
     private final Connector connector;
@@ -561,23 +561,82 @@ public class Database {
     }
     
     public boolean saveVideo(Video video) {
-        //TODO !!
-        return false;
+        try {
+            synchronized (preparedStatement_updateVideo) {
+                preparedStatement_updateVideo.setString(1, video.getId());
+                preparedStatement_updateVideo.setString(2, video.getUploader());
+                preparedStatement_updateVideo.setString(3, video.getUploaderId());
+                preparedStatement_updateVideo.setString(4, video.getTitle());
+                preparedStatement_updateVideo.setString(5, video.getAltTitle());
+                preparedStatement_updateVideo.setLong(7, video.getDurationAsMillis());
+                preparedStatement_updateVideo.setLong(8, video.getUploadDateAsLong());
+                preparedStatement_updateVideo.setString(9, video.getId()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
+                preparedStatement_updateVideo.executeUpdate();
+            }
+            return true;
+        } catch (SQLException ex) {
+            Logger.handleError(ex);
+            return false;
+        }
     }
     
     public boolean savePlaylist(Playlist playlist) {
-        //TODO !!
-        return false;
+        try {
+            synchronized (preparedStatement_updatePlaylist) {
+                preparedStatement_updatePlaylist.setString(1, playlist.getId());
+                preparedStatement_updatePlaylist.setString(2, playlist.getTitle());
+                preparedStatement_updatePlaylist.setString(3, playlist.getPlaylist());
+                preparedStatement_updatePlaylist.setString(4, playlist.getUploader());
+                preparedStatement_updatePlaylist.setString(5, playlist.getUploaderId());
+                preparedStatement_updatePlaylist.setString(6, playlist.getId()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
+                preparedStatement_updatePlaylist.executeUpdate();
+            }
+            return true;
+        } catch (SQLException ex) {
+            Logger.handleError(ex);
+            return false;
+        }
     }
     
     public boolean saveMediaFile(MediaFile mediaFile) {
-        //TODO !!
-        return false;
+        try {
+            synchronized (preparedStatement_updateMediaFile) {
+                preparedStatement_updateMediaFile.setString(1, mediaFile.getVideoId());
+                preparedStatement_updateMediaFile.setString(2, mediaFile.getFile());
+                preparedStatement_updateMediaFile.setString(3, mediaFile.getFileType());
+                preparedStatement_updateMediaFile.setString(4, mediaFile.getFormat());
+                preparedStatement_updateMediaFile.setString(5, mediaFile.getVcodec());
+                preparedStatement_updateMediaFile.setString(6, mediaFile.getAcodec());
+                preparedStatement_updateMediaFile.setInt(7, mediaFile.getWidth());
+                preparedStatement_updateMediaFile.setInt(8, mediaFile.getHeight());
+                preparedStatement_updateMediaFile.setInt(9, mediaFile.getFps());
+                preparedStatement_updateMediaFile.setInt(10, mediaFile.getAsr());
+                preparedStatement_updateMediaFile.setString(11, mediaFile.getVideoId()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
+                preparedStatement_updateMediaFile.setString(12, mediaFile.getFile()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
+                preparedStatement_updateMediaFile.executeUpdate();
+            }
+            return true;
+        } catch (SQLException ex) {
+            Logger.handleError(ex);
+            return false;
+        }
     }
     
     public boolean saveExtraFile(ExtraFile extraFile) {
-        //TODO !!
-        return false;
+        try {
+            synchronized (preparedStatement_updateExtraFile) {
+                preparedStatement_updateExtraFile.setString(1, extraFile.getVideoId());
+                preparedStatement_updateExtraFile.setString(2, extraFile.getFile());
+                preparedStatement_updateExtraFile.setString(3, extraFile.getFileType());
+                preparedStatement_updateExtraFile.setString(4, extraFile.getVideoId()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
+                preparedStatement_updateExtraFile.setString(5, extraFile.getFile()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
+                preparedStatement_updateExtraFile.executeUpdate();
+            }
+            return true;
+        } catch (SQLException ex) {
+            Logger.handleError(ex);
+            return false;
+        }
     }
     
     @Override
