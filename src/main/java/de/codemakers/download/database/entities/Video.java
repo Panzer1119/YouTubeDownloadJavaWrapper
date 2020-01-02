@@ -41,6 +41,11 @@ public class Video extends AbstractEntity {
         this(null, null, null, null, null, -1, null);
     }
     
+    public Video(String id, String uploader, String uploaderId, String title, String altTitle, long duration, long uploadDate) {
+        this(id, uploader, uploaderId, title, altTitle, duration, null);
+        setUploadDate(uploadDate);
+    }
+    
     public Video(String id, String uploader, String uploaderId, String title, String altTitle, long duration, LocalDate uploadDate) {
         this.id = id;
         this.uploader = uploader;
@@ -126,6 +131,9 @@ public class Video extends AbstractEntity {
     }
     
     public Video setUploadDate(long uploadDate) {
+        if (uploadDate < 0) {
+            return setUploadDate((LocalDate) null);
+        }
         return setUploadDate("" + uploadDate);
     }
     

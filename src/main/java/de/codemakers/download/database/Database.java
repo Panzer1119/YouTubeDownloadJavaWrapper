@@ -26,6 +26,9 @@ import de.codemakers.io.IOUtil;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Database {
@@ -188,38 +191,71 @@ public class Database {
     }
     
     public List<Video> getAllVideos() {
-        
-        //TODO !!!!
-        return null;
+        if (!isRunning()) {
+            return null;
+        }
+        try {
+            final ResultSet resultSet = preparedStatement_getAllVideos.executeQuery();
+            final List<Video> videos = new ArrayList<>();
+            while (resultSet.next()) {
+                videos.add(new Video(resultSet.getString(TABLE_VIDEOS_COLUMN_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(TABLE_VIDEOS_COLUMN_DURATION), resultSet.getLong(TABLE_VIDEOS_COLUMN_UPLOAD_DATE)));
+            }
+            return videos;
+        } catch (SQLException ex) {
+            return null;
+        }
     }
     
     public List<Playlist> getAllPlaylists() {
-        //TODO !!!!
-        return null;
+        if (!isRunning()) {
+            return null;
+        }
+        try {
+            final ResultSet resultSet = preparedStatement_getAllPlaylists.executeQuery();
+            final List<Playlist> playlists = new ArrayList<>();
+            while (resultSet.next()) {
+                playlists.add(new Playlist(resultSet.getString(TABLE_PLAYLISTS_COLUMN_ID), resultSet.getString(TABLE_PLAYLISTS_COLUMN_TITLE), resultSet.getString(TABLE_PLAYLISTS_COLUMN_PLAYLIST), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER_ID)));
+            }
+            return playlists;
+        } catch (SQLException ex) {
+            return null;
+        }
     }
     
     public List<MediaFile> getMediaFilesForVideo(String videoId) {
+        if (!isRunning()) {
+            return null;
+        }
         //TODO !
         return null;
     }
     
     public List<ExtraFile> getExtraFilesForVideo(String videoId) {
+        if (!isRunning()) {
+            return null;
+        }
         //TODO !
         return null;
     }
     
     public List<Video> getVideosInPlaylist(String playlistId) {
+        if (!isRunning()) {
+            return null;
+        }
         //TODO !!!
         return null;
     }
     
     public List<Playlist> getPlaylistsContainingVideo(String videoId) {
+        if (!isRunning()) {
+            return null;
+        }
         //TODO !!!
         return null;
     }
     
     public boolean isVideoInPlaylist(String videoId) {
-        if (videoId == null || videoId.isEmpty()) {
+        if (!isRunning() || videoId == null || videoId.isEmpty()) {
             return false;
         }
         //TODO !!
@@ -227,7 +263,7 @@ public class Database {
     }
     
     public int getIndexOfVideoInPlaylist(String videoId) {
-        if (videoId == null || videoId.isEmpty()) {
+        if (!isRunning() || videoId == null || videoId.isEmpty()) {
             return -1;
         }
         //TODO !!
