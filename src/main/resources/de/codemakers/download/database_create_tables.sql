@@ -1,20 +1,3 @@
-/*
- *    Copyright 2019 - 2020 Paul Hagedorn (Panzer1119)
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 CREATE TABLE IF NOT EXISTS videos (
     id VARCHAR(16) NOT NULL,
     uploader VARCHAR(256),
@@ -25,19 +8,29 @@ CREATE TABLE IF NOT EXISTS videos (
     uploadDate BIGINT,
     PRIMARY KEY (id)
 );
-CREATE TABLE IF NOT EXISTS files (
+CREATE TABLE IF NOT EXISTS mediaFiles (
     videoId VARCHAR(16) NOT NULL,
     file VARCHAR(1024) NOT NULL,
+    fileType VARCHAR (1) NOT NULL DEFAULT 'B',
     format VARCHAR(128),
-    width INT,
-    height INT,
-    fps INT,
+    vcodec VARCHAR (32),
+    acodec VARCHAR (32),
+    width INT DEFAULT 0,
+    height INT DEFAULT 0,
+    fps INT DEFAULT 0,
+    asr INT DEFAULT 0,
+    PRIMARY KEY (videoId, file)
+);
+CREATE TABLE IF NOT EXISTS extraFiles (
+    videoId VARCHAR(16) NOT NULL,
+    file VARCHAR(1024) NOT NULL,
+    fileType VARCHAR(16) NOT NULL,
     PRIMARY KEY (videoId, file)
 );
 CREATE TABLE IF NOT EXISTS playlists (
     id VARCHAR(64) NOT NULL,
     title VARCHAR(256),
-    name VARCHAR(128),
+    playlist VARCHAR(128),
     uploader VARCHAR(256),
     uploaderId VARCHAR(128),
     PRIMARY KEY (id)

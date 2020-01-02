@@ -74,7 +74,9 @@ public class Connector {
         if (connection == null) {
             return true;
         }
-        return Standard.silentError(connection::close) == null;
+        final boolean good = Standard.silentError(connection::close) == null;
+        connection = null;
+        return good;
     }
     
     public Connection getConnection() {
