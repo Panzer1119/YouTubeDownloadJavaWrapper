@@ -150,6 +150,14 @@ public class Video extends AbstractEntity {
         return getDatabase().getPlaylistsContainingVideo(getId());
     }
     
+    public boolean isInPlaylist(String playlistId) {
+        return getDatabase().isVideoInPlaylist(getId(), playlistId);
+    }
+    
+    public int getIndexInPlaylist(String playlistId) {
+        return getDatabase().getIndexOfVideoInPlaylist(getId(), playlistId);
+    }
+    
     public List<MediaFile> getMediaFiles() {
         return getDatabase().getMediaFilesForVideo(getId());
     }

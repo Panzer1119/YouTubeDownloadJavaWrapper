@@ -90,11 +90,11 @@ public class Playlist extends AbstractEntity {
     }
     
     public boolean containsVideo(String videoId) {
-        return getDatabase().isVideoInPlaylist(videoId);
+        return getDatabase().isVideoInPlaylist(videoId, getId());
     }
     
     public int getIndexOfVideo(String videoId) {
-        return getDatabase().getIndexOfVideoInPlaylist(videoId);
+        return getDatabase().getIndexOfVideoInPlaylist(videoId, getId());
     }
     
     @Override
