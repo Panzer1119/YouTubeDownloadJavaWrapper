@@ -95,10 +95,22 @@ public class Database {
     public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_EXTRA_FILES);
     public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID);
     public static final String TABLE_EXTRA_FILES_QUERY_GET_BY_VIDEO_ID_AND_FILE = String.format("SELECT * FROM %s WHERE %s = ? AND WHERE %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, TABLE_EXTRA_FILES_COLUMN_FILE);
+    // // Updates
+    // Table: videos
+    public static final String TABLE_VIDEOS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_VIDEOS, TABLE_VIDEOS_COLUMN_UPLOADER, TABLE_VIDEOS_COLUMN_UPLOADER_ID, TABLE_VIDEOS_COLUMN_TITLE, TABLE_VIDEOS_COLUMN_ALT_TITLE, TABLE_VIDEOS_COLUMN_DURATION, TABLE_VIDEOS_COLUMN_UPLOAD_DATE, TABLE_VIDEOS_COLUMN_ID);
+    // Table: playlists
+    public static final String TABLE_PLAYLISTS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_PLAYLISTS, TABLE_PLAYLISTS_COLUMN_TITLE, TABLE_PLAYLISTS_COLUMN_PLAYLIST, TABLE_PLAYLISTS_COLUMN_UPLOADER, TABLE_PLAYLISTS_COLUMN_UPLOADER_ID, TABLE_PLAYLISTS_COLUMN_ID);
+    // Table: playlistVideos
+    public static final String TABLE_PLAYLIST_VIDEOS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ? WHERE %s = ? AND %s = ?;", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_INDEX, TABLE_PLAYLISTS_COLUMN_UPLOADER_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
+    // Table: mediaFiles
+    public static final String TABLE_MEDIA_FILES_UPDATE = String.format("UPDATE %s SET %s = ? WHERE %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? AND %s = ?;", TABLE_MEDIA_FILES, TABLE_MEDIA_FILES_COLUMN_FILE, TABLE_MEDIA_FILES_COLUMN_FORMAT, TABLE_MEDIA_FILES_COLUMN_VCODEC, TABLE_MEDIA_FILES_COLUMN_ACODEC, TABLE_MEDIA_FILES_COLUMN_WIDTH, TABLE_MEDIA_FILES_COLUMN_HEIGHT, TABLE_MEDIA_FILES_COLUMN_FPS, TABLE_MEDIA_FILES_COLUMN_ASR, TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, TABLE_MEDIA_FILES_COLUMN_FILE);
+    // Table: extraFiles
+    public static final String TABLE_EXTRA_FILES_UPDATE = String.format("UPDATE %s SET %s = ? WHERE %s = ?, %s = ? AND %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_FILE, TABLE_EXTRA_FILES_COLUMN_FILE_TYPE, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, TABLE_EXTRA_FILES_COLUMN_FILE);
     // // //
     
     private final Connector connector;
-    // // Temp
+    // // // SQL Stuff
+    // // Queries
     // Videos
     private transient PreparedStatement preparedStatement_getAllVideos = null;
     private transient PreparedStatement preparedStatement_getVideoById = null;
@@ -118,7 +130,18 @@ public class Database {
     private transient PreparedStatement preparedStatement_getAllExtraFiles = null;
     private transient PreparedStatement preparedStatement_getExtraFilesByVideoId = null;
     private transient PreparedStatement preparedStatement_getExtraFileByVideoIdAndFile = null;
-    // //
+    // // Updates
+    // Videos
+    private transient PreparedStatement preparedStatement_updateVideo = null;
+    // Playlists
+    private transient PreparedStatement preparedStatement_updatePlaylist = null;
+    // Playlists and Videos
+    private transient PreparedStatement preparedStatement_updatePlaylistVideo = null;
+    // MediaFiles
+    private transient PreparedStatement preparedStatement_updateMediaFile = null;
+    // ExtraFiles
+    private transient PreparedStatement preparedStatement_updateExtraFile = null;
+    // // //
     
     public Database(AdvancedFile databaseDirectory) {
         this(new Connector(databaseDirectory));
@@ -148,6 +171,7 @@ public class Database {
     }
     
     private void initStatements() {
+        // // Queries
         // Videos
         Standard.silentError(() -> preparedStatement_getAllVideos = connector.prepareStatement(TABLE_VIDEOS_QUERY_GET_ALL));
         Standard.silentError(() -> preparedStatement_getVideoById = connector.prepareStatement(TABLE_VIDEOS_QUERY_GET_BY_ID));
@@ -167,6 +191,17 @@ public class Database {
         Standard.silentError(() -> preparedStatement_getAllExtraFiles = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_ALL));
         Standard.silentError(() -> preparedStatement_getExtraFilesByVideoId = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID));
         Standard.silentError(() -> preparedStatement_getExtraFileByVideoIdAndFile = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_BY_VIDEO_ID_AND_FILE));
+        // // Updates
+        // Videos
+        Standard.silentError(() -> preparedStatement_updateVideo = connector.prepareStatement(TABLE_VIDEOS_UPDATE));
+        // Playlists
+        Standard.silentError(() -> preparedStatement_updatePlaylist = connector.prepareStatement(TABLE_PLAYLISTS_UPDATE));
+        // Playlists and Videos
+        Standard.silentError(() -> preparedStatement_updatePlaylistVideo = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_UPDATE));
+        // MediaFiles
+        Standard.silentError(() -> preparedStatement_updateMediaFile = connector.prepareStatement(TABLE_MEDIA_FILES_UPDATE));
+        // ExtraFiles
+        Standard.silentError(() -> preparedStatement_updateExtraFile = connector.prepareStatement(TABLE_EXTRA_FILES_UPDATE));
     }
     
     public boolean stop() {
@@ -178,6 +213,7 @@ public class Database {
     }
     
     private void closeStatements() {
+        // // Queries
         // Videos
         IOUtil.closeQuietly(preparedStatement_getAllVideos);
         IOUtil.closeQuietly(preparedStatement_getVideoById);
@@ -197,6 +233,17 @@ public class Database {
         IOUtil.closeQuietly(preparedStatement_getAllExtraFiles);
         IOUtil.closeQuietly(preparedStatement_getExtraFilesByVideoId);
         IOUtil.closeQuietly(preparedStatement_getExtraFileByVideoIdAndFile);
+        // // Updates
+        // Videos
+        IOUtil.closeQuietly(preparedStatement_updateVideo);
+        // Playlists
+        IOUtil.closeQuietly(preparedStatement_updatePlaylist);
+        // Playlists and Videos
+        IOUtil.closeQuietly(preparedStatement_updatePlaylistVideo);
+        // MediaFiles
+        IOUtil.closeQuietly(preparedStatement_updateMediaFile);
+        // ExtraFiles
+        IOUtil.closeQuietly(preparedStatement_updateExtraFile);
     }
     
     public List<Video> getAllVideos() {
