@@ -513,6 +513,26 @@ public class Database {
         return new ExtraFile(resultSet.getString(TABLE_EXTRA_FILES_COLUMN_VIDEO_ID), resultSet.getString(TABLE_EXTRA_FILES_COLUMN_FILE), resultSet.getString(TABLE_EXTRA_FILES_COLUMN_FILE_TYPE)).setDatabase(this);
     }
     
+    public boolean saveVideo(Video video) {
+        //TODO !!
+        return false;
+    }
+    
+    public boolean savePlaylist(Playlist playlist) {
+        //TODO !!
+        return false;
+    }
+    
+    public boolean saveMediaFile(MediaFile mediaFile) {
+        //TODO !!
+        return false;
+    }
+    
+    public boolean saveExtraFile(ExtraFile extraFile) {
+        //TODO !!
+        return false;
+    }
+    
     @Override
     public String toString() {
         return "Database{" + "connector=" + connector + '}';
