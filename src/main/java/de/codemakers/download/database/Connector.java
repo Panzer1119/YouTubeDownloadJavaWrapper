@@ -22,10 +22,7 @@ import de.codemakers.base.action.ClosingAction;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.io.file.AdvancedFile;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Objects;
 
 public class Connector {
@@ -95,6 +92,13 @@ public class Connector {
             return null;
         }
         return new ClosingAction<>(connection::createStatement);
+    }
+    
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+        if (!isConnected()) {
+            return null;
+        }
+        return connection.prepareStatement(sql);
     }
     
     @Override

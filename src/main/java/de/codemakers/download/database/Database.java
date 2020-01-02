@@ -17,7 +17,16 @@
 
 package de.codemakers.download.database;
 
+import de.codemakers.base.Standard;
+import de.codemakers.download.database.entities.ExtraFile;
+import de.codemakers.download.database.entities.MediaFile;
+import de.codemakers.download.database.entities.Playlist;
+import de.codemakers.download.database.entities.Video;
+import de.codemakers.io.IOUtil;
 import de.codemakers.io.file.AdvancedFile;
+
+import java.sql.PreparedStatement;
+import java.util.List;
 
 public class Database {
     
@@ -65,24 +74,43 @@ public class Database {
     // // Queries
     // Table: videos
     public static final String TABLE_VIDEOS_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_VIDEOS);
-    public static final String TABLE_VIDEOS_QUERY_GET_BY_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_VIDEOS, TABLE_VIDEOS_COLUMN_ID);
+    public static final String TABLE_VIDEOS_QUERY_GET_BY_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_VIDEOS, TABLE_VIDEOS_COLUMN_ID);
     // Table: playlists
     public static final String TABLE_PLAYLISTS_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_PLAYLISTS);
-    public static final String TABLE_PLAYLISTS_QUERY_GET_BY_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_PLAYLISTS, TABLE_PLAYLISTS_COLUMN_ID);
+    public static final String TABLE_PLAYLISTS_QUERY_GET_BY_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_PLAYLISTS, TABLE_PLAYLISTS_COLUMN_ID);
     // Table: playlistVideos
     public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_PLAYLIST_VIDEOS);
-    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
-    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_PLAYLIST_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID);
-    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_BY_VIDEO_ID_AND_PLAYLIST_ID = String.format("SELECT * FROM %s WHERE %s = '%%s' AND %s = '%%s';", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID);
+    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
+    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_PLAYLIST_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID);
+    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_BY_VIDEO_ID_AND_PLAYLIST_ID = String.format("SELECT * FROM %s WHERE %s = ? AND %s = ?;", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID);
     // Table: mediaFiles
     public static final String TABLE_MEDIA_FILES_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_MEDIA_FILES);
-    public static final String TABLE_MEDIA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_MEDIA_FILES, TABLE_MEDIA_FILES_COLUMN_VIDEO_ID);
+    public static final String TABLE_MEDIA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_MEDIA_FILES, TABLE_MEDIA_FILES_COLUMN_VIDEO_ID);
     // Table: extraFiles
     public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_EXTRA_FILES);
-    public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID);
+    public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID);
     // // //
     
     private final Connector connector;
+    // // Temp
+    // Videos
+    private transient PreparedStatement preparedStatement_getAllVideos = null;
+    private transient PreparedStatement preparedStatement_getVideoById = null;
+    // Playlists
+    private transient PreparedStatement preparedStatement_getAllPlaylists = null;
+    private transient PreparedStatement preparedStatement_getPlaylistByPlaylistId = null;
+    // Playlists and Videos
+    private transient PreparedStatement preparedStatement_getAllPlaylistVideos = null;
+    private transient PreparedStatement preparedStatement_getVideosByPlaylistId = null;
+    private transient PreparedStatement preparedStatement_getPlaylistsByVideoId = null;
+    private transient PreparedStatement preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId = null;
+    // MediaFiles
+    private transient PreparedStatement preparedStatement_getAllMediaFiles = null;
+    private transient PreparedStatement preparedStatement_getMediaFilesByVideoId = null;
+    // ExtraFiles
+    private transient PreparedStatement preparedStatement_getAllExtraFiles = null;
+    private transient PreparedStatement preparedStatement_getExtraFilesByVideoId = null;
+    // //
     
     public Database(AdvancedFile databaseDirectory) {
         this(new Connector(databaseDirectory));
@@ -104,14 +132,106 @@ public class Database {
         if (isRunning()) {
             return false;
         }
-        return connector.createConnection();
+        if (!connector.createConnection()) {
+            return false;
+        }
+        initStatements();
+        return true;
+    }
+    
+    private void initStatements() {
+        // Videos
+        Standard.silentError(() -> preparedStatement_getAllVideos = connector.prepareStatement(TABLE_VIDEOS_QUERY_GET_ALL));
+        Standard.silentError(() -> preparedStatement_getVideoById = connector.prepareStatement(TABLE_VIDEOS_QUERY_GET_BY_ID));
+        // Playlists
+        Standard.silentError(() -> preparedStatement_getAllPlaylists = connector.prepareStatement(TABLE_PLAYLISTS_QUERY_GET_ALL));
+        Standard.silentError(() -> preparedStatement_getPlaylistByPlaylistId = connector.prepareStatement(TABLE_PLAYLISTS_QUERY_GET_BY_ID));
+        // Playlists and Videos
+        Standard.silentError(() -> preparedStatement_getAllPlaylistVideos = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL));
+        Standard.silentError(() -> preparedStatement_getVideosByPlaylistId = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_VIDEO_ID));
+        Standard.silentError(() -> preparedStatement_getPlaylistsByVideoId = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_PLAYLIST_ID));
+        Standard.silentError(() -> preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_BY_VIDEO_ID_AND_PLAYLIST_ID));
+        // MediaFiles
+        Standard.silentError(() -> preparedStatement_getAllMediaFiles = connector.prepareStatement(TABLE_MEDIA_FILES_QUERY_GET_ALL));
+        Standard.silentError(() -> preparedStatement_getMediaFilesByVideoId = connector.prepareStatement(TABLE_MEDIA_FILES_QUERY_GET_ALL_BY_VIDEO_ID));
+        // ExtraFiles
+        Standard.silentError(() -> preparedStatement_getAllExtraFiles = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_ALL));
+        Standard.silentError(() -> preparedStatement_getExtraFilesByVideoId = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID));
     }
     
     public boolean stop() {
         if (!isRunning()) {
             return false;
         }
+        closeStatements();
         return connector.closeConnection();
+    }
+    
+    private void closeStatements() {
+        // Videos
+        IOUtil.closeQuietly(preparedStatement_getAllVideos);
+        IOUtil.closeQuietly(preparedStatement_getVideoById);
+        // Playlists
+        IOUtil.closeQuietly(preparedStatement_getAllPlaylists);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistByPlaylistId);
+        // Playlists and Videos
+        IOUtil.closeQuietly(preparedStatement_getAllPlaylistVideos);
+        IOUtil.closeQuietly(preparedStatement_getVideosByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistsByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId);
+        // MediaFiles
+        IOUtil.closeQuietly(preparedStatement_getAllMediaFiles);
+        IOUtil.closeQuietly(preparedStatement_getMediaFilesByVideoId);
+        // ExtraFiles
+        IOUtil.closeQuietly(preparedStatement_getAllExtraFiles);
+        IOUtil.closeQuietly(preparedStatement_getExtraFilesByVideoId);
+    }
+    
+    public List<Video> getAllVideos() {
+        
+        //TODO !!!!
+        return null;
+    }
+    
+    public List<Playlist> getAllPlaylists() {
+        //TODO !!!!
+        return null;
+    }
+    
+    public List<MediaFile> getMediaFilesForVideo(String videoId) {
+        //TODO !
+        return null;
+    }
+    
+    public List<ExtraFile> getExtraFilesForVideo(String videoId) {
+        //TODO !
+        return null;
+    }
+    
+    public List<Video> getVideosInPlaylist(String playlistId) {
+        //TODO !!!
+        return null;
+    }
+    
+    public List<Playlist> getPlaylistsContainingVideo(String videoId) {
+        //TODO !!!
+        return null;
+    }
+    
+    public boolean isVideoInPlaylist(String videoId) {
+        if (videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        //TODO !!
+        return false;
+    }
+    
+    public int getIndexOfVideoInPlaylist(String videoId) {
+        if (videoId == null || videoId.isEmpty()) {
+            return -1;
+        }
+        //TODO !!
+        return -1;
     }
     
     @Override
