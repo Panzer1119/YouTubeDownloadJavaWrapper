@@ -22,6 +22,7 @@ import de.codemakers.download.Misc;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class Video {
     
@@ -139,6 +140,23 @@ public class Video {
     @Override
     public String toString() {
         return "Video{" + "id='" + id + '\'' + ", uploader='" + uploader + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", altTitle='" + altTitle + '\'' + ", duration=" + duration + ", uploadDate=" + uploadDate + '}';
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        final Video video = (Video) other;
+        return duration == video.duration && Objects.equals(id, video.id) && Objects.equals(uploader, video.uploader) && Objects.equals(uploaderId, video.uploaderId) && Objects.equals(title, video.title) && Objects.equals(altTitle, video.altTitle) && Objects.equals(uploadDate, video.uploadDate);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, uploader, uploaderId, title, altTitle, duration, uploadDate);
     }
     
 }
