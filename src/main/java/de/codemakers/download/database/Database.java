@@ -194,13 +194,8 @@ public class Database {
         if (!isRunning()) {
             return null;
         }
-        try {
-            final ResultSet resultSet = preparedStatement_getAllVideos.executeQuery();
-            final List<Video> videos = new ArrayList<>();
-            while (resultSet.next()) {
-                videos.add(new Video(resultSet.getString(TABLE_VIDEOS_COLUMN_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(TABLE_VIDEOS_COLUMN_DURATION), resultSet.getLong(TABLE_VIDEOS_COLUMN_UPLOAD_DATE)));
-            }
-            return videos;
+        try (final ResultSet resultSet = preparedStatement_getAllVideos.executeQuery()) {
+            return videosFromResultSet(resultSet);
         } catch (SQLException ex) {
             return null;
         }
@@ -210,13 +205,8 @@ public class Database {
         if (!isRunning()) {
             return null;
         }
-        try {
-            final ResultSet resultSet = preparedStatement_getAllPlaylists.executeQuery();
-            final List<Playlist> playlists = new ArrayList<>();
-            while (resultSet.next()) {
-                playlists.add(new Playlist(resultSet.getString(TABLE_PLAYLISTS_COLUMN_ID), resultSet.getString(TABLE_PLAYLISTS_COLUMN_TITLE), resultSet.getString(TABLE_PLAYLISTS_COLUMN_PLAYLIST), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER_ID)));
-            }
-            return playlists;
+        try (final ResultSet resultSet = preparedStatement_getAllPlaylists.executeQuery()) {
+            return playlistsFromResultSet(resultSet);
         } catch (SQLException ex) {
             return null;
         }
@@ -268,6 +258,30 @@ public class Database {
         }
         //TODO !!
         return -1;
+    }
+    
+    public static List<Video> videosFromResultSet(ResultSet resultSet) throws SQLException {
+        final List<Video> videos = new ArrayList<>();
+        while (resultSet.next()) {
+            videos.add(videoFromResultSet(resultSet));
+        }
+        return videos;
+    }
+    
+    public static Video videoFromResultSet(ResultSet resultSet) throws SQLException {
+        return new Video(resultSet.getString(TABLE_VIDEOS_COLUMN_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(TABLE_VIDEOS_COLUMN_DURATION), resultSet.getLong(TABLE_VIDEOS_COLUMN_UPLOAD_DATE));
+    }
+    
+    public static List<Playlist> playlistsFromResultSet(ResultSet resultSet) throws SQLException {
+        final List<Playlist> playlists = new ArrayList<>();
+        while (resultSet.next()) {
+            playlists.add(playlistFromResultSet(resultSet));
+        }
+        return playlists;
+    }
+    
+    public static Playlist playlistFromResultSet(ResultSet resultSet) throws SQLException {
+        return new Playlist(resultSet.getString(TABLE_PLAYLISTS_COLUMN_ID), resultSet.getString(TABLE_PLAYLISTS_COLUMN_TITLE), resultSet.getString(TABLE_PLAYLISTS_COLUMN_PLAYLIST), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER_ID));
     }
     
     @Override
