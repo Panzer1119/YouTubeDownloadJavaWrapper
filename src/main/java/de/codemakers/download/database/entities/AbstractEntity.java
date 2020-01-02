@@ -19,7 +19,7 @@ package de.codemakers.download.database.entities;
 
 import de.codemakers.download.database.Database;
 
-public class AbstractEntity {
+public class AbstractEntity<T> {
     
     private Database database = null;
     
@@ -27,9 +27,9 @@ public class AbstractEntity {
         return database;
     }
     
-    public AbstractEntity setDatabase(Database database) {
+    public T setDatabase(Database database) {
         this.database = database;
-        return this;
+        return (T) this;
     }
     
 }

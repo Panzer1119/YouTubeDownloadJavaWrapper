@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
-public class Video extends AbstractEntity {
+public class Video extends AbstractEntity<Video> {
     
     public static final DateTimeFormatter DATE_TIME_FORMATTER_UPLOAD_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
     
