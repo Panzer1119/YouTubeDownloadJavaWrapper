@@ -229,7 +229,9 @@ public class Database {
             try {
                 preparedStatement_getVideoById.setString(1, videoId);
                 resultSet = preparedStatement_getVideoById.executeQuery();
-                video = videoFromResultSet(resultSet);
+                if (resultSet.next()) {
+                    video = videoFromResultSet(resultSet);
+                }
             } catch (SQLException ex) {
                 Logger.handleError(ex);
             }
@@ -250,7 +252,9 @@ public class Database {
             try {
                 preparedStatement_getPlaylistById.setString(1, playlistId);
                 resultSet = preparedStatement_getPlaylistById.executeQuery();
-                playlist = playlistFromResultSet(resultSet);
+                if (resultSet.next()) {
+                    playlist = playlistFromResultSet(resultSet);
+                }
             } catch (SQLException ex) {
                 Logger.handleError(ex);
             }
@@ -314,7 +318,10 @@ public class Database {
                 preparedStatement_getVideoIdsByPlaylistId.setString(1, playlistId);
                 resultSet = preparedStatement_getVideoIdsByPlaylistId.executeQuery();
                 while (resultSet.next()) {
-                    videos.add(getVideoById(resultSet.getString(TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID)));
+                    final Video video = getVideoById(resultSet.getString(TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID));
+                    if (video != null) {
+                        videos.add(video);
+                    }
                 }
             } catch (SQLException ex) {
                 Logger.handleError(ex);
@@ -338,7 +345,10 @@ public class Database {
                 preparedStatement_getPlaylistIdsByVideoId.setString(1, videoId);
                 resultSet = preparedStatement_getPlaylistIdsByVideoId.executeQuery();
                 while (resultSet.next()) {
-                    playlists.add(getPlaylistById(resultSet.getString(TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID)));
+                    final Playlist playlist = getPlaylistById(resultSet.getString(TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID));
+                    if (playlist != null) {
+                        playlists.add(playlist);
+                    }
                 }
             } catch (SQLException ex) {
                 Logger.handleError(ex);
