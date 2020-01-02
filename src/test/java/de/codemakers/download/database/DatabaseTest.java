@@ -20,6 +20,7 @@ package de.codemakers.download.database;
 import de.codemakers.base.Standard;
 import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.download.database.entities.Playlist;
 import de.codemakers.download.database.entities.Video;
 import de.codemakers.io.file.AdvancedFile;
 
@@ -43,6 +44,11 @@ public class DatabaseTest {
         //Logger.log("videos_1=" + videos_1);
         Logger.log("videos_1:");
         videos_1.forEach(System.out::println);
+        System.out.println();
+        final Video video_0 = videos_1.get(0);
+        Logger.log("video_0=" + video_0);
+        final List<Playlist> playlists_0 = video_0.getPlaylists();
+        Logger.log("playlists_0=" + playlists_0);
         System.exit(0);
     }
     
