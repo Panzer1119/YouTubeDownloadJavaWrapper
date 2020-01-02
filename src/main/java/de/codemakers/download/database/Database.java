@@ -62,6 +62,24 @@ public class Database {
     public static final String TABLE_EXTRA_FILES_COLUMN_VIDEO_ID = "videoId";
     public static final String TABLE_EXTRA_FILES_COLUMN_FILE = "file";
     public static final String TABLE_EXTRA_FILES_COLUMN_FILE_TYPE = "fileType";
+    // // Queries
+    // Table: videos
+    public static final String TABLE_VIDEOS_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_VIDEOS);
+    public static final String TABLE_VIDEOS_QUERY_GET_BY_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_VIDEOS, TABLE_VIDEOS_COLUMN_ID);
+    // Table: playlists
+    public static final String TABLE_PLAYLISTS_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_PLAYLISTS);
+    public static final String TABLE_PLAYLISTS_QUERY_GET_BY_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_PLAYLISTS, TABLE_PLAYLISTS_COLUMN_ID);
+    // Table: playlistVideos
+    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_PLAYLIST_VIDEOS);
+    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
+    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_PLAYLIST_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID);
+    public static final String TABLE_PLAYLIST_VIDEOS_QUERY_GET_BY_VIDEO_ID_AND_PLAYLIST_ID = String.format("SELECT * FROM %s WHERE %s = '%%s' AND %s = '%%s';", TABLE_PLAYLIST_VIDEOS, TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID, TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID);
+    // Table: mediaFiles
+    public static final String TABLE_MEDIA_FILES_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_MEDIA_FILES);
+    public static final String TABLE_MEDIA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_MEDIA_FILES, TABLE_MEDIA_FILES_COLUMN_VIDEO_ID);
+    // Table: extraFiles
+    public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_EXTRA_FILES);
+    public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = '%%s';", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID);
     // // //
     
     private final Connector connector;
@@ -99,6 +117,10 @@ public class Database {
     @Override
     public String toString() {
         return "Database{" + "connector=" + connector + '}';
+    }
+    
+    public static void createTables(Database database) {
+        //TODO Use the "database_create_tables.sql" to create (if not existing) tables...
     }
     
 }
