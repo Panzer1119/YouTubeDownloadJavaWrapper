@@ -399,7 +399,7 @@ public class Database {
         return index;
     }
     
-    public static List<Video> videosFromResultSet(ResultSet resultSet) throws SQLException {
+    public List<Video> videosFromResultSet(ResultSet resultSet) throws SQLException {
         final List<Video> videos = new ArrayList<>();
         while (resultSet.next()) {
             videos.add(videoFromResultSet(resultSet));
@@ -407,11 +407,11 @@ public class Database {
         return videos;
     }
     
-    public static Video videoFromResultSet(ResultSet resultSet) throws SQLException {
-        return new Video(resultSet.getString(TABLE_VIDEOS_COLUMN_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(TABLE_VIDEOS_COLUMN_DURATION), resultSet.getLong(TABLE_VIDEOS_COLUMN_UPLOAD_DATE));
+    public Video videoFromResultSet(ResultSet resultSet) throws SQLException {
+        return new Video(resultSet.getString(TABLE_VIDEOS_COLUMN_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(TABLE_VIDEOS_COLUMN_DURATION), resultSet.getLong(TABLE_VIDEOS_COLUMN_UPLOAD_DATE)).setDatabase(this);
     }
     
-    public static List<Playlist> playlistsFromResultSet(ResultSet resultSet) throws SQLException {
+    public List<Playlist> playlistsFromResultSet(ResultSet resultSet) throws SQLException {
         final List<Playlist> playlists = new ArrayList<>();
         while (resultSet.next()) {
             playlists.add(playlistFromResultSet(resultSet));
@@ -419,11 +419,11 @@ public class Database {
         return playlists;
     }
     
-    public static Playlist playlistFromResultSet(ResultSet resultSet) throws SQLException {
-        return new Playlist(resultSet.getString(TABLE_PLAYLISTS_COLUMN_ID), resultSet.getString(TABLE_PLAYLISTS_COLUMN_TITLE), resultSet.getString(TABLE_PLAYLISTS_COLUMN_PLAYLIST), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER_ID));
+    public Playlist playlistFromResultSet(ResultSet resultSet) throws SQLException {
+        return new Playlist(resultSet.getString(TABLE_PLAYLISTS_COLUMN_ID), resultSet.getString(TABLE_PLAYLISTS_COLUMN_TITLE), resultSet.getString(TABLE_PLAYLISTS_COLUMN_PLAYLIST), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER_ID)).setDatabase(this);
     }
     
-    public static List<MediaFile> mediaFilesFromResultSet(ResultSet resultSet) throws SQLException {
+    public List<MediaFile> mediaFilesFromResultSet(ResultSet resultSet) throws SQLException {
         final List<MediaFile> mediaFiles = new ArrayList<>();
         while (resultSet.next()) {
             mediaFiles.add(mediaFileFromResultSet(resultSet));
@@ -431,11 +431,11 @@ public class Database {
         return mediaFiles;
     }
     
-    public static MediaFile mediaFileFromResultSet(ResultSet resultSet) throws SQLException {
-        return new MediaFile(resultSet.getString(TABLE_MEDIA_FILES_COLUMN_VIDEO_ID), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_FILE), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_FILE_TYPE), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_FORMAT), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_VCODEC), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_ACODEC), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_WIDTH), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_HEIGHT), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_FPS), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_ASR));
+    public MediaFile mediaFileFromResultSet(ResultSet resultSet) throws SQLException {
+        return new MediaFile(resultSet.getString(TABLE_MEDIA_FILES_COLUMN_VIDEO_ID), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_FILE), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_FILE_TYPE), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_FORMAT), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_VCODEC), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_ACODEC), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_WIDTH), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_HEIGHT), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_FPS), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_ASR)).setDatabase(this);
     }
     
-    public static List<ExtraFile> extraFilesFromResultSet(ResultSet resultSet) throws SQLException {
+    public List<ExtraFile> extraFilesFromResultSet(ResultSet resultSet) throws SQLException {
         final List<ExtraFile> extraFiles = new ArrayList<>();
         while (resultSet.next()) {
             extraFiles.add(extraFileFromResultSet(resultSet));
@@ -443,8 +443,8 @@ public class Database {
         return extraFiles;
     }
     
-    public static ExtraFile extraFileFromResultSet(ResultSet resultSet) throws SQLException {
-        return new ExtraFile(resultSet.getString(TABLE_EXTRA_FILES_COLUMN_VIDEO_ID), resultSet.getString(TABLE_EXTRA_FILES_COLUMN_FILE), resultSet.getString(TABLE_EXTRA_FILES_COLUMN_FILE_TYPE));
+    public ExtraFile extraFileFromResultSet(ResultSet resultSet) throws SQLException {
+        return new ExtraFile(resultSet.getString(TABLE_EXTRA_FILES_COLUMN_VIDEO_ID), resultSet.getString(TABLE_EXTRA_FILES_COLUMN_FILE), resultSet.getString(TABLE_EXTRA_FILES_COLUMN_FILE_TYPE)).setDatabase(this);
     }
     
     @Override
