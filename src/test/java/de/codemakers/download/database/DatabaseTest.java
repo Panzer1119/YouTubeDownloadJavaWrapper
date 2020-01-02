@@ -49,6 +49,10 @@ public class DatabaseTest {
         Logger.log("video_0=" + video_0);
         final List<Playlist> playlists_0 = video_0.getPlaylists();
         Logger.log("playlists_0=" + playlists_0);
+        System.out.println();
+        System.out.println();
+        //video_0.setUploader(video_0.getUploader().toUpperCase()).save();
+        Logger.log("video_0=" + video_0);
         System.exit(0);
     }
     

@@ -568,9 +568,9 @@ public class Database {
                 preparedStatement_updateVideo.setString(3, video.getUploaderId());
                 preparedStatement_updateVideo.setString(4, video.getTitle());
                 preparedStatement_updateVideo.setString(5, video.getAltTitle());
-                preparedStatement_updateVideo.setLong(7, video.getDurationAsMillis());
-                preparedStatement_updateVideo.setLong(8, video.getUploadDateAsLong());
-                preparedStatement_updateVideo.setString(9, video.getId()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
+                preparedStatement_updateVideo.setLong(6, video.getDurationAsMillis());
+                preparedStatement_updateVideo.setLong(7, video.getUploadDateAsLong());
+                preparedStatement_updateVideo.setString(8, video.getId()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
                 preparedStatement_updateVideo.executeUpdate();
             }
             return true;
