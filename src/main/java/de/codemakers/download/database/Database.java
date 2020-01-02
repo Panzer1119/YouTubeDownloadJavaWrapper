@@ -18,6 +18,7 @@
 package de.codemakers.download.database;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.logger.Logger;
 import de.codemakers.download.database.entities.ExtraFile;
 import de.codemakers.download.database.entities.MediaFile;
 import de.codemakers.download.database.entities.Playlist;
@@ -101,11 +102,11 @@ public class Database {
     private transient PreparedStatement preparedStatement_getVideoById = null;
     // Playlists
     private transient PreparedStatement preparedStatement_getAllPlaylists = null;
-    private transient PreparedStatement preparedStatement_getPlaylistByPlaylistId = null;
+    private transient PreparedStatement preparedStatement_getPlaylistById = null;
     // Playlists and Videos
     private transient PreparedStatement preparedStatement_getAllPlaylistVideos = null;
-    private transient PreparedStatement preparedStatement_getVideosByPlaylistId = null;
-    private transient PreparedStatement preparedStatement_getPlaylistsByVideoId = null;
+    private transient PreparedStatement preparedStatement_getPlaylistIdsByVideoId = null;
+    private transient PreparedStatement preparedStatement_getVideoIdsByPlaylistId = null;
     private transient PreparedStatement preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId = null;
     // MediaFiles
     private transient PreparedStatement preparedStatement_getAllMediaFiles = null;
@@ -148,11 +149,11 @@ public class Database {
         Standard.silentError(() -> preparedStatement_getVideoById = connector.prepareStatement(TABLE_VIDEOS_QUERY_GET_BY_ID));
         // Playlists
         Standard.silentError(() -> preparedStatement_getAllPlaylists = connector.prepareStatement(TABLE_PLAYLISTS_QUERY_GET_ALL));
-        Standard.silentError(() -> preparedStatement_getPlaylistByPlaylistId = connector.prepareStatement(TABLE_PLAYLISTS_QUERY_GET_BY_ID));
+        Standard.silentError(() -> preparedStatement_getPlaylistById = connector.prepareStatement(TABLE_PLAYLISTS_QUERY_GET_BY_ID));
         // Playlists and Videos
         Standard.silentError(() -> preparedStatement_getAllPlaylistVideos = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL));
-        Standard.silentError(() -> preparedStatement_getVideosByPlaylistId = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_VIDEO_ID));
-        Standard.silentError(() -> preparedStatement_getPlaylistsByVideoId = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_PLAYLIST_ID));
+        Standard.silentError(() -> preparedStatement_getPlaylistIdsByVideoId = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_VIDEO_ID));
+        Standard.silentError(() -> preparedStatement_getVideoIdsByPlaylistId = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_ALL_BY_PLAYLIST_ID));
         Standard.silentError(() -> preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId = connector.prepareStatement(TABLE_PLAYLIST_VIDEOS_QUERY_GET_BY_VIDEO_ID_AND_PLAYLIST_ID));
         // MediaFiles
         Standard.silentError(() -> preparedStatement_getAllMediaFiles = connector.prepareStatement(TABLE_MEDIA_FILES_QUERY_GET_ALL));
@@ -176,11 +177,11 @@ public class Database {
         IOUtil.closeQuietly(preparedStatement_getVideoById);
         // Playlists
         IOUtil.closeQuietly(preparedStatement_getAllPlaylists);
-        IOUtil.closeQuietly(preparedStatement_getPlaylistByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistById);
         // Playlists and Videos
         IOUtil.closeQuietly(preparedStatement_getAllPlaylistVideos);
-        IOUtil.closeQuietly(preparedStatement_getVideosByPlaylistId);
-        IOUtil.closeQuietly(preparedStatement_getPlaylistsByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistIdsByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getVideoIdsByPlaylistId);
         IOUtil.closeQuietly(preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId);
         // MediaFiles
         IOUtil.closeQuietly(preparedStatement_getAllMediaFiles);
@@ -194,10 +195,13 @@ public class Database {
         if (!isRunning()) {
             return null;
         }
-        try (final ResultSet resultSet = preparedStatement_getAllVideos.executeQuery()) {
-            return videosFromResultSet(resultSet);
-        } catch (SQLException ex) {
-            return null;
+        synchronized (preparedStatement_getAllVideos) {
+            try (final ResultSet resultSet = preparedStatement_getAllVideos.executeQuery()) {
+                return videosFromResultSet(resultSet);
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+                return null;
+            }
         }
     }
     
@@ -205,11 +209,56 @@ public class Database {
         if (!isRunning()) {
             return null;
         }
-        try (final ResultSet resultSet = preparedStatement_getAllPlaylists.executeQuery()) {
-            return playlistsFromResultSet(resultSet);
-        } catch (SQLException ex) {
+        synchronized (preparedStatement_getAllPlaylists) {
+            try (final ResultSet resultSet = preparedStatement_getAllPlaylists.executeQuery()) {
+                return playlistsFromResultSet(resultSet);
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+                return null;
+            }
+        }
+    }
+    
+    public Video getVideoById(String videoId) {
+        if (!isRunning()) {
             return null;
         }
+        Video video = null;
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getVideoById) {
+            try {
+                preparedStatement_getVideoById.setString(1, videoId);
+                resultSet = preparedStatement_getVideoById.executeQuery();
+                video = videoFromResultSet(resultSet);
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return video;
+    }
+    
+    public Playlist getPlaylistById(String playlistId) {
+        if (!isRunning()) {
+            return null;
+        }
+        Playlist playlist = null;
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getPlaylistById) {
+            try {
+                preparedStatement_getPlaylistById.setString(1, playlistId);
+                resultSet = preparedStatement_getPlaylistById.executeQuery();
+                playlist = playlistFromResultSet(resultSet);
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return playlist;
     }
     
     public List<MediaFile> getMediaFilesForVideo(String videoId) {
@@ -232,32 +281,96 @@ public class Database {
         if (!isRunning()) {
             return null;
         }
-        //TODO !!!
-        return null;
+        List<Video> videos = new ArrayList<>();
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getVideoIdsByPlaylistId) {
+            try {
+                preparedStatement_getVideoIdsByPlaylistId.setString(1, playlistId);
+                resultSet = preparedStatement_getVideoIdsByPlaylistId.executeQuery();
+                while (resultSet.next()) {
+                    videos.add(getVideoById(resultSet.getString(TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID)));
+                }
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+                videos = null;
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return videos;
     }
     
     public List<Playlist> getPlaylistsContainingVideo(String videoId) {
         if (!isRunning()) {
             return null;
         }
-        //TODO !!!
-        return null;
+        List<Playlist> playlists = new ArrayList<>();
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getPlaylistIdsByVideoId) {
+            try {
+                preparedStatement_getPlaylistIdsByVideoId.setString(1, videoId);
+                resultSet = preparedStatement_getPlaylistIdsByVideoId.executeQuery();
+                while (resultSet.next()) {
+                    playlists.add(getPlaylistById(resultSet.getString(TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID)));
+                }
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+                playlists = null;
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return playlists;
     }
     
-    public boolean isVideoInPlaylist(String videoId) {
-        if (!isRunning() || videoId == null || videoId.isEmpty()) {
+    public boolean isVideoInPlaylist(String videoId, String playlistId) {
+        if (!isRunning() || videoId == null || videoId.isEmpty() || playlistId.isEmpty() || playlistId.isEmpty()) {
             return false;
         }
-        //TODO !!
-        return false;
+        boolean contains = false;
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId) {
+            try {
+                preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId.setString(1, videoId);
+                preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId.setString(2, playlistId);
+                resultSet = preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId.executeQuery();
+                contains = resultSet.next();
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return contains;
     }
     
-    public int getIndexOfVideoInPlaylist(String videoId) {
-        if (!isRunning() || videoId == null || videoId.isEmpty()) {
-            return -1;
+    public int getIndexOfVideoInPlaylist(String videoId, String playlistId) {
+        if (!isRunning() || videoId == null || videoId.isEmpty() || playlistId.isEmpty() || playlistId.isEmpty()) {
+            return -3;
         }
-        //TODO !!
-        return -1;
+        int index = -3;
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId) {
+            try {
+                preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId.setString(1, videoId);
+                preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId.setString(2, playlistId);
+                resultSet = preparedStatement_getPlaylistVideoByVideoIdAndPlaylistId.executeQuery();
+                if (resultSet.next()) {
+                    index = resultSet.getInt(TABLE_PLAYLIST_VIDEOS_COLUMN_INDEX);
+                } else {
+                    index = -2;
+                }
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return index;
     }
     
     public static List<Video> videosFromResultSet(ResultSet resultSet) throws SQLException {
