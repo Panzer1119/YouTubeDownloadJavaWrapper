@@ -19,7 +19,7 @@ package de.codemakers.download.database.entities;
 
 import java.util.Objects;
 
-public class Playlist {
+public class Playlist extends AbstractEntity {
     
     private String id;
     private String title;

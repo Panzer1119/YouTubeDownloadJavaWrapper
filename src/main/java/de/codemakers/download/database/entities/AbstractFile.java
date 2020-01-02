@@ -19,7 +19,7 @@ package de.codemakers.download.database.entities;
 
 import java.util.Objects;
 
-public abstract class AbstractFile<T> {
+public abstract class AbstractFile<T> extends AbstractEntity {
     
     protected String videoId;
     protected String file;
