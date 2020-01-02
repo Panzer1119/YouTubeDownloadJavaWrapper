@@ -90,9 +90,11 @@ public class Database {
     // Table: mediaFiles
     public static final String TABLE_MEDIA_FILES_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_MEDIA_FILES);
     public static final String TABLE_MEDIA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_MEDIA_FILES, TABLE_MEDIA_FILES_COLUMN_VIDEO_ID);
+    public static final String TABLE_MEDIA_FILES_QUERY_GET_BY_VIDEO_ID_AND_FILE = String.format("SELECT * FROM %s WHERE %s = ? AND WHERE %s = ?;", TABLE_MEDIA_FILES, TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, TABLE_MEDIA_FILES_COLUMN_FILE);
     // Table: extraFiles
     public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_EXTRA_FILES);
     public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID);
+    public static final String TABLE_EXTRA_FILES_QUERY_GET_BY_VIDEO_ID_AND_FILE = String.format("SELECT * FROM %s WHERE %s = ? AND WHERE %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, TABLE_EXTRA_FILES_COLUMN_FILE);
     // // //
     
     private final Connector connector;
@@ -111,9 +113,11 @@ public class Database {
     // MediaFiles
     private transient PreparedStatement preparedStatement_getAllMediaFiles = null;
     private transient PreparedStatement preparedStatement_getMediaFilesByVideoId = null;
+    private transient PreparedStatement preparedStatement_getMediaFileByVideoIdAndFile = null;
     // ExtraFiles
     private transient PreparedStatement preparedStatement_getAllExtraFiles = null;
     private transient PreparedStatement preparedStatement_getExtraFilesByVideoId = null;
+    private transient PreparedStatement preparedStatement_getExtraFileByVideoIdAndFile = null;
     // //
     
     public Database(AdvancedFile databaseDirectory) {
@@ -158,9 +162,11 @@ public class Database {
         // MediaFiles
         Standard.silentError(() -> preparedStatement_getAllMediaFiles = connector.prepareStatement(TABLE_MEDIA_FILES_QUERY_GET_ALL));
         Standard.silentError(() -> preparedStatement_getMediaFilesByVideoId = connector.prepareStatement(TABLE_MEDIA_FILES_QUERY_GET_ALL_BY_VIDEO_ID));
+        Standard.silentError(() -> preparedStatement_getMediaFileByVideoIdAndFile = connector.prepareStatement(TABLE_MEDIA_FILES_QUERY_GET_BY_VIDEO_ID_AND_FILE));
         // ExtraFiles
         Standard.silentError(() -> preparedStatement_getAllExtraFiles = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_ALL));
         Standard.silentError(() -> preparedStatement_getExtraFilesByVideoId = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID));
+        Standard.silentError(() -> preparedStatement_getExtraFileByVideoIdAndFile = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_BY_VIDEO_ID_AND_FILE));
     }
     
     public boolean stop() {
@@ -186,9 +192,11 @@ public class Database {
         // MediaFiles
         IOUtil.closeQuietly(preparedStatement_getAllMediaFiles);
         IOUtil.closeQuietly(preparedStatement_getMediaFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getMediaFileByVideoIdAndFile);
         // ExtraFiles
         IOUtil.closeQuietly(preparedStatement_getAllExtraFiles);
         IOUtil.closeQuietly(preparedStatement_getExtraFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getExtraFileByVideoIdAndFile);
     }
     
     public List<Video> getAllVideos() {
@@ -220,7 +228,7 @@ public class Database {
     }
     
     public Video getVideoById(String videoId) {
-        if (!isRunning()) {
+        if (!isRunning() || videoId == null || videoId.isEmpty()) {
             return null;
         }
         Video video = null;
@@ -243,7 +251,7 @@ public class Database {
     }
     
     public Playlist getPlaylistById(String playlistId) {
-        if (!isRunning()) {
+        if (!isRunning() || playlistId == null || playlistId.isEmpty()) {
             return null;
         }
         Playlist playlist = null;
@@ -266,7 +274,7 @@ public class Database {
     }
     
     public List<MediaFile> getMediaFilesForVideo(String videoId) {
-        if (!isRunning()) {
+        if (!isRunning() || videoId == null || videoId.isEmpty()) {
             return null;
         }
         List<MediaFile> mediaFiles = null;
@@ -287,7 +295,7 @@ public class Database {
     }
     
     public List<ExtraFile> getExtraFilesForVideo(String videoId) {
-        if (!isRunning()) {
+        if (!isRunning() || videoId == null || videoId.isEmpty()) {
             return null;
         }
         List<ExtraFile> extraFiles = null;
@@ -308,7 +316,7 @@ public class Database {
     }
     
     public List<Video> getVideosInPlaylist(String playlistId) {
-        if (!isRunning()) {
+        if (!isRunning() || playlistId == null || playlistId.isEmpty()) {
             return null;
         }
         List<Video> videos = new ArrayList<>();
@@ -335,7 +343,7 @@ public class Database {
     }
     
     public List<Playlist> getPlaylistsContainingVideo(String videoId) {
-        if (!isRunning()) {
+        if (!isRunning() || videoId == null || videoId.isEmpty()) {
             return null;
         }
         List<Playlist> playlists = new ArrayList<>();
@@ -407,6 +415,54 @@ public class Database {
             Standard.silentError(resultSet::close);
         }
         return index;
+    }
+    
+    public MediaFile getMediaFileByVideoIdAndFile(String videoId, String file) {
+        if (!isRunning()) {
+            return null;
+        }
+        MediaFile mediaFile = null;
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getMediaFileByVideoIdAndFile) {
+            try {
+                preparedStatement_getMediaFileByVideoIdAndFile.setString(1, videoId);
+                preparedStatement_getMediaFileByVideoIdAndFile.setString(2, file);
+                resultSet = preparedStatement_getMediaFileByVideoIdAndFile.executeQuery();
+                if (resultSet.next()) {
+                    mediaFile = mediaFileFromResultSet(resultSet);
+                }
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return mediaFile;
+    }
+    
+    public ExtraFile getExtraFileByVideoIdAndFile(String videoId, String file) {
+        if (!isRunning()) {
+            return null;
+        }
+        ExtraFile extraFile = null;
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getExtraFileByVideoIdAndFile) {
+            try {
+                preparedStatement_getExtraFileByVideoIdAndFile.setString(1, videoId);
+                preparedStatement_getExtraFileByVideoIdAndFile.setString(2, file);
+                resultSet = preparedStatement_getExtraFileByVideoIdAndFile.executeQuery();
+                if (resultSet.next()) {
+                    extraFile = extraFileFromResultSet(resultSet);
+                }
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return extraFile;
     }
     
     public List<Video> videosFromResultSet(ResultSet resultSet) throws SQLException {
