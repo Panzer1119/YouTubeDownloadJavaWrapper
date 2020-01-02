@@ -265,16 +265,42 @@ public class Database {
         if (!isRunning()) {
             return null;
         }
-        //TODO !
-        return null;
+        List<MediaFile> mediaFiles = null;
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getMediaFilesByVideoId) {
+            try {
+                preparedStatement_getMediaFilesByVideoId.setString(1, videoId);
+                resultSet = preparedStatement_getMediaFilesByVideoId.executeQuery();
+                mediaFiles = mediaFilesFromResultSet(resultSet);
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return mediaFiles;
     }
     
     public List<ExtraFile> getExtraFilesForVideo(String videoId) {
         if (!isRunning()) {
             return null;
         }
-        //TODO !
-        return null;
+        List<ExtraFile> extraFiles = null;
+        ResultSet resultSet = null;
+        synchronized (preparedStatement_getExtraFilesByVideoId) {
+            try {
+                preparedStatement_getExtraFilesByVideoId.setString(1, videoId);
+                resultSet = preparedStatement_getExtraFilesByVideoId.executeQuery();
+                extraFiles = extraFilesFromResultSet(resultSet);
+            } catch (SQLException ex) {
+                Logger.handleError(ex);
+            }
+        }
+        if (resultSet != null) {
+            Standard.silentError(resultSet::close);
+        }
+        return extraFiles;
     }
     
     public List<Video> getVideosInPlaylist(String playlistId) {
@@ -395,6 +421,30 @@ public class Database {
     
     public static Playlist playlistFromResultSet(ResultSet resultSet) throws SQLException {
         return new Playlist(resultSet.getString(TABLE_PLAYLISTS_COLUMN_ID), resultSet.getString(TABLE_PLAYLISTS_COLUMN_TITLE), resultSet.getString(TABLE_PLAYLISTS_COLUMN_PLAYLIST), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER), resultSet.getString(TABLE_PLAYLISTS_COLUMN_UPLOADER_ID));
+    }
+    
+    public static List<MediaFile> mediaFilesFromResultSet(ResultSet resultSet) throws SQLException {
+        final List<MediaFile> mediaFiles = new ArrayList<>();
+        while (resultSet.next()) {
+            mediaFiles.add(mediaFileFromResultSet(resultSet));
+        }
+        return mediaFiles;
+    }
+    
+    public static MediaFile mediaFileFromResultSet(ResultSet resultSet) throws SQLException {
+        return new MediaFile(resultSet.getString(TABLE_MEDIA_FILES_COLUMN_VIDEO_ID), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_FILE), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_FILE_TYPE), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_FORMAT), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_VCODEC), resultSet.getString(TABLE_MEDIA_FILES_COLUMN_ACODEC), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_WIDTH), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_HEIGHT), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_FPS), resultSet.getInt(TABLE_MEDIA_FILES_COLUMN_ASR));
+    }
+    
+    public static List<ExtraFile> extraFilesFromResultSet(ResultSet resultSet) throws SQLException {
+        final List<ExtraFile> extraFiles = new ArrayList<>();
+        while (resultSet.next()) {
+            extraFiles.add(extraFileFromResultSet(resultSet));
+        }
+        return extraFiles;
+    }
+    
+    public static ExtraFile extraFileFromResultSet(ResultSet resultSet) throws SQLException {
+        return new ExtraFile(resultSet.getString(TABLE_EXTRA_FILES_COLUMN_VIDEO_ID), resultSet.getString(TABLE_EXTRA_FILES_COLUMN_FILE), resultSet.getString(TABLE_EXTRA_FILES_COLUMN_FILE_TYPE));
     }
     
     @Override
