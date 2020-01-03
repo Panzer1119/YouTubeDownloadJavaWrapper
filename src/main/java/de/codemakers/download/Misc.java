@@ -159,7 +159,7 @@ public class Misc {
     }
     
     public static String durationToString(Duration duration) {
-        if (duration == null || duration.toMillis() == 0) {
+        if (duration == null || duration.toMillis() < 0) {
             return "--";
         }
         if (duration.toHours() > 0) {
