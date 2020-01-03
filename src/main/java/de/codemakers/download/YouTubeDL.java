@@ -552,8 +552,18 @@ public class YouTubeDL {
         return downloadFileInfosFromListAndThenAsync(source, false);
     }
     
-    public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(final Source source, final boolean getIndex) {
+    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
+        return downloadFileInfosFromListAndThenAsync(source, fileInfoGenerator, false);
+    }
+    
+    public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, boolean getIndex) {
         final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = downloadFileInfosAndThenAsync(source);
+        addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex);
+        return doublet;
+    }
+    
+    public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator, boolean getIndex) {
+        final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = downloadFileInfosAndThenAsync(source, fileInfoGenerator);
         addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex);
         return doublet;
     }
