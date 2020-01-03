@@ -159,6 +159,9 @@ public class Misc {
     }
     
     public static String durationToString(Duration duration) {
+        if (duration == null || duration.toMillis() == 0) {
+            return "--";
+        }
         if (duration.toHours() > 0) {
             return String.format("%02d:%02d:%02d", duration.toHours(), duration.toMinutes() % 60, duration.getSeconds() % 60);
         } else if (duration.toMinutes() > 0) {
@@ -187,10 +190,18 @@ public class Misc {
         return duration_;
     }
     
+    public static String localDateToString(LocalDate localDate) {
+        if (localDate == null) {
+            return "--";
+        }
+        return localDate.format(Video.DATE_TIME_FORMATTER_UPLOAD_DATE);
+    }
+    
     public static LocalDate stringToLocalDate(String uploadDate) {
         if (uploadDate == null || uploadDate.equals("NA") || uploadDate.isEmpty()) {
             return null;
         }
         return LocalDate.parse(uploadDate, Video.DATE_TIME_FORMATTER_UPLOAD_DATE);
     }
+    
 }
