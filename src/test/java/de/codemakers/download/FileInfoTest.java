@@ -40,12 +40,12 @@ public class FileInfoTest {
         final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = YouTubeDL.downloadFileInfosAndThenAsync(source);
         //Logger.log("doublet=" + doublet);
         //Logger.log("doublet.getA()=" + doublet.getA());
-        Logger.log(doublet.getA().stream().map(Objects::toString).collect(Collectors.joining("\n\n", "Before:\n", "--- END ---")));
+        Logger.log(doublet.getA().stream().map(Objects::toString).collect(Collectors.joining("\n\n", "\n\n\n\nBEFORE:\n", "--- END ---\n\n\n\n")));
         final Future<List<FileInfo>> future = doublet.getB();
         Logger.log("future=" + future);
         final List<FileInfo> fileInfos = future.get();
         //Logger.log("fileInfos=" + fileInfos);
-        Logger.log(fileInfos.stream().map(Objects::toString).collect(Collectors.joining("\n\n", "After:\n", "--- END ---")));
+        Logger.log(fileInfos.stream().map(Objects::toString).collect(Collectors.joining("\n\n", "\n\n\n\nAFTER:\n", "--- END ---\n\n\n\n")));
         final long duration = System.currentTimeMillis() - start;
         Logger.log("Time taken: " + (duration / 1000) + " seconds");
     }
