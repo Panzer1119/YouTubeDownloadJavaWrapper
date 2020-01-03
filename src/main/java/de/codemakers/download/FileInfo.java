@@ -76,9 +76,9 @@ public class FileInfo {
     
     public FileInfo setHeight(String height) {
         if (height == null || height.equals("NA") || height.isEmpty()) {
-            return setWidth(-1);
+            return setHeight(-1);
         }
-        return setWidth(Integer.parseInt(height));
+        return setHeight(Integer.parseInt(height));
     }
     
     public FileInfo setHeight(int height) {
@@ -92,9 +92,9 @@ public class FileInfo {
     
     public FileInfo setFps(String fps) {
         if (fps == null || fps.equals("NA") || fps.isEmpty()) {
-            return setWidth(-1);
+            return setFps(-1);
         }
-        return setWidth(Integer.parseInt(fps));
+        return setFps(Integer.parseInt(fps));
     }
     
     public FileInfo setFps(int fps) {
@@ -108,9 +108,9 @@ public class FileInfo {
     
     public FileInfo setAsr(String asr) {
         if (asr == null || asr.equals("NA") || asr.isEmpty()) {
-            return setWidth(-1);
+            return setAsr(-1);
         }
-        return setWidth(Integer.parseInt(asr));
+        return setAsr(Integer.parseInt(asr));
     }
     
     public FileInfo setAsr(int asr) {
