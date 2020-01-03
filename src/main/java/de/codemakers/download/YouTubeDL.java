@@ -548,6 +548,10 @@ public class YouTubeDL {
         }
     }
     
+    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(Source source) {
+        return downloadFileInfosAndThenAsync(source, () -> new FileInfo(new VideoInfo()));
+    }
+    
     public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
         return downloadFileInfosAndThenAsync(Misc.EXECUTOR_SERVICE_TOUGH_SUPPLIER, source, fileInfoGenerator);
     }
