@@ -24,7 +24,7 @@ public class JsonTest {
     public static void main(String[] args) {
         final VideoInfo videoInfo_1 = new VideoInfo(args[0], "title", 0);
         System.out.println("videoInfo_1=" + videoInfo_1);
-        System.out.println("videoInfo_1.getUrl()=" + videoInfo_1.getUrl());
+        //System.out.println("videoInfo_1.getUrl()=" + videoInfo_1.getUrl());
         final String jsonString_1 = videoInfo_1.toJsonString();
         System.out.println("jsonString_1=" + jsonString_1);
         final JsonObject jsonObject_1 = videoInfo_1.toJsonObject();

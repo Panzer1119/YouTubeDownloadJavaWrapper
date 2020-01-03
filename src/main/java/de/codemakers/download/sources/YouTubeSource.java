@@ -35,7 +35,6 @@ public class YouTubeSource implements Source {
     protected YouTubeSource(String id, String url) {
         this.id = id;
         setUrl(url);
-        System.out.println("I have been created: " + this);
     }
     
     @Override
