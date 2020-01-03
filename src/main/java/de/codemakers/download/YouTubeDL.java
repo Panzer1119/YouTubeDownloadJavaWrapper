@@ -646,6 +646,26 @@ public class YouTubeDL {
                     final String playlistIndex = matcher.group(16);
                     final String playlistUploader = matcher.group(17);
                     final String playlistUploaderId = matcher.group(18);
+                    /*
+                    System.out.println("id=" + id);
+                    System.out.println("uploader=" + uploader);
+                    System.out.println("uploaderId=" + uploaderId);
+                    System.out.println("title=" + title);
+                    System.out.println("altTitle=" + altTitle);
+                    System.out.println("duration=" + duration);
+                    System.out.println("uploadDate=" + uploadDate);
+                    System.out.println("format=" + format);
+                    System.out.println("width=" + width);
+                    System.out.println("height=" + height);
+                    System.out.println("fps=" + fps);
+                    System.out.println("asr=" + asr);
+                    System.out.println("playlist=" + playlist);
+                    System.out.println("playlistId=" + playlistId);
+                    System.out.println("playlistTitle=" + playlistTitle);
+                    System.out.println("playlistIndex=" + playlistIndex);
+                    System.out.println("playlistUploader=" + playlistUploader);
+                    System.out.println("playlistUploaderId=" + playlistUploaderId);
+                    */
                     fileInfo.getVideoInfo().setId(id);
                     fileInfo.getVideoInfo().setUploader(uploader);
                     fileInfo.getVideoInfo().setUploaderId(uploaderId);
@@ -658,12 +678,14 @@ public class YouTubeDL {
                     fileInfo.setHeight(height);
                     fileInfo.setFps(fps);
                     fileInfo.setAsr(asr);
-                    fileInfo.setPlaylist(playlist);
-                    fileInfo.setPlaylistId(playlistId);
-                    fileInfo.setPlaylistTitle(playlistTitle);
-                    fileInfo.setPlaylistIndex(playlistIndex);
-                    fileInfo.setPlaylistUploader(playlistUploader);
-                    fileInfo.setPlaylistUploaderId(playlistUploaderId);
+                    fileInfo.setPlaylist(playlist); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
+                    fileInfo.setPlaylistId(playlistId); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
+                    fileInfo.setPlaylistTitle(playlistTitle); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
+                    fileInfo.setPlaylistIndex(playlistIndex); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
+                    fileInfo.setPlaylistUploader(playlistUploader); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
+                    fileInfo.setPlaylistUploaderId(playlistUploaderId); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
+                } else {
+                    //Logger.logWarning(String.format("WTF (%s) IT DIDN'T MATCH: \"%s\"", fileInfo.getVideoInfo().getId(), normal)); //TODO Remove this?
                 }
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
             System.out.println("downloadVideoInfoExtras: exitValue=" + exitValue);
