@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
 
 import java.io.Serializable;
 import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,18 +32,15 @@ import java.util.stream.StreamSupport;
 
 public class VideoInfo implements Serializable {
     
-    public static final String PREFIX_YOUTUBE_VIDEO_URL = "https://youtube.com/watch?v=";
-    
     private String id;
-    private String title;
-    private long duration;
-    //Temp
-    private String url = null;
-    private final List<String> files = new ArrayList<>();
-    //Extra
     private String uploader = null;
-    private ZonedDateTime uploadDate = null;
-    private JsonObject information = null;
+    private String uploaderId = null;
+    private String title;
+    private String altTitle;
+    private long duration;
+    private LocalDate uploadDate = null;
+    //Temp
+    private final List<String> files = new ArrayList<>();
     
     public VideoInfo() {
         this(null);
@@ -68,12 +65,39 @@ public class VideoInfo implements Serializable {
         return this;
     }
     
+    public String getUploader() {
+        return uploader;
+    }
+    
+    public VideoInfo setUploader(String uploader) {
+        this.uploader = uploader;
+        return this;
+    }
+    
+    public String getUploaderId() {
+        return uploaderId;
+    }
+    
+    public VideoInfo setUploaderId(String uploaderId) {
+        this.uploaderId = uploaderId;
+        return this;
+    }
+    
     public String getTitle() {
         return title;
     }
     
     public VideoInfo setTitle(String title) {
         this.title = title;
+        return this;
+    }
+    
+    public String getAltTitle() {
+        return altTitle;
+    }
+    
+    public VideoInfo setAltTitle(String altTitle) {
+        this.altTitle = altTitle;
         return this;
     }
     
@@ -102,51 +126,17 @@ public class VideoInfo implements Serializable {
         return this;
     }
     
-    //Temp
-    
-    public String getUrl() {
-        if (url == null) {
-            return PREFIX_YOUTUBE_VIDEO_URL + getId();
-        }
-        return url;
+    public LocalDate getUploadDate() {
+        return uploadDate;
     }
     
-    public VideoInfo setUrl(String url) {
-        this.url = url;
+    public VideoInfo setUploadDate(LocalDate uploadDate) {
+        this.uploadDate = uploadDate;
         return this;
     }
     
     public List<String> getFiles() {
         return files;
-    }
-    
-    //Extra
-    
-    public String getUploader() {
-        return uploader;
-    }
-    
-    public VideoInfo setUploader(String uploader) {
-        this.uploader = uploader;
-        return this;
-    }
-    
-    public ZonedDateTime getUploadDate() {
-        return uploadDate;
-    }
-    
-    public VideoInfo setUploadDate(ZonedDateTime uploadDate) {
-        this.uploadDate = uploadDate;
-        return this;
-    }
-    
-    public JsonObject getInformation() {
-        return information;
-    }
-    
-    public VideoInfo setInformation(JsonObject information) {
-        this.information = information;
-        return this;
     }
     
     public String toJsonString() {
@@ -159,7 +149,7 @@ public class VideoInfo implements Serializable {
     
     @Override
     public String toString() {
-        return "VideoInfo{" + "id='" + id + '\'' + ", title='" + title + '\'' + ", duration=" + duration + ", url='" + url + '\'' + ", files=" + files + ", uploader='" + uploader + '\'' + ", uploadDate=" + uploadDate + ", information=" + information + '}';
+        return "VideoInfo{" + "id='" + id + '\'' + ", uploader='" + uploader + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", altTitle='" + altTitle + '\'' + ", duration=" + duration + ", uploadDate=" + uploadDate + ", files=" + files + '}';
     }
     
     public static JsonArray toJsonArray(Collection<VideoInfo> videoInfos) {
