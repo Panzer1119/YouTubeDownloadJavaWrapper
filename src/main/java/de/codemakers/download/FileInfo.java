@@ -28,7 +28,7 @@ public class FileInfo {
     private String playlist;
     private String playlistId;
     private String playlistTitle;
-    private String playlistIndex;
+    private int playlistIndex;
     private String playlistUploader;
     private String playlistUploaderId;
     
@@ -145,11 +145,11 @@ public class FileInfo {
         return this;
     }
     
-    public String getPlaylistIndex() {
+    public int getPlaylistIndex() {
         return playlistIndex;
     }
     
-    public FileInfo setPlaylistIndex(String playlistIndex) {
+    public FileInfo setPlaylistIndex(int playlistIndex) {
         this.playlistIndex = playlistIndex;
         return this;
     }

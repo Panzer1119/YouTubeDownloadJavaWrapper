@@ -37,7 +37,7 @@ public class FileInfoTest {
         final Source source = YouTubeSource.ofString(url);
         Logger.log("source=" + source);
         final long start = System.currentTimeMillis();
-        final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = YouTubeDL.downloadFileInfosAndThenAsync(source);
+        final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = YouTubeDL.downloadFileInfosFromListAndThenAsync(source, true);
         //Logger.log("doublet=" + doublet);
         //Logger.log("doublet.getA()=" + doublet.getA());
         Logger.log(doublet.getA().stream().map(Objects::toString).collect(Collectors.joining("\n\n", "\n\n\n\nBEFORE:\n", "--- END ---\n\n\n\n")));
