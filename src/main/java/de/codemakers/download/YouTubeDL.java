@@ -17,16 +17,24 @@
 
 package de.codemakers.download;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.sources.Source;
+import de.codemakers.download.sources.YouTubeSource;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -283,6 +291,10 @@ public class YouTubeDL {
      * Simulate, quiet but print video length
      */
     public static final String ARGUMENT_GET_DURATION = "--get-duration";
+    /**
+     * Simulate, quiet but print output filename
+     */
+    public static final String ARGUMENT_GET_FILENAME = "--get-filename";
     //TODO
     
     // Workarounds
@@ -535,5 +547,132 @@ public class YouTubeDL {
             return null;
         }
     }
+    
+    public static Doublet<List<VideoInfo>, Future<List<VideoInfo>>> downloadVideoInfosAndThenAsync(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
+        return downloadVideoInfosAndThenAsync(Misc.EXECUTOR_SERVICE_TOUGH_SUPPLIER, source, videoInfoGenerator);
+    }
+    
+    public static Doublet<List<VideoInfo>, Future<List<VideoInfo>>> downloadVideoInfosAndThenAsync(ToughSupplier<ExecutorService> executorServiceSupplier, Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
+        final DownloadInfo downloadInfo = new DownloadInfo(source);
+        downloadInfo.setUseConfig(false);
+        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_TITLE, ARGUMENT_GET_ID);
+        final List<VideoInfo> videoInfos = new ArrayList<>();
+        try {
+            final AtomicBoolean errored = new AtomicBoolean(false);
+            final AtomicInteger counter = new AtomicInteger(0);
+            final AtomicReference<String> title = new AtomicReference<>(null);
+            final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), (normal) -> {
+                switch (counter.get()) {
+                    case 0: //Title
+                        title.set(normal);
+                        //videoInfos.put(videoInfoGenerator.getWithoutException().setTitle(normal)); //TODO Remove this
+                        break;
+                    case 1: //ID
+                        final VideoInfo videoInfo = videoInfoGenerator.getWithoutException();
+                        videoInfo.setId(normal);
+                        if (title.get() != null) {
+                            videoInfo.setTitle(title.get());
+                            title.set(null);
+                        }
+                        videoInfos.add(videoInfo);
+                        //videoInfos.get(videoInfos.size() - 1).setId(normal);
+                        counter.set(-1); //FIXME Duration is not downloaded, when using --flat-playlist
+                        break;
+                    case 2: //Duration
+                        //videoInfos.get(videoInfos.size() - 1).setDuration(normal); //TODO Remove this
+                        counter.set(-1);
+                        break;
+                }
+                counter.incrementAndGet();
+            }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
+            System.out.println("downloadVideoInfosDirect: exitValue=" + exitValue);
+            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
+                //return videoInfos;
+            }
+            
+            final Future<List<VideoInfo>> future = downloadVideoInfosAsync(executorServiceSupplier, videoInfos);
+            
+            //return videoInfos;
+            return new Doublet<>(videoInfos, future);
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    private static Future<List<VideoInfo>> downloadVideoInfosAsync(ToughSupplier<ExecutorService> executorServiceSupplier, List<VideoInfo> videoInfos) {
+        FutureTask<List<VideoInfo>> futureTask = new FutureTask<>(() -> downloadVideoInfosExtras(executorServiceSupplier, videoInfos));
+        Standard.async(futureTask::run); //TODO Async extra info loading stuff
+        return futureTask;
+    }
+    
+    private static List<VideoInfo> downloadVideoInfosExtras(ToughSupplier<ExecutorService> executorServiceSupplier, List<VideoInfo> videoInfos) {
+        final ExecutorService executorService = executorServiceSupplier.getWithoutException();
+        videoInfos.forEach((videoInfo) -> executorService.submit(() -> downloadVideoInfoExtras(videoInfo)));
+        executorService.shutdown();
+        Standard.silentError(() -> executorService.awaitTermination(10, TimeUnit.MINUTES));
+        executorService.shutdownNow();
+        return videoInfos;
+    }
+    
+    private static void downloadVideoInfoExtras(VideoInfo videoInfo) {
+        final DownloadInfo downloadInfo = new DownloadInfo(YouTubeSource.ofId(videoInfo.getId()));
+        downloadInfo.setUseConfig(false);
+        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_GET_FILENAME, ARGUMENT_OUTPUT, OUTPUT_TEMPLATE_EXTRAS);
+        try {
+            final AtomicBoolean errored = new AtomicBoolean(false);
+            final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), (normal) -> {
+                final Matcher matcher = PATTERN_OUTPUT_EXTRAS.matcher(normal);
+                if (matcher.matches()) {
+                    final String id = matcher.group(1);
+                    final String uploader = matcher.group(2);
+                    final String uploaderId = matcher.group(3);
+                    final String title = matcher.group(4);
+                    final String altTitle = matcher.group(5);
+                    final String duration = matcher.group(6);
+                    final String uploadDate = matcher.group(7);
+                    final String format = matcher.group(8);
+                    final String width = matcher.group(9);
+                    final String height = matcher.group(10);
+                    final String fps = matcher.group(11);
+                    final String asr = matcher.group(12);
+                    final String playlist = matcher.group(13);
+                    final String playlistId = matcher.group(14);
+                    final String playlistTitle = matcher.group(15);
+                    final String playlistIndex = matcher.group(16);
+                    final String playlistUploader = matcher.group(17);
+                    final String playlistUploaderId = matcher.group(18);
+                    //videoInfo.setId(id);
+                    videoInfo.setUploader(uploader);
+                    videoInfo.setUploaderId(uploaderId);
+                    //videoInfo.setTitle(title);
+                    videoInfo.setAltTitle(altTitle);
+                    videoInfo.setDuration(duration);
+                    videoInfo.setUploadDate(uploadDate);
+                    //videoInfo.setFormat(format); //FIXME Oof format is more file specific and not bound to a video itself?
+                    //videoInfo.setWidth(width); //FIXME Oof width is more file specific and not bound to a video itself?
+                    //videoInfo.setHeight(height); //FIXME Oof height is more file specific and not bound to a video itself?
+                    //videoInfo.setFps(fps); //FIXME Oof fps is more file specific and not bound to a video itself?
+                    //videoInfo.setAsr(asr); //FIXME Oof asr is more file specific and not bound to a video itself?
+                    //videoInfo.setPlaylist(playlist); //FIXME Oof playlist is more playlist specific...
+                    //videoInfo.setPlaylistId(playlistId); //FIXME Oof playlist id is more playlist specific...
+                    //videoInfo.setPlaylistTitle(playlistTitle); //FIXME Oof playlist title is more playlist specific...
+                    //videoInfo.setPlaylistIndex(playlistIndex); //FIXME Oof playlist index is more playlist specific...
+                    //videoInfo.setPlaylistUploader(playlistUploader); //FIXME Oof playlist uploader is more playlist specific...
+                    //videoInfo.setPlaylistUploaderId(playlistUploaderId); //FIXME Oof playlist uploader id is more playlist specific...
+                }
+            }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
+            System.out.println("downloadVideoInfoExtras: exitValue=" + exitValue);
+            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
+                //return;
+            }
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+        }
+    }
+    
+    private static final String OUTPUT_TEMPLATE_EXTRAS = "\"id={%(id)s},uploader={%(uploader)s},uploaderId={%(uploader_id)s},title={%(title)s},altTitle={%(alt_title)s},duration={%(duration)s},uploadDate={%(upload_date)s},format={%(format)s},width={%(width)s},height={%(height)s},fps={%(fps)s},asr={%(asr)s},playlist={%(playlist)s},playlistId={%(playlist_id)s},playlistTitle={%(playlist_title)s},playlistIndex={%(playlist_index)s},playlistUploader={%(playlist_uploader)s},playlistUploaderId={%(playlist_uploader_id)s}\"";
+    private static final String PATTERN_OUTPUT_EXTRAS_STRING = "id=\\{([a-zA-Z0-9_-]+)\\},uploader=\\{(.*)\\},uploaderId=\\{(.*)\\},title=\\{(.*)\\},altTitle=\\{(.*)\\},duration=\\{((?:NA)|(?:\\d+))\\},uploadDate=\\{((?:NA)|(?:\\d+))\\},format=\\{(.*)\\},width=\\{((?:NA)|(?:\\d+))\\},height=\\{((?:NA)|(?:\\d+))\\},fps=\\{((?:NA)|(?:\\d+))\\},asr=\\{((?:NA)|(?:\\d+))\\},playlist=\\{(.*)\\},playlistId=\\{(.*)\\},playlistTitle=\\{(.*)\\},playlistIndex=\\{((?:NA)|(?:\\d+))\\},playlistUploader=\\{(.*)\\},playlistUploaderId=\\{(.*)\\}";
+    private static final Pattern PATTERN_OUTPUT_EXTRAS = Pattern.compile(PATTERN_OUTPUT_EXTRAS_STRING);
     
 }
