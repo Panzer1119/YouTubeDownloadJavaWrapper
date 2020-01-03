@@ -548,15 +548,15 @@ public class YouTubeDL {
         }
     }
     
-    public static Doublet<List<VideoInfo>, Future<List<VideoInfo>>> downloadVideoInfosAndThenAsync(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
-        return downloadVideoInfosAndThenAsync(Misc.EXECUTOR_SERVICE_TOUGH_SUPPLIER, source, videoInfoGenerator);
+    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
+        return downloadFileInfosAndThenAsync(Misc.EXECUTOR_SERVICE_TOUGH_SUPPLIER, source, fileInfoGenerator);
     }
     
-    public static Doublet<List<VideoInfo>, Future<List<VideoInfo>>> downloadVideoInfosAndThenAsync(ToughSupplier<ExecutorService> executorServiceSupplier, Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
+    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(ToughSupplier<ExecutorService> executorServiceSupplier, Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
         downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_TITLE, ARGUMENT_GET_ID);
-        final List<VideoInfo> videoInfos = new ArrayList<>();
+        final List<FileInfo> fileInfos = new ArrayList<>();
         try {
             final AtomicBoolean errored = new AtomicBoolean(false);
             final AtomicInteger counter = new AtomicInteger(0);
@@ -568,13 +568,13 @@ public class YouTubeDL {
                         //videoInfos.put(videoInfoGenerator.getWithoutException().setTitle(normal)); //TODO Remove this
                         break;
                     case 1: //ID
-                        final VideoInfo videoInfo = videoInfoGenerator.getWithoutException();
-                        videoInfo.setId(normal);
+                        final FileInfo fileInfo = fileInfoGenerator.getWithoutException();
+                        fileInfo.getVideoInfo().setId(normal);
                         if (title.get() != null) {
-                            videoInfo.setTitle(title.get());
+                            fileInfo.getVideoInfo().setTitle(title.get());
                             title.set(null);
                         }
-                        videoInfos.add(videoInfo);
+                        fileInfos.add(fileInfo);
                         //videoInfos.get(videoInfos.size() - 1).setId(normal);
                         counter.set(-1); //FIXME Duration is not downloaded, when using --flat-playlist
                         break;
@@ -590,33 +590,33 @@ public class YouTubeDL {
                 //return videoInfos;
             }
             
-            final Future<List<VideoInfo>> future = downloadVideoInfosAsync(executorServiceSupplier, videoInfos);
+            final Future<List<FileInfo>> future = downloadFileInfosAsync(executorServiceSupplier, fileInfos);
             
             //return videoInfos;
-            return new Doublet<>(videoInfos, future);
+            return new Doublet<>(fileInfos, future);
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
         }
     }
     
-    private static Future<List<VideoInfo>> downloadVideoInfosAsync(ToughSupplier<ExecutorService> executorServiceSupplier, List<VideoInfo> videoInfos) {
-        FutureTask<List<VideoInfo>> futureTask = new FutureTask<>(() -> downloadVideoInfosExtras(executorServiceSupplier, videoInfos));
+    private static Future<List<FileInfo>> downloadFileInfosAsync(ToughSupplier<ExecutorService> executorServiceSupplier, List<FileInfo> fileInfos) {
+        FutureTask<List<FileInfo>> futureTask = new FutureTask<>(() -> downloadFileInfosExtras(executorServiceSupplier, fileInfos));
         Standard.async(futureTask::run); //TODO Async extra info loading stuff
         return futureTask;
     }
     
-    private static List<VideoInfo> downloadVideoInfosExtras(ToughSupplier<ExecutorService> executorServiceSupplier, List<VideoInfo> videoInfos) {
+    private static List<FileInfo> downloadFileInfosExtras(ToughSupplier<ExecutorService> executorServiceSupplier, List<FileInfo> fileInfos) {
         final ExecutorService executorService = executorServiceSupplier.getWithoutException();
-        videoInfos.forEach((videoInfo) -> executorService.submit(() -> downloadVideoInfoExtras(videoInfo)));
+        fileInfos.forEach((videoInfo) -> executorService.submit(() -> downloadFileInfoExtras(videoInfo)));
         executorService.shutdown();
         Standard.silentError(() -> executorService.awaitTermination(10, TimeUnit.MINUTES));
         executorService.shutdownNow();
-        return videoInfos;
+        return fileInfos;
     }
     
-    private static void downloadVideoInfoExtras(VideoInfo videoInfo) {
-        final DownloadInfo downloadInfo = new DownloadInfo(YouTubeSource.ofId(videoInfo.getId()));
+    private static void downloadFileInfoExtras(FileInfo fileInfo) {
+        final DownloadInfo downloadInfo = new DownloadInfo(YouTubeSource.ofId(fileInfo.getVideoInfo().getId()));
         downloadInfo.setUseConfig(false);
         downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_GET_FILENAME, ARGUMENT_OUTPUT, OUTPUT_TEMPLATE_EXTRAS);
         try {
@@ -642,24 +642,24 @@ public class YouTubeDL {
                     final String playlistIndex = matcher.group(16);
                     final String playlistUploader = matcher.group(17);
                     final String playlistUploaderId = matcher.group(18);
-                    //videoInfo.setId(id);
-                    videoInfo.setUploader(uploader);
-                    videoInfo.setUploaderId(uploaderId);
-                    //videoInfo.setTitle(title);
-                    videoInfo.setAltTitle(altTitle);
-                    videoInfo.setDuration(duration);
-                    videoInfo.setUploadDate(uploadDate);
-                    //videoInfo.setFormat(format); //FIXME Oof format is more file specific and not bound to a video itself?
-                    //videoInfo.setWidth(width); //FIXME Oof width is more file specific and not bound to a video itself?
-                    //videoInfo.setHeight(height); //FIXME Oof height is more file specific and not bound to a video itself?
-                    //videoInfo.setFps(fps); //FIXME Oof fps is more file specific and not bound to a video itself?
-                    //videoInfo.setAsr(asr); //FIXME Oof asr is more file specific and not bound to a video itself?
-                    //videoInfo.setPlaylist(playlist); //FIXME Oof playlist is more playlist specific...
-                    //videoInfo.setPlaylistId(playlistId); //FIXME Oof playlist id is more playlist specific...
-                    //videoInfo.setPlaylistTitle(playlistTitle); //FIXME Oof playlist title is more playlist specific...
-                    //videoInfo.setPlaylistIndex(playlistIndex); //FIXME Oof playlist index is more playlist specific...
-                    //videoInfo.setPlaylistUploader(playlistUploader); //FIXME Oof playlist uploader is more playlist specific...
-                    //videoInfo.setPlaylistUploaderId(playlistUploaderId); //FIXME Oof playlist uploader id is more playlist specific...
+                    fileInfo.getVideoInfo().setId(id);
+                    fileInfo.getVideoInfo().setUploader(uploader);
+                    fileInfo.getVideoInfo().setUploaderId(uploaderId);
+                    fileInfo.getVideoInfo().setTitle(title);
+                    fileInfo.getVideoInfo().setAltTitle(altTitle);
+                    fileInfo.getVideoInfo().setDuration(duration);
+                    fileInfo.getVideoInfo().setUploadDate(uploadDate);
+                    fileInfo.setFormat(format);
+                    fileInfo.setWidth(width);
+                    fileInfo.setHeight(height);
+                    fileInfo.setFps(fps);
+                    fileInfo.setAsr(asr);
+                    fileInfo.setPlaylist(playlist);
+                    fileInfo.setPlaylistId(playlistId);
+                    fileInfo.setPlaylistTitle(playlistTitle);
+                    fileInfo.setPlaylistIndex(playlistIndex);
+                    fileInfo.setPlaylistUploader(playlistUploader);
+                    fileInfo.setPlaylistUploaderId(playlistUploaderId);
                 }
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
             System.out.println("downloadVideoInfoExtras: exitValue=" + exitValue);
