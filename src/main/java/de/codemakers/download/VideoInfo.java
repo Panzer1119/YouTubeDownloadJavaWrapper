@@ -130,6 +130,10 @@ public class VideoInfo implements Serializable {
         return uploadDate;
     }
     
+    public VideoInfo setUploadDate(String uploadDate) {
+        return setUploadDate(Misc.stringToLocalDate(uploadDate));
+    }
+    
     public VideoInfo setUploadDate(LocalDate uploadDate) {
         this.uploadDate = uploadDate;
         return this;

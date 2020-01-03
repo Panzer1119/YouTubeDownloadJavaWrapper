@@ -22,14 +22,19 @@ import com.google.gson.GsonBuilder;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.tough.ToughConsumer;
+import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.database.entities.Video;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +48,8 @@ public class Misc {
     public static final String DEFAULT_APP_DATA_DATABASES_DIRECTORY_NAME = "databases";
     public static final AdvancedFile DEFAULT_APP_DATA_DATABASES_DIRECTORY = OSUtil.getAppDataSubDirectory(DEFAULT_APP_DATA_DATABASES_DIRECTORY_NAME);
     public static final String DEFAULT_SETTINGS_FILE_NAME = "settings.txt";
+    
+    public static final ToughSupplier<ExecutorService> EXECUTOR_SERVICE_TOUGH_SUPPLIER = () -> Executors.newFixedThreadPool(4); //TODO Make the count of threads changable?
     
     static {
         DEFAULT_APP_DATA_DIRECTORY.mkdirsWithoutException();
@@ -163,6 +170,9 @@ public class Misc {
     }
     
     public static Duration stringToDuration(String duration) {
+        if (duration.equals("NA")) {
+            return null;
+        }
         final String[] split = duration.split(":");
         Duration duration_ = Duration.ZERO;
         if (split.length > 0) {
@@ -177,4 +187,10 @@ public class Misc {
         return duration_;
     }
     
+    public static LocalDate stringToLocalDate(String uploadDate) {
+        if (uploadDate.equals("NA")) {
+            return null;
+        }
+        return LocalDate.parse(uploadDate, Video.DATE_TIME_FORMATTER_UPLOAD_DATE);
+    }
 }
