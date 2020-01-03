@@ -548,6 +548,85 @@ public class YouTubeDL {
         }
     }
     
+    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source) {
+        return downloadFileInfosFromListAndThenAsync(source, false);
+    }
+    
+    public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(final Source source, final boolean getIndex) {
+        final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = downloadFileInfosAndThenAsync(source);
+        addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex);
+        return doublet;
+    }
+    
+    protected static void addPlaylistInformationToFileInfos(final List<FileInfo> fileInfos, final Source source, final boolean getIndex) {
+        final DownloadInfo downloadInfo = new DownloadInfo(source);
+        downloadInfo.setUseConfig(false);
+        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_IGNORE_CONFIG, ARGUMENT_GET_FILENAME, ARGUMENT_OUTPUT, OUTPUT_TEMPLATE_EXTRAS);
+        final AtomicReference<String> playlist = new AtomicReference<>();
+        final AtomicReference<String> playlistId = new AtomicReference<>();
+        final AtomicReference<String> playlistTitle = new AtomicReference<>();
+        final AtomicInteger playlistIndex = new AtomicInteger();
+        final AtomicReference<String> playlistUploader = new AtomicReference<>();
+        final AtomicReference<String> playlistUploaderId = new AtomicReference<>();
+        try {
+            final AtomicBoolean done = new AtomicBoolean(false);
+            final AtomicBoolean errored = new AtomicBoolean(false);
+            final Process process = createProcess(downloadInfo);
+            final int exitValue = Misc.monitorProcess(process, (normal) -> {
+                if (done.get()) {
+                    return;
+                }
+                try {
+                    final Matcher matcher = PATTERN_OUTPUT_EXTRAS.matcher(normal);
+                    if (!matcher.matches()) {
+                        return;
+                    }
+                    playlist.set(matcher.group(13));
+                    playlistId.set(matcher.group(14));
+                    playlistTitle.set(matcher.group(15));
+                    try {
+                        playlistIndex.set(Integer.parseInt(matcher.group(16)));
+                    } catch (Exception ex) {
+                        playlistIndex.set(-1);
+                    }
+                    playlistUploader.set(matcher.group(17));
+                    playlistUploaderId.set(matcher.group(18));
+                    if (!getIndex) {
+                        done.set(true);
+                        process.destroyForcibly();
+                    } else {
+                        final String id = matcher.group(1);
+                        fileInfos.stream().filter((fileInfo) -> Objects.equals(fileInfo.getVideoInfo().getId(), id)).findFirst().ifPresent((fileInfo) -> {
+                            fileInfo.setPlaylist(playlist.get());
+                            fileInfo.setPlaylistId(playlistId.get());
+                            fileInfo.setPlaylistTitle(playlistTitle.get());
+                            fileInfo.setPlaylistIndex(playlistIndex.get());
+                            fileInfo.setPlaylistUploader(playlistUploader.get());
+                            fileInfo.setPlaylistUploaderId(playlistUploaderId.get());
+                        });
+                    }
+                } catch (Exception ex) {
+                }
+            }, (error) -> errored.set(true));
+            if (exitValue != 0 || errored.get()) {
+                //return doublet;
+            }
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return;
+        }
+        if (!getIndex) {
+            fileInfos.forEach((fileInfo) -> {
+                fileInfo.setPlaylist(playlist.get());
+                fileInfo.setPlaylistId(playlistId.get());
+                fileInfo.setPlaylistTitle(playlistTitle.get());
+                //fileInfo.setPlaylistIndex(playlistIndex.get());
+                fileInfo.setPlaylistUploader(playlistUploader.get());
+                fileInfo.setPlaylistUploaderId(playlistUploaderId.get());
+            });
+        }
+    }
+    
     public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(Source source) {
         return downloadFileInfosAndThenAsync(source, () -> new FileInfo(new VideoInfo()));
     }
@@ -559,7 +638,7 @@ public class YouTubeDL {
     public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(ToughSupplier<ExecutorService> executorServiceSupplier, Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
-        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_TITLE, ARGUMENT_GET_ID);
+        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_IGNORE_CONFIG, ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_TITLE, ARGUMENT_GET_ID);
         final List<FileInfo> fileInfos = new ArrayList<>();
         try {
             final AtomicBoolean errored = new AtomicBoolean(false);
@@ -640,12 +719,12 @@ public class YouTubeDL {
                     final String height = matcher.group(10);
                     final String fps = matcher.group(11);
                     final String asr = matcher.group(12);
-                    final String playlist = matcher.group(13);
-                    final String playlistId = matcher.group(14);
-                    final String playlistTitle = matcher.group(15);
-                    final String playlistIndex = matcher.group(16);
-                    final String playlistUploader = matcher.group(17);
-                    final String playlistUploaderId = matcher.group(18);
+                    //final String playlist = matcher.group(13);
+                    //final String playlistId = matcher.group(14);
+                    //final String playlistTitle = matcher.group(15);
+                    //final String playlistIndex = matcher.group(16);
+                    //final String playlistUploader = matcher.group(17);
+                    //final String playlistUploaderId = matcher.group(18);
                     /*
                     System.out.println("id=" + id);
                     System.out.println("uploader=" + uploader);
@@ -678,12 +757,11 @@ public class YouTubeDL {
                     fileInfo.setHeight(height);
                     fileInfo.setFps(fps);
                     fileInfo.setAsr(asr);
-                    fileInfo.setPlaylist(playlist); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
-                    fileInfo.setPlaylistId(playlistId); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
-                    fileInfo.setPlaylistTitle(playlistTitle); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
-                    fileInfo.setPlaylistIndex(playlistIndex); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
-                    fileInfo.setPlaylistUploader(playlistUploader); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
-                    fileInfo.setPlaylistUploaderId(playlistUploaderId); //TODO Maybe we don't need this, because if we download from a playlist than we already know the playlist and can set it manually (use the fileInfoGenerator for that! So we can preset the playlist data!)
+                    //fileInfo.setPlaylist(playlist);
+                    //fileInfo.setPlaylistId(playlistId);
+                    //fileInfo.setPlaylistIndex(playlistIndex);
+                    //fileInfo.setPlaylistUploader(playlistUploader);
+                    //fileInfo.setPlaylistUploaderId(playlistUploaderId);
                 } else {
                     //Logger.logWarning(String.format("WTF (%s) IT DIDN'T MATCH: \"%s\"", fileInfo.getVideoInfo().getId(), normal)); //TODO Remove this?
                 }
