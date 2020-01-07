@@ -389,20 +389,20 @@ public class YouTubeDL {
                 output[1] = ARGUMENT_CONFIG_LOCATION;
                 output[2] = getConfigFileAbsoluteAndEscaped();
                 System.arraycopy(downloadInfo.getArguments(), 0, output, 3, downloadInfo.getArguments().length);
-                output[output.length - 1] = downloadInfo.getUrl();
+                output[output.length - 1] = "\"" + downloadInfo.getUrl() + "\"";
                 return output;
             } else {
                 final String[] output = new String[1 + downloadInfo.getArguments().length + 1];
                 output[0] = PROGRAM_NAME;
                 System.arraycopy(downloadInfo.getArguments(), 0, output, 1, downloadInfo.getArguments().length);
-                output[output.length - 1] = downloadInfo.getUrl();
+                output[output.length - 1] = "\"" + downloadInfo.getUrl() + "\"";
                 return output;
             }
         } else {
             if (useConfig) {
-                return new String[] {PROGRAM_NAME, ARGUMENT_CONFIG_LOCATION, getConfigFileAbsoluteAndEscaped(), downloadInfo.getUrl()};
+                return new String[] {PROGRAM_NAME, ARGUMENT_CONFIG_LOCATION, getConfigFileAbsoluteAndEscaped(), "\"" + downloadInfo.getUrl() + "\""};
             } else {
-                return new String[] {PROGRAM_NAME, downloadInfo.getUrl()};
+                return new String[] {PROGRAM_NAME, "\"" + downloadInfo.getUrl() + "\""};
             }
         }
     }
