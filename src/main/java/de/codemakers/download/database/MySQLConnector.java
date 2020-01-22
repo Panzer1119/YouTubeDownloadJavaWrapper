@@ -62,6 +62,18 @@ public class MySQLConnector extends AbstractConnector {
         this.port = port;
     }
     
+    public MySQLConnector(String host, String database) {
+        super();
+        this.host = host;
+        this.database = database;
+    }
+    
+    public MySQLConnector(Connection connection, String host, String database) {
+        super(connection);
+        this.host = host;
+        this.database = database;
+    }
+    
     public MySQLConnector(String host, int port, String database) {
         super();
         this.host = host;
