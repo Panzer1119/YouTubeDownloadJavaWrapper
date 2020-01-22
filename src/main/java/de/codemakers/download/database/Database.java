@@ -41,6 +41,7 @@ public class Database {
     public static final String TABLE_PLAYLIST_VIDEOS = "playlistVideos";
     public static final String TABLE_MEDIA_FILES = "mediaFiles";
     public static final String TABLE_EXTRA_FILES = "extraFiles";
+    public static final String TABLE_VIDEO_QUEUE = "videoQueue";
     // // Columns
     // Table: videos
     public static final String TABLE_VIDEOS_COLUMN_ID = "id";
@@ -75,6 +76,14 @@ public class Database {
     public static final String TABLE_EXTRA_FILES_COLUMN_VIDEO_ID = "videoId";
     public static final String TABLE_EXTRA_FILES_COLUMN_FILE = "file";
     public static final String TABLE_EXTRA_FILES_COLUMN_FILE_TYPE = "fileType";
+    // Table: videoQueue
+    public static final String TABLE_VIDEO_QUEUE_COLUMN_ID = "id";
+    public static final String TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID = "videoId";
+    public static final String TABLE_VIDEO_QUEUE_COLUMN_VIDEO_PRIORITY = "priority";
+    public static final String TABLE_VIDEO_QUEUE_COLUMN_VIDEO_REQUESTED = "requested";
+    public static final String TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ARGUMENTS = "arguments";
+    public static final String TABLE_VIDEO_QUEUE_COLUMN_VIDEO_CONFIG_FILE = "configFile";
+    public static final String TABLE_VIDEO_QUEUE_COLUMN_VIDEO_OUTPUT_DIRECTORY = "outputDirectory";
     // // Queries
     // Table: videos
     public static final String TABLE_VIDEOS_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_VIDEOS);
@@ -95,6 +104,8 @@ public class Database {
     public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL = String.format("SELECT * FROM %s;", TABLE_EXTRA_FILES);
     public static final String TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID);
     public static final String TABLE_EXTRA_FILES_QUERY_GET_BY_VIDEO_ID_AND_FILE = String.format("SELECT * FROM %s WHERE %s = ? AND WHERE %s = ?;", TABLE_EXTRA_FILES, TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, TABLE_EXTRA_FILES_COLUMN_FILE);
+    // Table: videoQueue
+    public static final String TABLE_VIDEO_QUEUE_QUERY_GET_NEXT = String.format("SELECT * FROM %s ORDER BY %s DESC LIMIT 1;", TABLE_VIDEO_QUEUE, TABLE_VIDEO_QUEUE_COLUMN_VIDEO_PRIORITY);
     // // Updates
     // Table: videos
     public static final String TABLE_VIDEOS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_VIDEOS, TABLE_VIDEOS_COLUMN_ID, TABLE_VIDEOS_COLUMN_UPLOADER, TABLE_VIDEOS_COLUMN_UPLOADER_ID, TABLE_VIDEOS_COLUMN_TITLE, TABLE_VIDEOS_COLUMN_ALT_TITLE, TABLE_VIDEOS_COLUMN_DURATION, TABLE_VIDEOS_COLUMN_UPLOAD_DATE, TABLE_VIDEOS_COLUMN_ID);
@@ -130,6 +141,8 @@ public class Database {
     private transient PreparedStatement preparedStatement_getAllExtraFiles = null;
     private transient PreparedStatement preparedStatement_getExtraFilesByVideoId = null;
     private transient PreparedStatement preparedStatement_getExtraFileByVideoIdAndFile = null;
+    // Videos queued
+    private transient PreparedStatement preparedStatement_getNextVideoFromQueue = null;
     // // Updates
     // Videos
     private transient PreparedStatement preparedStatement_updateVideo = null;
@@ -191,6 +204,8 @@ public class Database {
         Standard.silentError(() -> preparedStatement_getAllExtraFiles = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_ALL));
         Standard.silentError(() -> preparedStatement_getExtraFilesByVideoId = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_ALL_BY_VIDEO_ID));
         Standard.silentError(() -> preparedStatement_getExtraFileByVideoIdAndFile = connector.prepareStatement(TABLE_EXTRA_FILES_QUERY_GET_BY_VIDEO_ID_AND_FILE));
+        // ExtraFiles
+        Standard.silentError(() -> preparedStatement_getNextVideoFromQueue = connector.prepareStatement(TABLE_VIDEO_QUEUE_QUERY_GET_NEXT));
         // // Updates
         // Videos
         Standard.silentError(() -> preparedStatement_updateVideo = connector.prepareStatement(TABLE_VIDEOS_UPDATE));
@@ -233,6 +248,8 @@ public class Database {
         IOUtil.closeQuietly(preparedStatement_getAllExtraFiles);
         IOUtil.closeQuietly(preparedStatement_getExtraFilesByVideoId);
         IOUtil.closeQuietly(preparedStatement_getExtraFileByVideoIdAndFile);
+        // ExtraFiles
+        IOUtil.closeQuietly(preparedStatement_getNextVideoFromQueue);
         // // Updates
         // Videos
         IOUtil.closeQuietly(preparedStatement_updateVideo);
@@ -510,6 +527,10 @@ public class Database {
             Standard.silentError(resultSet::close);
         }
         return extraFile;
+    }
+    
+    public void nextVideoFromQueue() {
+    
     }
     
     public List<Video> videosFromResultSet(ResultSet resultSet) throws SQLException {
