@@ -17,6 +17,9 @@
 
 package de.codemakers.download.database.entities;
 
+import de.codemakers.download.YouTubeDL;
+import de.codemakers.io.file.AdvancedFile;
+
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -89,6 +92,14 @@ public class QueuedVideo extends AbstractEntity<QueuedVideo> {
         return this;
     }
     
+    public String getArgumentsOrEmptyString() {
+        final String arguments = getArguments();
+        if (arguments == null) {
+            return "";
+        }
+        return " " + arguments;
+    }
+    
     public String getConfigFile() {
         return configFile;
     }
@@ -98,6 +109,14 @@ public class QueuedVideo extends AbstractEntity<QueuedVideo> {
         return this;
     }
     
+    public AdvancedFile resolveConfigFile() {
+        final String configFile = getConfigFile();
+        if (configFile == null) {
+            return YouTubeDL.getConfigFile();
+        }
+        return new AdvancedFile(configFile);
+    }
+    
     public String getOutputDirectory() {
         return outputDirectory;
     }
@@ -105,6 +124,14 @@ public class QueuedVideo extends AbstractEntity<QueuedVideo> {
     public QueuedVideo setOutputDirectory(String outputDirectory) {
         this.outputDirectory = outputDirectory;
         return this;
+    }
+    
+    public AdvancedFile resolveOutputDirectory() {
+        final String outputDirectory = getOutputDirectory();
+        if (outputDirectory == null) {
+            return YouTubeDL.getDirectory();
+        }
+        return new AdvancedFile(outputDirectory);
     }
     
     public Video asVideo() {
