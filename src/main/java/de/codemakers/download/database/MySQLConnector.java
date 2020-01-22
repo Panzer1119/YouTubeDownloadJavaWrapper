@@ -26,6 +26,8 @@ public class MySQLConnector extends AbstractConnector {
     public static final String CLASS_JDBC_DRIVER = "com.mysql.jdbc.Driver";
     public static final String TEMPLATE_CONNECTION_STRING = "jdbc:mysql://%s:%d/%d";
     
+    public static final int DEFAULT_PORT = 3306;
+    
     static {
         try {
             Class.forName(CLASS_JDBC_DRIVER);
@@ -35,7 +37,7 @@ public class MySQLConnector extends AbstractConnector {
     }
     
     protected String host;
-    protected int port = 3306;
+    protected int port = DEFAULT_PORT;
     protected String database;
     
     public MySQLConnector(String host) {
