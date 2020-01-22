@@ -148,8 +148,16 @@ public class QueuedVideo extends AbstractEntity<QueuedVideo> {
     
     @Override
     public void set(QueuedVideo queuedVideo) {
-        //FIXME TODO
-        throw new Exception();
+        if (queuedVideo == null) {
+            return;
+        }
+        setId(queuedVideo.getId());
+        setVideoId(queuedVideo.getVideoId());
+        setPriority(queuedVideo.getPriority());
+        setRequested(queuedVideo.getRequested());
+        setArguments(queuedVideo.getArguments());
+        setConfigFile(queuedVideo.getConfigFile());
+        setOutputDirectory(queuedVideo.getOutputDirectory());
     }
     
 }
