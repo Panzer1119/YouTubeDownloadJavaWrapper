@@ -40,14 +40,22 @@ public abstract class AbstractConnector {
     }
     
     public boolean createConnection() {
+        return createConnection(null, null);
+    }
+    
+    public boolean createConnection(String username, byte[] password) {
         if (connection != null) {
             return true;
         }
-        connection = createConnectionIntern();
+        connection = createConnectionIntern(username, password);
         return connection != null;
     }
     
-    abstract Connection createConnectionIntern();
+    abstract Connection createConnectionIntern(String username, byte[] password);
+    
+    private Connection createConnectionIntern() {
+        return createConnectionIntern(null, null);
+    }
     
     public boolean closeConnection() {
         if (connection == null) {
@@ -92,9 +100,9 @@ public abstract class AbstractConnector {
         return createConnection(connectionString, null, null);
     }
     
-    protected static Connection createConnection(String connectionString, String username, String password) {
+    protected static Connection createConnection(String connectionString, String username, byte[] password) {
         try {
-            return DriverManager.getConnection(connectionString, username == null ? "" : username, password == null ? "" : password);
+            return DriverManager.getConnection(connectionString, username == null ? "" : username, (password == null || password.length == 0) ? "" : new String(password));
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;

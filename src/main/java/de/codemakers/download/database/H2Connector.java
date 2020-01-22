@@ -52,8 +52,8 @@ public class H2Connector extends AbstractConnector {
     }
     
     @Override
-    Connection createConnectionIntern() {
-        return createConnectionFromPath(getDatabaseDirectory().getAbsolutePath());
+    Connection createConnectionIntern(String username, byte[] password) {
+        return createConnectionFromPath(getDatabaseDirectory().getAbsolutePath(), username, password);
     }
     
     @Override
@@ -65,7 +65,7 @@ public class H2Connector extends AbstractConnector {
         return createConnectionFromPath(path, null, null);
     }
     
-    protected static Connection createConnectionFromPath(String path, String username, String password) {
+    protected static Connection createConnectionFromPath(String path, String username, byte[] password) {
         return createConnection(String.format(TEMPLATE_CONNECTION_STRING, path), username, password);
     }
     
