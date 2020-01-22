@@ -36,7 +36,7 @@ public class H2Connector extends AbstractConnector {
         }
     }
     
-    private AdvancedFile databaseDirectory;
+    protected AdvancedFile databaseDirectory;
     
     public H2Connector(AdvancedFile databaseDirectory) {
         this.databaseDirectory = Objects.requireNonNull(databaseDirectory, "databaseDirectory");
