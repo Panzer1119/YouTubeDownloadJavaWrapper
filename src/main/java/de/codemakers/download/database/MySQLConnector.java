@@ -17,24 +17,14 @@
 
 package de.codemakers.download.database;
 
-import de.codemakers.base.logger.Logger;
-
 import java.sql.Connection;
 
 public class MySQLConnector extends AbstractConnector {
     
     public static final String CLASS_JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    public static final String TEMPLATE_CONNECTION_STRING = "jdbc:mysql://%s:%d/%d";
+    public static final String TEMPLATE_CONNECTION_STRING = "jdbc:mysql://%s:%d/%s";
     
     public static final int DEFAULT_PORT = 3306;
-    
-    static {
-        try {
-            Class.forName(CLASS_JDBC_DRIVER);
-        } catch (ClassNotFoundException ex) {
-            Logger.handleError(ex);
-        }
-    }
     
     protected String host;
     protected int port = DEFAULT_PORT;
