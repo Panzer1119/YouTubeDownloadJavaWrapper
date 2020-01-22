@@ -22,11 +22,11 @@ import java.util.Objects;
 
 public class Playlist extends AbstractEntity<Playlist> {
     
-    private String id;
-    private String title;
-    private String playlist;
-    private String uploader;
-    private String uploaderId;
+    protected String id;
+    protected String title;
+    protected String playlist;
+    protected String uploader;
+    protected String uploaderId;
     
     public Playlist() {
         this(null, null, null, null, null);

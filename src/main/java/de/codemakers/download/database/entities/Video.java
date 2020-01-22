@@ -29,13 +29,13 @@ public class Video extends AbstractEntity<Video> {
     
     public static final DateTimeFormatter DATE_TIME_FORMATTER_UPLOAD_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
     
-    private String id;
-    private String uploader;
-    private String uploaderId;
-    private String title;
-    private String altTitle;
-    private long duration;
-    private LocalDate uploadDate;
+    protected String id;
+    protected String uploader;
+    protected String uploaderId;
+    protected String title;
+    protected String altTitle;
+    protected long duration;
+    protected LocalDate uploadDate;
     
     public Video() {
         this(null, null, null, null, null, -1, null);

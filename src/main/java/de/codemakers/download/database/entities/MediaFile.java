@@ -21,13 +21,13 @@ import java.util.Objects;
 
 public class MediaFile extends AbstractFile<MediaFile> {
     
-    private String format;
-    private String vcodec;
-    private String acodec;
-    private int width;
-    private int height;
-    private int fps;
-    private int asr;
+    protected String format;
+    protected String vcodec;
+    protected String acodec;
+    protected int width;
+    protected int height;
+    protected int fps;
+    protected int asr;
     
     public MediaFile() {
         this(null, null, null, null, null, null, -1, -1, -1, -1);
