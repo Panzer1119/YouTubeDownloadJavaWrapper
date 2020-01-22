@@ -176,10 +176,14 @@ public class Database {
     }
     
     public boolean start() {
+        return start(null, null);
+    }
+    
+    public boolean start(String username, byte[] password) {
         if (isRunning()) {
             return false;
         }
-        if (!connector.createConnection()) {
+        if (!connector.createConnection(username, password)) {
             return false;
         }
         initStatements();
