@@ -119,7 +119,7 @@ public class Database {
     public static final String TABLE_VIDEO_QUEUE_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_VIDEO_QUEUE, TABLE_VIDEO_QUEUE_COLUMN_ID, TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID, TABLE_VIDEO_QUEUE_COLUMN_PRIORITY, TABLE_VIDEO_QUEUE_COLUMN_REQUESTED, TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS, TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE, TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY, TABLE_VIDEO_QUEUE_COLUMN_ID);
     // // //
     
-    private final Connector connector;
+    private final AbstractConnector connector;
     // // // SQL Stuff
     // // Queries
     // Videos
@@ -160,15 +160,15 @@ public class Database {
     // // //
     
     public Database(AdvancedFile databaseDirectory) {
-        this(new Connector(databaseDirectory));
+        this(new H2Connector(databaseDirectory));
     }
     
-    public Database(Connector connector) {
+    public Database(AbstractConnector connector) {
         this.connector = connector;
     }
     
-    public Connector getConnector() {
-        return connector;
+    public <T extends AbstractConnector> T getConnector() {
+        return (T) connector;
     }
     
     public boolean isRunning() {

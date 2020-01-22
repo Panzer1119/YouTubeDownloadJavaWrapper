@@ -20,39 +20,19 @@ package de.codemakers.download.database;
 import de.codemakers.base.Standard;
 import de.codemakers.base.action.ClosingAction;
 import de.codemakers.base.logger.Logger;
-import de.codemakers.io.file.AdvancedFile;
 
 import java.sql.*;
-import java.util.Objects;
 
-public class Connector {
+public abstract class AbstractConnector {
     
-    public static final String CLASS_H2_DRIVER = "org.h2.Driver";
-    public static final String TEMPLATE_CONNECTION_STRING = "jdbc:h2:%s";
+    protected transient Connection connection;
     
-    static {
-        try {
-            Class.forName(CLASS_H2_DRIVER);
-        } catch (ClassNotFoundException ex) {
-            Logger.handleError(ex);
-        }
+    public AbstractConnector() {
+        this(null);
     }
     
-    private AdvancedFile databaseDirectory;
-    //Temp
-    private transient Connection connection;
-    
-    public Connector(AdvancedFile databaseDirectory) {
-        this.databaseDirectory = Objects.requireNonNull(databaseDirectory, "databaseDirectory");
-    }
-    
-    public AdvancedFile getDatabaseDirectory() {
-        return databaseDirectory;
-    }
-    
-    public Connector setDatabaseDirectory(AdvancedFile databaseDirectory) {
-        this.databaseDirectory = databaseDirectory;
-        return this;
+    public AbstractConnector(Connection connection) {
+        this.connection = connection;
     }
     
     public boolean isConnected() {
@@ -63,9 +43,11 @@ public class Connector {
         if (connection != null) {
             return true;
         }
-        connection = createConnection(databaseDirectory.getAbsolutePath());
+        connection = createConnectionIntern();
         return connection != null;
     }
+    
+    abstract Connection createConnectionIntern();
     
     public boolean closeConnection() {
         if (connection == null) {
@@ -103,15 +85,14 @@ public class Connector {
     
     @Override
     public String toString() {
-        return "Connector{" + "databaseDirectory=" + databaseDirectory + ", connection=" + connection + '}';
+        return "AbstractConnector{" + "connection=" + connection + '}';
     }
     
-    protected static Connection createConnection(String path) {
-        return createConnection(path, null, null);
+    protected static Connection createConnection(String connectionString) {
+        return createConnection(connectionString, null, null);
     }
     
-    protected static Connection createConnection(String path, String username, String password) {
-        final String connectionString = String.format(TEMPLATE_CONNECTION_STRING, path);
+    protected static Connection createConnection(String connectionString, String username, String password) {
         try {
             return DriverManager.getConnection(connectionString, username == null ? "" : username, password == null ? "" : password);
         } catch (Exception ex) {
