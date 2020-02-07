@@ -42,12 +42,14 @@ public class Database {
     // // Columns
     // Table: videos
     public static final String TABLE_VIDEOS_COLUMN_ID = "id";
-    public static final String TABLE_VIDEOS_COLUMN_UPLOADER = "uploader";
     public static final String TABLE_VIDEOS_COLUMN_UPLOADER_ID = "uploaderId";
     public static final String TABLE_VIDEOS_COLUMN_TITLE = "title";
     public static final String TABLE_VIDEOS_COLUMN_ALT_TITLE = "altTitle";
     public static final String TABLE_VIDEOS_COLUMN_DURATION = "duration";
     public static final String TABLE_VIDEOS_COLUMN_UPLOAD_DATE = "uploadDate";
+    // Table: uploaders
+    public static final String TABLE_UPLOADERS_COLUMN_ID = "id";
+    public static final String TABLE_UPLOADERS_COLUMN_NAME = "name";
     // Table: playlists
     public static final String TABLE_PLAYLISTS_COLUMN_ID = "id";
     public static final String TABLE_PLAYLISTS_COLUMN_TITLE = "title";
@@ -106,7 +108,7 @@ public class Database {
     public static final String TABLE_VIDEO_QUEUE_QUERY_GET_BY_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_VIDEO_QUEUE, TABLE_VIDEO_QUEUE_COLUMN_ID);
     // // Updates
     // Table: videos
-    public static final String TABLE_VIDEOS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_VIDEOS, TABLE_VIDEOS_COLUMN_ID, TABLE_VIDEOS_COLUMN_UPLOADER, TABLE_VIDEOS_COLUMN_UPLOADER_ID, TABLE_VIDEOS_COLUMN_TITLE, TABLE_VIDEOS_COLUMN_ALT_TITLE, TABLE_VIDEOS_COLUMN_DURATION, TABLE_VIDEOS_COLUMN_UPLOAD_DATE, TABLE_VIDEOS_COLUMN_ID);
+    public static final String TABLE_VIDEOS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_VIDEOS, TABLE_VIDEOS_COLUMN_ID, TABLE_VIDEOS_COLUMN_UPLOADER_ID, TABLE_VIDEOS_COLUMN_TITLE, TABLE_VIDEOS_COLUMN_ALT_TITLE, TABLE_VIDEOS_COLUMN_DURATION, TABLE_VIDEOS_COLUMN_UPLOAD_DATE, TABLE_VIDEOS_COLUMN_ID);
     // Table: playlists
     public static final String TABLE_PLAYLISTS_UPDATE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", TABLE_PLAYLISTS, TABLE_PLAYLISTS_COLUMN_ID, TABLE_PLAYLISTS_COLUMN_TITLE, TABLE_PLAYLISTS_COLUMN_PLAYLIST, TABLE_PLAYLISTS_COLUMN_UPLOADER, TABLE_PLAYLISTS_COLUMN_UPLOADER_ID, TABLE_PLAYLISTS_COLUMN_ID);
     // Table: playlistVideos
@@ -600,7 +602,7 @@ public class Database {
     }
     
     public Video videoFromResultSet(ResultSet resultSet) throws SQLException {
-        return new Video(resultSet.getString(TABLE_VIDEOS_COLUMN_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(TABLE_VIDEOS_COLUMN_DURATION), resultSet.getLong(TABLE_VIDEOS_COLUMN_UPLOAD_DATE)).setDatabase(this);
+        return new Video(resultSet.getString(TABLE_VIDEOS_COLUMN_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_UPLOADER_ID), resultSet.getString(TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(TABLE_VIDEOS_COLUMN_DURATION), resultSet.getLong(TABLE_VIDEOS_COLUMN_UPLOAD_DATE)).setDatabase(this);
     }
     
     public List<Playlist> playlistsFromResultSet(ResultSet resultSet) throws SQLException {
@@ -663,13 +665,12 @@ public class Database {
         try {
             synchronized (preparedStatement_updateVideo) {
                 preparedStatement_updateVideo.setString(1, video.getId());
-                preparedStatement_updateVideo.setString(2, video.getUploader());
-                preparedStatement_updateVideo.setString(3, video.getUploaderId());
-                preparedStatement_updateVideo.setString(4, video.getTitle());
-                preparedStatement_updateVideo.setString(5, video.getAltTitle());
-                preparedStatement_updateVideo.setLong(6, video.getDurationAsMillis());
-                preparedStatement_updateVideo.setLong(7, video.getUploadDateAsLong());
-                preparedStatement_updateVideo.setString(8, video.getId()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
+                preparedStatement_updateVideo.setString(2, video.getUploaderId());
+                preparedStatement_updateVideo.setString(3, video.getTitle());
+                preparedStatement_updateVideo.setString(4, video.getAltTitle());
+                preparedStatement_updateVideo.setLong(5, video.getDurationAsMillis());
+                preparedStatement_updateVideo.setLong(6, video.getUploadDateAsLong());
+                preparedStatement_updateVideo.setString(7, video.getId()); //TODO If the primary key has been changed, than this would also return the new id, and therefore the old id would be lost, so maybe preserve it somehow??
                 preparedStatement_updateVideo.executeUpdate();
             }
             return true;

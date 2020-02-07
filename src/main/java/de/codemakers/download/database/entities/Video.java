@@ -30,7 +30,6 @@ public class Video extends AbstractEntity<Video> {
     public static final DateTimeFormatter DATE_TIME_FORMATTER_UPLOAD_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
     
     protected String id;
-    protected String uploader;
     protected String uploaderId;
     protected String title;
     protected String altTitle;
@@ -38,17 +37,16 @@ public class Video extends AbstractEntity<Video> {
     protected LocalDate uploadDate;
     
     public Video() {
-        this(null, null, null, null, null, -1, null);
+        this(null, null, null, null, -1, null);
     }
     
-    public Video(String id, String uploader, String uploaderId, String title, String altTitle, long duration, long uploadDate) {
-        this(id, uploader, uploaderId, title, altTitle, duration, null);
+    public Video(String id, String uploaderId, String title, String altTitle, long duration, long uploadDate) {
+        this(id, uploaderId, title, altTitle, duration, null);
         setUploadDate(uploadDate);
     }
     
-    public Video(String id, String uploader, String uploaderId, String title, String altTitle, long duration, LocalDate uploadDate) {
+    public Video(String id, String uploaderId, String title, String altTitle, long duration, LocalDate uploadDate) {
         this.id = id;
-        this.uploader = uploader;
         this.uploaderId = uploaderId;
         this.title = title;
         this.altTitle = altTitle;
@@ -62,15 +60,6 @@ public class Video extends AbstractEntity<Video> {
     
     public Video setId(String id) {
         this.id = id;
-        return this;
-    }
-    
-    public String getUploader() {
-        return uploader;
-    }
-    
-    public Video setUploader(String uploader) {
-        this.uploader = uploader;
         return this;
     }
     
@@ -175,7 +164,7 @@ public class Video extends AbstractEntity<Video> {
     
     @Override
     public String toString() {
-        return "Video{" + "id='" + id + '\'' + ", uploader='" + uploader + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", altTitle='" + altTitle + '\'' + ", duration=" + duration + ", uploadDate=" + uploadDate + '}';
+        return "Video{" + "id='" + id + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", altTitle='" + altTitle + '\'' + ", duration=" + duration + ", uploadDate=" + uploadDate + '}';
     }
     
     @Override
@@ -187,12 +176,12 @@ public class Video extends AbstractEntity<Video> {
             return false;
         }
         final Video video = (Video) other;
-        return duration == video.duration && Objects.equals(id, video.id) && Objects.equals(uploader, video.uploader) && Objects.equals(uploaderId, video.uploaderId) && Objects.equals(title, video.title) && Objects.equals(altTitle, video.altTitle) && Objects.equals(uploadDate, video.uploadDate);
+        return duration == video.duration && Objects.equals(id, video.id) && Objects.equals(uploaderId, video.uploaderId) && Objects.equals(title, video.title) && Objects.equals(altTitle, video.altTitle) && Objects.equals(uploadDate, video.uploadDate);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(id, uploader, uploaderId, title, altTitle, duration, uploadDate);
+        return Objects.hash(id, uploaderId, title, altTitle, duration, uploadDate);
     }
     
     @Override
@@ -211,7 +200,6 @@ public class Video extends AbstractEntity<Video> {
             return;
         }
         setId(video.getId());
-        setUploader(video.getUploader());
         setUploaderId(video.getUploaderId());
         setTitle(video.getTitle());
         setAltTitle(video.getAltTitle());
