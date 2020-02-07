@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS playlistVideos
     playlistIndex INT DEFAULT -1,
     PRIMARY KEY (playlistId, videoId)
 );
-CREATE TABLE `videoQueue`
+CREATE TABLE IF NOT EXISTS `videoQueue`
 (
     `id`              int(11)     NOT NULL AUTO_INCREMENT,
     `videoId`         varchar(64) NOT NULL,
