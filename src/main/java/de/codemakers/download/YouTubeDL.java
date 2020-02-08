@@ -861,8 +861,11 @@ public class YouTubeDL {
     private static final String OUTPUT_FORMAT_EVERYTHING_REGEX = new String(new AdvancedFile(INTERN_FOLDER, "youtube-dl_output_format_everything_regex.txt").readBytesWithoutException());
     private static final Pattern PATTERN_OUTPUT_FORMAT_EVERYTHING = Pattern.compile(OUTPUT_FORMAT_EVERYTHING_REGEX);
     
+    @Deprecated
     private static final String OUTPUT_TEMPLATE_EXTRAS = "\"id={%(id)s},uploader={%(uploader)s},uploaderId={%(uploader_id)s},title={%(title)s},altTitle={%(alt_title)s},duration={%(duration)s},uploadDate={%(upload_date)s},format={%(format)s},width={%(width)s},height={%(height)s},fps={%(fps)s},asr={%(asr)s},playlist={%(playlist)s},playlistId={%(playlist_id)s},playlistTitle={%(playlist_title)s},playlistIndex={%(playlist_index)s},playlistUploader={%(playlist_uploader)s},playlistUploaderId={%(playlist_uploader_id)s}\"";
+    @Deprecated
     private static final String PATTERN_OUTPUT_EXTRAS_STRING = "id=\\{([a-zA-Z0-9_-]+)\\},uploader=\\{(.*)\\},uploaderId=\\{(.*)\\},title=\\{(.*)\\},altTitle=\\{(.*)\\},duration=\\{((?:NA)|(?:\\d+))\\},uploadDate=\\{((?:NA)|(?:\\d+))\\},format=\\{(.*)\\},width=\\{((?:NA)|(?:\\d+))\\},height=\\{((?:NA)|(?:\\d+))\\},fps=\\{((?:NA)|(?:\\d+))\\},asr=\\{((?:NA)|(?:\\d+))\\},playlist=\\{(.*)\\},playlistId=\\{(.*)\\},playlistTitle=\\{(.*)\\},playlistIndex=\\{((?:NA)|(?:\\d+))\\},playlistUploader=\\{(.*)\\},playlistUploaderId=\\{(.*)\\}";
+    @Deprecated
     private static final Pattern PATTERN_OUTPUT_EXTRAS = Pattern.compile(PATTERN_OUTPUT_EXTRAS_STRING);
     
 }

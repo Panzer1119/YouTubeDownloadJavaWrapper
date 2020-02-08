@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Panzer1119:CJP-Base:c054d0d1' //01.01.2020 17:13
+    implementation 'com.github.Panzer1119:CJP-Base:dad4aa63' //08.02.2020 15:46
     // https://mvnrepository.com/artifact/com.h2database/h2
     compile group: 'com.h2database', name: 'h2', version: '1.4.200' //31.12.2019 16:29
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
