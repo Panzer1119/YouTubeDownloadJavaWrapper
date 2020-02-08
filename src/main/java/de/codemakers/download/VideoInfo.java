@@ -37,7 +37,7 @@ public class VideoInfo implements Serializable {
     private String uploaderId = null;
     private String title;
     private String altTitle;
-    private long duration;
+    private double duration;
     private LocalDate uploadDate = null;
     //Temp
     private final List<String> files = new ArrayList<>();
@@ -110,6 +110,10 @@ public class VideoInfo implements Serializable {
     }
     
     public long getDurationAsMillis() {
+        return (long) duration;
+    }
+    
+    public double getDurationAsMillisDouble() {
         return duration;
     }
     
@@ -121,7 +125,7 @@ public class VideoInfo implements Serializable {
         return setDuration(duration.toMillis());
     }
     
-    public VideoInfo setDuration(long duration) {
+    public VideoInfo setDuration(double duration) {
         this.duration = duration;
         return this;
     }
