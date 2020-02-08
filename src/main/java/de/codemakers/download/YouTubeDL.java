@@ -17,6 +17,7 @@
 
 package de.codemakers.download;
 
+import com.google.gson.JsonObject;
 import de.codemakers.base.Standard;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.multiplets.Doublet;
@@ -83,6 +84,8 @@ public class YouTubeDL {
     // //
     public static final String TEMPLATE_LOG_FILE_NAME = "log_%s_%s.txt";
     public static final String UNKNOWN_YOUTUBE_ID = "UNKNOWN";
+    
+    public static final AdvancedFile INTERN_FOLDER = new AdvancedFile(Standard.MAIN_FOLDER, "download");
     
     public static final String DEFAULT_CONFIG_NAME = "youtube-dl.conf";
     private static AdvancedFile CONFIG_FILE = new AdvancedFile(DEFAULT_CONFIG_NAME);
@@ -558,16 +561,19 @@ public class YouTubeDL {
     
     public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, boolean getIndex) {
         final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = downloadFileInfosAndThenAsync(source);
-        addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex);
+        //addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex); //FIXME
         return doublet;
     }
     
     public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator, boolean getIndex) {
         final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = downloadFileInfosAndThenAsync(source, fileInfoGenerator);
-        addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex);
+        //addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex); //FIXME
         return doublet;
     }
     
+    /*
+    //FIXME //IMPORTANT WTF has the playlist information to do with a single video file?
+    @Deprecated
     protected static void addPlaylistInformationToFileInfos(final List<FileInfo> fileInfos, final Source source, final boolean getIndex) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
@@ -636,6 +642,7 @@ public class YouTubeDL {
             });
         }
     }
+    */
     
     public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(Source source) {
         return downloadFileInfosAndThenAsync(source, () -> new FileInfo(new VideoInfo()));
@@ -701,13 +708,15 @@ public class YouTubeDL {
     
     private static List<FileInfo> downloadFileInfosExtras(ToughSupplier<ExecutorService> executorServiceSupplier, List<FileInfo> fileInfos) {
         final ExecutorService executorService = executorServiceSupplier.getWithoutException();
-        fileInfos.forEach((videoInfo) -> executorService.submit(() -> downloadFileInfoExtras(videoInfo)));
+        //fileInfos.forEach((videoInfo) -> executorService.submit(() -> downloadFileInfoExtras(videoInfo)));
+        fileInfos.forEach((videoInfo) -> executorService.submit(() -> downloadInfoEverythingAndAddToFileInfo(videoInfo)));
         executorService.shutdown();
         Standard.silentError(() -> executorService.awaitTermination(10, TimeUnit.MINUTES));
         executorService.shutdownNow();
         return fileInfos;
     }
     
+    @Deprecated
     private static void downloadFileInfoExtras(FileInfo fileInfo) {
         final DownloadInfo downloadInfo = new DownloadInfo(YouTubeSource.ofId(fileInfo.getVideoInfo().getId()));
         downloadInfo.setUseConfig(false);
@@ -776,7 +785,7 @@ public class YouTubeDL {
                     //Logger.logWarning(String.format("WTF (%s) IT DIDN'T MATCH: \"%s\"", fileInfo.getVideoInfo().getId(), normal)); //TODO Remove this?
                 }
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            System.out.println("downloadVideoInfoExtras: exitValue=" + exitValue);
+            System.out.println("downloadVideoInfoExtras: exitValue=" + exitValue); //DEBUG Remove this
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return;
             }
@@ -784,6 +793,73 @@ public class YouTubeDL {
             Logger.handleError(ex);
         }
     }
+    
+    private static JsonObject downloadInfoEverythingAndAddToFileInfo(FileInfo fileInfo) {
+        final JsonObject jsonObject = downloadInfoEverything(fileInfo);
+        if (jsonObject == null) {
+            return null;
+        }
+        fileInfo.getVideoInfo().setId((!jsonObject.has("id") || jsonObject.get("id").getAsString().equalsIgnoreCase("NA")) ? null : jsonObject.get("id").getAsString());
+        fileInfo.getVideoInfo().setUploader((!jsonObject.has("uploader") || jsonObject.get("uploader").getAsString().equalsIgnoreCase("NA")) ? null : jsonObject.get("uploader").getAsString());
+        fileInfo.getVideoInfo().setUploaderId((!jsonObject.has("uploader_id") || jsonObject.get("uploader_id").getAsString().equalsIgnoreCase("NA")) ? null : jsonObject.get("uploader_id").getAsString());
+        fileInfo.getVideoInfo().setTitle((!jsonObject.has("title") || jsonObject.get("title").getAsString().equalsIgnoreCase("NA")) ? null : jsonObject.get("title").getAsString());
+        fileInfo.getVideoInfo().setAltTitle((!jsonObject.has("alt_title") || jsonObject.get("alt_title").getAsString().equalsIgnoreCase("NA")) ? null : jsonObject.get("alt_title").getAsString());
+        fileInfo.getVideoInfo().setDuration((!jsonObject.has("duration") || jsonObject.get("duration").getAsString().equalsIgnoreCase("NA")) ? null : jsonObject.get("duration").getAsDouble() * 1000.0);
+        fileInfo.getVideoInfo().setUploadDate((!jsonObject.has("upload_date") || jsonObject.get("upload_date").getAsString().equalsIgnoreCase("NA")) ? null : jsonObject.get("upload_date").getAsString());
+        fileInfo.setFormat(!jsonObject.has("format") ? null : jsonObject.get("format").getAsString());
+        fileInfo.setWidth(!jsonObject.has("width") ? null : jsonObject.get("width").getAsString());
+        fileInfo.setHeight(!jsonObject.has("height") ? null : jsonObject.get("height").getAsString());
+        fileInfo.setFps(!jsonObject.has("fps") ? null : jsonObject.get("fps").getAsString());
+        fileInfo.setAsr(!jsonObject.has("asr") ? null : jsonObject.get("asr").getAsString());
+        return jsonObject;
+    }
+    
+    private static JsonObject downloadInfoEverything(FileInfo fileInfo) {
+        if (fileInfo == null || fileInfo.getVideoInfo() == null) {
+            return null;
+        }
+        return downloadInfoEverything(fileInfo.getVideoInfo().getId());
+    }
+    
+    protected static JsonObject downloadInfoEverything(String videoId) {
+        if (videoId == null || videoId.isEmpty()) {
+            return null;
+        }
+        final DownloadInfo downloadInfo = new DownloadInfo(YouTubeSource.ofId(videoId));
+        downloadInfo.setUseConfig(false);
+        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_GET_FILENAME, ARGUMENT_OUTPUT, OUTPUT_FORMAT_EVERYTHING);
+        try {
+            final AtomicReference<JsonObject> jsonObjectAtomicReference = new AtomicReference<>(null);
+            final AtomicBoolean errored = new AtomicBoolean(false);
+            final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), (normal) -> {
+                final Matcher matcher = PATTERN_OUTPUT_FORMAT_EVERYTHING.matcher(normal);
+                if (matcher.matches()) {
+                    jsonObjectAtomicReference.set(outputInfoToJsonObject(normal));
+                } else {
+                    jsonObjectAtomicReference.set(null);
+                }
+            }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
+            System.out.println("downloadInfoEverything: exitValue=" + exitValue); //DEBUG Remove this
+            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
+                //return;
+            }
+            return jsonObjectAtomicReference.get();
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    private static JsonObject outputInfoToJsonObject(String outputInfo) {
+        if (outputInfo == null) {
+            return null;
+        }
+        return Misc.GSON.fromJson(outputInfo.replaceAll("(?:\\{\\{\\{###\\{\\{\\{)|(?:\\}\\}\\}###\\}\\}\\})", "\"").replaceAll("=", ":"), JsonObject.class);
+    }
+    
+    private static final String OUTPUT_FORMAT_EVERYTHING = new String(new AdvancedFile(INTERN_FOLDER, "youtube-dl_output_format_everything.txt").readBytesWithoutException());
+    private static final String OUTPUT_FORMAT_EVERYTHING_REGEX = new String(new AdvancedFile(INTERN_FOLDER, "youtube-dl_output_format_everything_regex.txt").readBytesWithoutException());
+    private static final Pattern PATTERN_OUTPUT_FORMAT_EVERYTHING = Pattern.compile(OUTPUT_FORMAT_EVERYTHING_REGEX);
     
     private static final String OUTPUT_TEMPLATE_EXTRAS = "\"id={%(id)s},uploader={%(uploader)s},uploaderId={%(uploader_id)s},title={%(title)s},altTitle={%(alt_title)s},duration={%(duration)s},uploadDate={%(upload_date)s},format={%(format)s},width={%(width)s},height={%(height)s},fps={%(fps)s},asr={%(asr)s},playlist={%(playlist)s},playlistId={%(playlist_id)s},playlistTitle={%(playlist_title)s},playlistIndex={%(playlist_index)s},playlistUploader={%(playlist_uploader)s},playlistUploaderId={%(playlist_uploader_id)s}\"";
     private static final String PATTERN_OUTPUT_EXTRAS_STRING = "id=\\{([a-zA-Z0-9_-]+)\\},uploader=\\{(.*)\\},uploaderId=\\{(.*)\\},title=\\{(.*)\\},altTitle=\\{(.*)\\},duration=\\{((?:NA)|(?:\\d+))\\},uploadDate=\\{((?:NA)|(?:\\d+))\\},format=\\{(.*)\\},width=\\{((?:NA)|(?:\\d+))\\},height=\\{((?:NA)|(?:\\d+))\\},fps=\\{((?:NA)|(?:\\d+))\\},asr=\\{((?:NA)|(?:\\d+))\\},playlist=\\{(.*)\\},playlistId=\\{(.*)\\},playlistTitle=\\{(.*)\\},playlistIndex=\\{((?:NA)|(?:\\d+))\\},playlistUploader=\\{(.*)\\},playlistUploaderId=\\{(.*)\\}";
