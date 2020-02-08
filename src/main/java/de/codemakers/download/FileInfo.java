@@ -25,12 +25,15 @@ public class FileInfo {
     private int height;
     private int fps;
     private int asr;
+    /*
+    //FIXME //IMPORTANT WTF What has the playlist to do with the File?! excuse me qdlf?!
     private String playlist;
     private String playlistId;
     private String playlistTitle;
     private int playlistIndex;
     private String playlistUploader;
     private String playlistUploaderId;
+    */
     
     public FileInfo(VideoInfo videoInfo) {
         this.videoInfo = videoInfo;
@@ -50,6 +53,10 @@ public class FileInfo {
     }
     
     public FileInfo setFormat(String format) {
+        if (format == null || format.equalsIgnoreCase("NA") || format.isEmpty()) {
+            this.format = null;
+            return this;
+        }
         this.format = format;
         return this;
     }
@@ -59,7 +66,7 @@ public class FileInfo {
     }
     
     public FileInfo setWidth(String width) {
-        if (width == null || width.equals("NA") || width.isEmpty()) {
+        if (width == null || width.equalsIgnoreCase("NA") || width.isEmpty()) {
             return setWidth(-1);
         }
         return setWidth(Integer.parseInt(width));
@@ -75,7 +82,7 @@ public class FileInfo {
     }
     
     public FileInfo setHeight(String height) {
-        if (height == null || height.equals("NA") || height.isEmpty()) {
+        if (height == null || height.equalsIgnoreCase("NA") || height.isEmpty()) {
             return setHeight(-1);
         }
         return setHeight(Integer.parseInt(height));
@@ -91,7 +98,7 @@ public class FileInfo {
     }
     
     public FileInfo setFps(String fps) {
-        if (fps == null || fps.equals("NA") || fps.isEmpty()) {
+        if (fps == null || fps.equalsIgnoreCase("NA") || fps.isEmpty()) {
             return setFps(-1);
         }
         return setFps(Integer.parseInt(fps));
@@ -107,7 +114,7 @@ public class FileInfo {
     }
     
     public FileInfo setAsr(String asr) {
-        if (asr == null || asr.equals("NA") || asr.isEmpty()) {
+        if (asr == null || asr.equalsIgnoreCase("NA") || asr.isEmpty()) {
             return setAsr(-1);
         }
         return setAsr(Integer.parseInt(asr));
@@ -117,6 +124,8 @@ public class FileInfo {
         this.asr = asr;
         return this;
     }
+    
+    /*
     
     public String getPlaylist() {
         return playlist;
@@ -172,9 +181,11 @@ public class FileInfo {
         return this;
     }
     
+    */
+    
     @Override
     public String toString() {
-        return "FileInfo{" + "videoInfo=" + videoInfo + ", format='" + format + '\'' + ", width=" + width + ", height=" + height + ", fps=" + fps + ", asr=" + asr + ", playlist='" + playlist + '\'' + ", playlistId='" + playlistId + '\'' + ", playlistTitle='" + playlistTitle + '\'' + ", playlistIndex='" + playlistIndex + '\'' + ", playlistUploader='" + playlistUploader + '\'' + ", playlistUploaderId='" + playlistUploaderId + '\'' + '}';
+        return "FileInfo{" + "videoInfo=" + videoInfo + ", format='" + format + '\'' + ", width=" + width + ", height=" + height + ", fps=" + fps + ", asr=" + asr + '}';
     }
     
 }
