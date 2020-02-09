@@ -17,17 +17,17 @@
 
 package de.codemakers.download.database.entities;
 
-import de.codemakers.download.database.Database;
+import de.codemakers.base.util.tough.ToughFunction;
 
-public abstract class AbstractEntity<T> {
+public abstract class AbstractEntity<T extends AbstractEntity, D extends AbstractDatabase> {
     
-    private Database database = null;
+    private D database = null;
     
-    public Database getDatabase() {
+    public D getDatabase() {
         return database;
     }
     
-    public T setDatabase(Database database) {
+    public T setDatabase(D database) {
         this.database = database;
         return (T) this;
     }
@@ -46,5 +46,17 @@ public abstract class AbstractEntity<T> {
     public abstract boolean save();
     
     public abstract void set(T t);
+    
+    protected <R> R useDatabaseOrNull(ToughFunction<D, R> databaseFunction) {
+        return useDatabase(databaseFunction, null);
+    }
+    
+    protected <R> R useDatabase(ToughFunction<D, R> databaseFunction, R defaultValue) {
+        final D database = getDatabase();
+        if (database == null) {
+            return defaultValue;
+        }
+        return databaseFunction.applyWithoutException(database);
+    }
     
 }
