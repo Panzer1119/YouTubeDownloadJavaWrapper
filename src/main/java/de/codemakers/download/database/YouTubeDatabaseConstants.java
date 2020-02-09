@@ -81,8 +81,39 @@ public class YouTubeDatabaseConstants {
     // //
     // // // Queries
     // // Selects
+    // Table: Channels
+    public static final String TABLE_CHANNELS_SELECT_ALL = String.format("SELECT * FROM %s;", TABLE_CHANNELS);
+    public static final String TABLE_CHANNELS_SELECT_BY_CHANNEL_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_CHANNELS, TABLE_CHANNELS_COLUMN_ID);
+    // Table: Extra Files
+    // Table: Media Files
+    // Table: Playlists
+    // Table: Playlist Videos
+    // Table: Uploaders
+    public static final String TABLE_UPLOADERS_SELECT_ALL = String.format("SELECT * FROM %s;", TABLE_UPLOADERS);
+    public static final String TABLE_UPLOADERS_SELECT_BY_UPLOADER_ID = String.format("SELECT * FROM %s WHERE %s = ?;", TABLE_UPLOADERS, TABLE_UPLOADERS_COLUMN_ID);
+    // Table: Video Queue
+    // Table: Videos
+    //
     // // Inserts
+    // Table: Channels
+    // Table: Extra Files
+    // Table: Media Files
+    // Table: Playlists
+    // Table: Playlist Videos
+    // Table: Uploaders
+    // Table: Video Queue
+    // Table: Videos
+    //
     // // Updates
+    // Table: Channels
+    // Table: Extra Files
+    // Table: Media Files
+    // Table: Playlists
+    // Table: Playlist Videos
+    // Table: Uploaders
+    // Table: Video Queue
+    // Table: Videos
+    //
     // //
     // // //
     
