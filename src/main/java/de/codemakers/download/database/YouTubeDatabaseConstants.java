@@ -96,21 +96,39 @@ public class YouTubeDatabaseConstants {
     //
     // // Inserts
     // Table: Channels
+    public static final String TABLE_CHANNELS_INSERT = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);", TABLE_CHANNELS, TABLE_CHANNELS_COLUMN_ID, TABLE_CHANNELS_COLUMN_NAME);
     // Table: Extra Files
     // Table: Media Files
     // Table: Playlists
     // Table: Playlist Videos
     // Table: Uploaders
+    public static final String TABLE_UPLOADERS_INSERT = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);", TABLE_UPLOADERS, TABLE_UPLOADERS_COLUMN_ID, TABLE_UPLOADERS_COLUMN_NAME);
     // Table: Video Queue
     // Table: Videos
     //
     // // Updates
     // Table: Channels
+    public static final String TABLE_CHANNELS_UPDATE_BY_CHANNEL_ID = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", TABLE_CHANNELS, TABLE_CHANNELS_COLUMN_NAME, TABLE_CHANNELS_COLUMN_ID);
     // Table: Extra Files
     // Table: Media Files
     // Table: Playlists
     // Table: Playlist Videos
     // Table: Uploaders
+    public static final String TABLE_UPLOADERS_UPDATE_BY_UPLOADER_ID = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", TABLE_UPLOADERS, TABLE_UPLOADERS_COLUMN_NAME, TABLE_UPLOADERS_COLUMN_ID);
+    // Table: Video Queue
+    // Table: Videos
+    //
+    // // Deletes
+    // Table: Channels
+    public static final String TABLE_CHANNELS_DELETE_ALL = String.format("DELETE FROM %s;", TABLE_CHANNELS);
+    public static final String TABLE_CHANNELS_DELETE_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", TABLE_CHANNELS, TABLE_CHANNELS_COLUMN_ID);
+    // Table: Extra Files
+    // Table: Media Files
+    // Table: Playlists
+    // Table: Playlist Videos
+    // Table: Uploaders
+    public static final String TABLE_UPLOADERS_DELETE_ALL = String.format("DELETE FROM %s;", TABLE_UPLOADERS);
+    public static final String TABLE_UPLOADERS_DELETE_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", TABLE_UPLOADERS, TABLE_UPLOADERS_COLUMN_ID);
     // Table: Video Queue
     // Table: Videos
     //
