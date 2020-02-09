@@ -19,7 +19,7 @@ package de.codemakers.download.database.entities;
 
 import java.util.List;
 
-public abstract class AbstractPlaylist<T extends AbstractPlaylist, M, E, D extends AbstractDatabase, V extends AbstractVideo> extends AbstractEntity<T, D> {
+public abstract class AbstractPlaylist<T extends AbstractPlaylist, M extends AbstractFile, E extends AbstractFile, D extends AbstractDatabase, V extends AbstractVideo> extends AbstractEntity<T, D> {
     
     protected String playlistId;
     protected String title;

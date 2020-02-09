@@ -19,7 +19,7 @@ package de.codemakers.download.database.entities;
 
 import java.util.List;
 
-public abstract class AbstractDatabase<T extends AbstractDatabase, M, E, V extends AbstractVideo, P extends AbstractPlaylist> {
+public abstract class AbstractDatabase<T extends AbstractDatabase, M extends AbstractFile, E extends AbstractFile, V extends AbstractVideo, P extends AbstractPlaylist> {
     
     public abstract V getVideoByVideoId(String videoId);
     

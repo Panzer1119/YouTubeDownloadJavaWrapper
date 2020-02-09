@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
-public abstract class AbstractVideo<T extends AbstractVideo, M, E, D extends AbstractDatabase, P extends AbstractPlaylist> extends AbstractEntity<T, D> {
+public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractFile, E extends AbstractFile, D extends AbstractDatabase, P extends AbstractPlaylist> extends AbstractEntity<T, D> {
     
     protected String videoId;
     protected String channelId;
@@ -132,5 +132,13 @@ public abstract class AbstractVideo<T extends AbstractVideo, M, E, D extends Abs
     }
     
     public abstract int getIndexInPlaylist(String playlistId);
+    
+    public List<M> getMediaFiles() {
+        return useDatabaseOrNull((database) -> database.getMediaFilesByVideoId(getVideoId()));
+    }
+    
+    public List<E> getExtraFiles() {
+        return useDatabaseOrNull((database) -> database.getExtraFilesByVideoId(getVideoId()));
+    }
     
 }
