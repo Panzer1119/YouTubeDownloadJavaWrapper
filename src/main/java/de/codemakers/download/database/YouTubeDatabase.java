@@ -67,12 +67,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     //
     // // Deletes / Removes
     // Table: Channels
+    private transient PreparedStatement preparedStatement_removeChannels = null;
     private transient PreparedStatement preparedStatement_removeChannelByChannelId = null;
     // Table: Extra Files
     // Table: Media Files
     // Table: Playlists
     // Table: Playlist Videos
     // Table: Uploaders
+    private transient PreparedStatement preparedStatement_removeUploaders = null;
     private transient PreparedStatement preparedStatement_removeUploaderByUploaderId = null;
     // Table: Video Queue
     // Table: Videos
@@ -86,45 +88,61 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private void createStatements() {
         // // Selects / Gets
         // Table: Channels
+        preparedStatement_getAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_ALL);
+        preparedStatement_getChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_BY_CHANNEL_ID);
         // Table: Extra Files
         // Table: Media Files
         // Table: Playlists
         // Table: Playlist Videos
         // Table: Uploaders
+        preparedStatement_getAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_SELECT_ALL);
+        preparedStatement_getUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_SELECT_BY_UPLOADER_ID);
         // Table: Video Queue
         // Table: Videos
         //
         // // Inserts / Adds
         // Table: Channels
+        preparedStatement_addChannel = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_INSERT);
         // Table: Extra Files
         // Table: Media Files
         // Table: Playlists
         // Table: Playlist Videos
         // Table: Uploaders
+        preparedStatement_addUploader = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_INSERT);
         // Table: Video Queue
         // Table: Videos
         //
         // // Updates / Sets
         // Table: Channels
+        preparedStatement_setChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_UPDATE_BY_CHANNEL_ID);
         // Table: Extra Files
         // Table: Media Files
         // Table: Playlists
         // Table: Playlist Videos
         // Table: Uploaders
+        preparedStatement_setUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_UPDATE_BY_UPLOADER_ID);
         // Table: Video Queue
         // Table: Videos
         //
         // // Deletes / Removes
         // Table: Channels
+        preparedStatement_removeChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_ALL);
+        preparedStatement_removeChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_BY_CHANNEL_ID);
         // Table: Extra Files
         // Table: Media Files
         // Table: Playlists
         // Table: Playlist Videos
         // Table: Uploaders
+        preparedStatement_removeUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_DELETE_ALL);
+        preparedStatement_removeUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_DELETE_BY_CHANNEL_ID);
         // Table: Video Queue
         // Table: Videos
         //
         // //
+    }
+    
+    private PreparedStatement createPreparedStatement(String sql) {
+        return createPreparedStatement(connector, sql);
     }
     
     @Override
@@ -175,6 +193,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     @Override
     public String toString() {
         return "SQLDatabase{" + "connector=" + connector + '}';
+    }
+    
+    public static PreparedStatement createPreparedStatement(AbstractConnector abstractConnector, String sql) {
+        try {
+            return abstractConnector.prepareStatement(sql);
+        } catch (Exception ex) {
+            return null;
+        }
     }
     
 }
