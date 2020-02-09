@@ -26,19 +26,17 @@ public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractF
     protected String videoId;
     protected String channelId;
     protected String title;
-    protected String altTitle;
     protected long durationMillis;
     protected LocalDate uploadDate;
     
     public AbstractVideo() {
-        this(null, null, null, null, -1, null);
+        this(null, null, null, -1, null);
     }
     
-    public AbstractVideo(String videoId, String channelId, String title, String altTitle, long durationMillis, LocalDate uploadDate) {
+    public AbstractVideo(String videoId, String channelId, String title, long durationMillis, LocalDate uploadDate) {
         this.videoId = videoId;
         this.channelId = channelId;
         this.title = title;
-        this.altTitle = altTitle;
         this.durationMillis = durationMillis;
         this.uploadDate = uploadDate;
     }
@@ -70,15 +68,6 @@ public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractF
         return (T) this;
     }
     
-    public String getAltTitle() {
-        return altTitle;
-    }
-    
-    public T setAltTitle(String altTitle) {
-        this.altTitle = altTitle;
-        return (T) this;
-    }
-    
     public long getDurationMillis() {
         return durationMillis;
     }
@@ -103,6 +92,11 @@ public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractF
     public T setUploadDate(LocalDate uploadDate) {
         this.uploadDate = uploadDate;
         return (T) this;
+    }
+    
+    @Override
+    protected T getFromDatabase() {
+        return (T) useDatabaseOrNull((database) -> database.getVideoByVideoId(getVideoId()));
     }
     
     public List<P> getPlaylists() {

@@ -73,6 +73,11 @@ public abstract class AbstractPlaylist<T extends AbstractPlaylist, M extends Abs
         return (T) this;
     }
     
+    @Override
+    protected T getFromDatabase() {
+        return (T) useDatabaseOrNull((database) -> database.getPlaylistByPlaylistId(getPlaylistId()));
+    }
+    
     public List<V> getVideos() {
         return useDatabaseOrNull((database) -> database.getVideosByPlaylistId(getPlaylistId()));
     }
