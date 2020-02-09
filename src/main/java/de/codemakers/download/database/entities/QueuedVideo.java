@@ -23,6 +23,7 @@ import de.codemakers.io.file.AdvancedFile;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Deprecated
 public class QueuedVideo extends AbstractEntity<QueuedVideo> {
     
     protected int id;

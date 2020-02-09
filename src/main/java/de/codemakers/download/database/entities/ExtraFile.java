@@ -17,6 +17,7 @@
 
 package de.codemakers.download.database.entities;
 
+@Deprecated
 public class ExtraFile extends AbstractFile<ExtraFile> {
     
     public ExtraFile() {

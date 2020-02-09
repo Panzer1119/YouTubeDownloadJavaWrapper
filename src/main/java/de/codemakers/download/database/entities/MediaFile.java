@@ -19,6 +19,7 @@ package de.codemakers.download.database.entities;
 
 import java.util.Objects;
 
+@Deprecated
 public class MediaFile extends AbstractFile<MediaFile> {
     
     protected String format;

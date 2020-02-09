@@ -20,6 +20,7 @@ package de.codemakers.download.database.entities;
 import java.util.List;
 import java.util.Objects;
 
+@Deprecated
 public class Playlist extends AbstractEntity<Playlist> {
     
     protected String id;
