@@ -22,9 +22,62 @@ import de.codemakers.download.database.entities.impl.MediaFile;
 import de.codemakers.download.database.entities.impl.YouTubePlaylist;
 import de.codemakers.download.database.entities.impl.YouTubeVideo;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, C> {
+    
+    // // Selects / Gets
+    // Table: Channels
+    private transient PreparedStatement preparedStatement_getAllChannels = null;
+    private transient PreparedStatement preparedStatement_getChannelByChannelId = null;
+    // Table: Extra Files
+    // Table: Media Files
+    // Table: Playlists
+    // Table: Playlist Videos
+    // Table: Uploaders
+    private transient PreparedStatement preparedStatement_getAllUploaders = null;
+    private transient PreparedStatement preparedStatement_getUploaderByUploaderId = null;
+    // Table: Video Queue
+    // Table: Videos
+    //
+    // // Inserts / Adds
+    // Table: Channels
+    private transient PreparedStatement preparedStatement_addChannel = null;
+    // Table: Extra Files
+    // Table: Media Files
+    // Table: Playlists
+    // Table: Playlist Videos
+    // Table: Uploaders
+    private transient PreparedStatement preparedStatement_addUploader = null;
+    // Table: Video Queue
+    // Table: Videos
+    //
+    // // Updates / Sets
+    // Table: Channels
+    private transient PreparedStatement preparedStatement_setChannelByChannelId = null;
+    // Table: Extra Files
+    // Table: Media Files
+    // Table: Playlists
+    // Table: Playlist Videos
+    // Table: Uploaders
+    private transient PreparedStatement preparedStatement_setUploaderByUploaderId = null;
+    // Table: Video Queue
+    // Table: Videos
+    //
+    // // Deletes / Removes
+    // Table: Channels
+    private transient PreparedStatement preparedStatement_removeChannelByChannelId = null;
+    // Table: Extra Files
+    // Table: Media Files
+    // Table: Playlists
+    // Table: Playlist Videos
+    // Table: Uploaders
+    private transient PreparedStatement preparedStatement_removeUploaderByUploaderId = null;
+    // Table: Video Queue
+    // Table: Videos
+    //
+    // //
     
     public YouTubeDatabase(C connector) {
         super(connector);
