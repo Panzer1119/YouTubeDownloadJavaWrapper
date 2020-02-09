@@ -83,6 +83,50 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         super(connector);
     }
     
+    private void createStatements() {
+        // // Selects / Gets
+        // Table: Channels
+        // Table: Extra Files
+        // Table: Media Files
+        // Table: Playlists
+        // Table: Playlist Videos
+        // Table: Uploaders
+        // Table: Video Queue
+        // Table: Videos
+        //
+        // // Inserts / Adds
+        // Table: Channels
+        // Table: Extra Files
+        // Table: Media Files
+        // Table: Playlists
+        // Table: Playlist Videos
+        // Table: Uploaders
+        // Table: Video Queue
+        // Table: Videos
+        //
+        // // Updates / Sets
+        // Table: Channels
+        // Table: Extra Files
+        // Table: Media Files
+        // Table: Playlists
+        // Table: Playlist Videos
+        // Table: Uploaders
+        // Table: Video Queue
+        // Table: Videos
+        //
+        // // Deletes / Removes
+        // Table: Channels
+        // Table: Extra Files
+        // Table: Media Files
+        // Table: Playlists
+        // Table: Playlist Videos
+        // Table: Uploaders
+        // Table: Video Queue
+        // Table: Videos
+        //
+        // //
+    }
+    
     @Override
     public YouTubeVideo getVideoByVideoId(String videoId) {
         return null; //TODO
