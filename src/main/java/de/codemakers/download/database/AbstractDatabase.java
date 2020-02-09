@@ -15,11 +15,30 @@
  *
  */
 
-package de.codemakers.download.database.entities;
+package de.codemakers.download.database;
+
+import de.codemakers.download.database.entities.AbstractFile;
+import de.codemakers.download.database.entities.AbstractPlaylist;
+import de.codemakers.download.database.entities.AbstractVideo;
 
 import java.util.List;
 
-public abstract class AbstractDatabase<T extends AbstractDatabase, M extends AbstractFile, E extends AbstractFile, V extends AbstractVideo, P extends AbstractPlaylist> {
+public abstract class AbstractDatabase<T extends AbstractDatabase, M extends AbstractFile, E extends AbstractFile, V extends AbstractVideo, P extends AbstractPlaylist, C extends AbstractConnector> {
+    
+    protected C connector;
+    
+    public AbstractDatabase(C connector) {
+        this.connector = connector;
+    }
+    
+    public C getConnector() {
+        return connector;
+    }
+    
+    public T setConnector(C connector) {
+        this.connector = connector;
+        return (T) this;
+    }
     
     public abstract V getVideoByVideoId(String videoId);
     
@@ -38,5 +57,10 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract List<M> getMediaFilesByVideoId(String videoId);
     
     public abstract List<E> getExtraFilesByVideoId(String videoId);
+    
+    @Override
+    public String toString() {
+        return "AbstractDatabase{" + "connector=" + connector + '}';
+    }
     
 }

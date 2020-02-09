@@ -17,6 +17,8 @@
 
 package de.codemakers.download.database.entities;
 
+import de.codemakers.download.database.AbstractDatabase;
+
 import java.util.List;
 
 public abstract class AbstractPlaylist<T extends AbstractPlaylist, M extends AbstractFile, E extends AbstractFile, D extends AbstractDatabase, V extends AbstractVideo> extends AbstractEntity<T, D> {

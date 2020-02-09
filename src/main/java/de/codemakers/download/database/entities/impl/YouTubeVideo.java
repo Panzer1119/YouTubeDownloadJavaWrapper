@@ -17,6 +17,7 @@
 
 package de.codemakers.download.database.entities.impl;
 
+import de.codemakers.download.database.SQLDatabase;
 import de.codemakers.download.database.entities.AbstractVideo;
 
 public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFile, SQLDatabase, YouTubePlaylist> {

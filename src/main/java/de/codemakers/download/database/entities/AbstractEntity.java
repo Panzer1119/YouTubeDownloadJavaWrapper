@@ -18,6 +18,7 @@
 package de.codemakers.download.database.entities;
 
 import de.codemakers.base.util.tough.ToughFunction;
+import de.codemakers.download.database.AbstractDatabase;
 
 public abstract class AbstractEntity<T extends AbstractEntity, D extends AbstractDatabase> {
     

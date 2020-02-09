@@ -15,13 +15,20 @@
  *
  */
 
-package de.codemakers.download.database.entities.impl;
+package de.codemakers.download.database;
 
-import de.codemakers.download.database.entities.AbstractDatabase;
+import de.codemakers.download.database.entities.impl.ExtraFile;
+import de.codemakers.download.database.entities.impl.MediaFile;
+import de.codemakers.download.database.entities.impl.YouTubePlaylist;
+import de.codemakers.download.database.entities.impl.YouTubeVideo;
 
 import java.util.List;
 
-public class SQLDatabase extends AbstractDatabase<SQLDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist> {
+public class SQLDatabase<C extends AbstractConnector> extends AbstractDatabase<SQLDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, C> {
+    
+    public SQLDatabase(C connector) {
+        super(connector);
+    }
     
     @Override
     public YouTubeVideo getVideoByVideoId(String videoId) {
@@ -66,6 +73,11 @@ public class SQLDatabase extends AbstractDatabase<SQLDatabase, MediaFile, ExtraF
     @Override
     public List<ExtraFile> getExtraFilesByVideoId(String videoId) {
         return null; //TODO
+    }
+    
+    @Override
+    public String toString() {
+        return "SQLDatabase{" + "connector=" + connector + '}';
     }
     
 }

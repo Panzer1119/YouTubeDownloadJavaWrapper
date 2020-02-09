@@ -17,6 +17,8 @@
 
 package de.codemakers.download.database.entities;
 
+import de.codemakers.download.database.AbstractDatabase;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;

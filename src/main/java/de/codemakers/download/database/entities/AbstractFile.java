@@ -17,6 +17,8 @@
 
 package de.codemakers.download.database.entities;
 
+import de.codemakers.download.database.AbstractDatabase;
+
 public abstract class AbstractFile<T extends AbstractFile, D extends AbstractDatabase> extends AbstractEntity<T, D> {
     
     protected String videoId;
