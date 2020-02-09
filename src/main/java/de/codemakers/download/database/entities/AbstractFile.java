@@ -17,9 +17,7 @@
 
 package de.codemakers.download.database.entities;
 
-import java.util.Objects;
-
-public abstract class AbstractFile<T> extends AbstractEntity<T> {
+public abstract class AbstractFile<T extends AbstractFile, D extends AbstractDatabase> extends AbstractEntity<T, D> {
     
     protected String videoId;
     protected String file;
@@ -60,28 +58,6 @@ public abstract class AbstractFile<T> extends AbstractEntity<T> {
     public T setFileType(String fileType) {
         this.fileType = fileType;
         return (T) this;
-    }
-    
-    @Override
-    public String toString() {
-        return "AbstractFile{" + "videoId='" + videoId + '\'' + ", file='" + file + '\'' + ", fileType='" + fileType + '\'' + '}';
-    }
-    
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        final AbstractFile<?> that = (AbstractFile<?>) other;
-        return Objects.equals(videoId, that.videoId) && Objects.equals(file, that.file) && Objects.equals(fileType, that.fileType);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(videoId, file, fileType);
     }
     
 }

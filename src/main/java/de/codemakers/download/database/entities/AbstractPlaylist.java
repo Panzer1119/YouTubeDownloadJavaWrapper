@@ -41,36 +41,36 @@ public abstract class AbstractPlaylist<T extends AbstractPlaylist, M, E, D exten
         return playlistId;
     }
     
-    public AbstractPlaylist setPlaylistId(String playlistId) {
+    public T setPlaylistId(String playlistId) {
         this.playlistId = playlistId;
-        return this;
+        return (T) this;
     }
     
     public String getTitle() {
         return title;
     }
     
-    public AbstractPlaylist setTitle(String title) {
+    public T setTitle(String title) {
         this.title = title;
-        return this;
+        return (T) this;
     }
     
     public String getPlaylist() {
         return playlist;
     }
     
-    public AbstractPlaylist setPlaylist(String playlist) {
+    public T setPlaylist(String playlist) {
         this.playlist = playlist;
-        return this;
+        return (T) this;
     }
     
     public String getUploaderId() {
         return uploaderId;
     }
     
-    public AbstractPlaylist setUploaderId(String uploaderId) {
+    public T setUploaderId(String uploaderId) {
         this.uploaderId = uploaderId;
-        return this;
+        return (T) this;
     }
     
     public List<V> getVideos() {

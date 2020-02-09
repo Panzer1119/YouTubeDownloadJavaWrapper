@@ -47,36 +47,36 @@ public abstract class AbstractVideo<T extends AbstractVideo, M, E, D extends Abs
         return videoId;
     }
     
-    public AbstractVideo setVideoId(String videoId) {
+    public T setVideoId(String videoId) {
         this.videoId = videoId;
-        return this;
+        return (T) this;
     }
     
     public String getChannelId() {
         return channelId;
     }
     
-    public AbstractVideo setChannelId(String channelId) {
+    public T setChannelId(String channelId) {
         this.channelId = channelId;
-        return this;
+        return (T) this;
     }
     
     public String getTitle() {
         return title;
     }
     
-    public AbstractVideo setTitle(String title) {
+    public T setTitle(String title) {
         this.title = title;
-        return this;
+        return (T) this;
     }
     
     public String getAltTitle() {
         return altTitle;
     }
     
-    public AbstractVideo setAltTitle(String altTitle) {
+    public T setAltTitle(String altTitle) {
         this.altTitle = altTitle;
-        return this;
+        return (T) this;
     }
     
     public long getDurationMillis() {
@@ -87,12 +87,12 @@ public abstract class AbstractVideo<T extends AbstractVideo, M, E, D extends Abs
         return Duration.ofMillis(getDurationMillis());
     }
     
-    public AbstractVideo setDurationMillis(long durationMillis) {
+    public T setDurationMillis(long durationMillis) {
         this.durationMillis = durationMillis;
-        return this;
+        return (T) this;
     }
     
-    public AbstractVideo setDuration(Duration duration) {
+    public T setDuration(Duration duration) {
         return setDurationMillis(duration.toMillis());
     }
     
@@ -100,9 +100,9 @@ public abstract class AbstractVideo<T extends AbstractVideo, M, E, D extends Abs
         return uploadDate;
     }
     
-    public AbstractVideo setUploadDate(LocalDate uploadDate) {
+    public T setUploadDate(LocalDate uploadDate) {
         this.uploadDate = uploadDate;
-        return this;
+        return (T) this;
     }
     
     public List<P> getPlaylists() {
