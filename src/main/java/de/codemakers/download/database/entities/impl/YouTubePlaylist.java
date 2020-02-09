@@ -17,10 +17,10 @@
 
 package de.codemakers.download.database.entities.impl;
 
-import de.codemakers.download.database.SQLDatabase;
+import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.AbstractPlaylist;
 
-public class YouTubePlaylist extends AbstractPlaylist<YouTubePlaylist, MediaFile, ExtraFile, SQLDatabase, YouTubeVideo> {
+public class YouTubePlaylist extends AbstractPlaylist<YouTubePlaylist, MediaFile, ExtraFile, YouTubeDatabase, YouTubeVideo> {
     
     @Override
     public int getIndex(String videoId) {

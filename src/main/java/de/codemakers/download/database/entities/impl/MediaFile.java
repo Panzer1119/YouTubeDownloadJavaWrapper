@@ -17,10 +17,10 @@
 
 package de.codemakers.download.database.entities.impl;
 
-import de.codemakers.download.database.SQLDatabase;
+import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.AbstractFile;
 
-public class MediaFile extends AbstractFile<MediaFile, SQLDatabase> {
+public class MediaFile extends AbstractFile<MediaFile, YouTubeDatabase> {
     
     @Override
     protected MediaFile getFromDatabase() {

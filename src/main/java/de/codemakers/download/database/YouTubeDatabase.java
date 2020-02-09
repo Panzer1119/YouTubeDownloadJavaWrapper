@@ -24,9 +24,9 @@ import de.codemakers.download.database.entities.impl.YouTubeVideo;
 
 import java.util.List;
 
-public class SQLDatabase<C extends AbstractConnector> extends AbstractDatabase<SQLDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, C> {
+public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, C> {
     
-    public SQLDatabase(C connector) {
+    public YouTubeDatabase(C connector) {
         super(connector);
     }
     
