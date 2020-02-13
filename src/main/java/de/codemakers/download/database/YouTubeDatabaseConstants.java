@@ -164,9 +164,37 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_CHANNELS_INSERT = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);", IDENTIFIER_TABLE_CHANNELS, IDENTIFIER_TABLE_CHANNELS_COLUMN_ID, IDENTIFIER_TABLE_CHANNELS_COLUMN_NAME);
     // Table: Extra Files
-    // TODO
+    /**
+     * 1. Argument: Video ID
+     * <br>
+     * 2. Argument: File
+     * <br>
+     * 3. Argument: File Type
+     */
+    public static final String QUERY_TABLE_EXTRA_FILES_INSERT = String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?);", IDENTIFIER_TABLE_EXTRA_FILES, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE_TYPE);
     // Table: Media Files
-    // TODO
+    /**
+     * 1. Argument: Video ID
+     * <br>
+     * 2. Argument: File
+     * <br>
+     * 3. Argument: File Type
+     * <br>
+     * 4. Argument: Format
+     * <br>
+     * 5. Argument: Video Codec
+     * <br>
+     * 6. Argument: Audio Codec
+     * <br>
+     * 7. Argument: Width
+     * <br>
+     * 8. Argument: Height
+     * <br>
+     * 9. Argument: FPS
+     * <br>
+     * 10. Argument: ASR
+     */
+    public static final String QUERY_TABLE_MEDIA_FILES_INSERT = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", IDENTIFIER_TABLE_MEDIA_FILES, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE_TYPE, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FORMAT, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VCODEC, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ACODEC, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_WIDTH, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_HEIGHT, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FPS, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ASR);
     // Table: Playlists
     // TODO
     // Table: Playlist Videos
@@ -205,9 +233,45 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_CHANNELS_UPDATE_BY_CHANNEL_ID = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_CHANNELS, IDENTIFIER_TABLE_CHANNELS_COLUMN_NAME, IDENTIFIER_TABLE_CHANNELS_COLUMN_ID);
     // Table: Extra Files
-    // TODO
+    /**
+     * 1. Argument: (Old) Video ID
+     * <br>
+     * 2. Argument: (Old) File
+     * <br>
+     * 3. Argument: File Type
+     * <br>
+     * 4. Argument: (New) Video ID
+     * <br>
+     * 5. Argument: (New) File
+     */
+    public static final String QUERY_TABLE_EXTRA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ? WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_EXTRA_FILES, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE_TYPE, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE);
     // Table: Media Files
-    // TODO
+    /**
+     * 1. Argument: (Old) Video ID
+     * <br>
+     * 2. Argument: (Old) File
+     * <br>
+     * 3. Argument: File Type
+     * <br>
+     * 4. Argument: Format
+     * <br>
+     * 5. Argument: Video Codec
+     * <br>
+     * 6. Argument: Audio Codec
+     * <br>
+     * 7. Argument: Width
+     * <br>
+     * 8. Argument: Height
+     * <br>
+     * 9. Argument: FPS
+     * <br>
+     * 10. Argument: ASR
+     * <br>
+     * 11. Argument: (New) Video ID
+     * <br>
+     * 12. Argument: (New) File
+     */
+    public static final String QUERY_TABLE_MEDIA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_MEDIA_FILES, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE_TYPE, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FORMAT, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VCODEC, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ACODEC, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_WIDTH, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_HEIGHT, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FPS, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ASR, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE);
     // Table: Playlists
     // TODO
     // Table: Playlist Videos
