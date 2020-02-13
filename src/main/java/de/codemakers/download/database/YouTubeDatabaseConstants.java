@@ -330,9 +330,35 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_CHANNELS_DELETE_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_CHANNELS, IDENTIFIER_TABLE_CHANNELS_COLUMN_ID);
     // Table: Extra Files
-    // TODO
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_EXTRA_FILES_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_EXTRA_FILES);
+    /**
+     * 1. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_EXTRA_FILES_DELETE_ALL_BY_VIDEO_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_EXTRA_FILES, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_VIDEO_ID);
+    /**
+     * 1. Argument: Video ID
+     * <br>
+     * 2. Argument: File
+     */
+    public static final String QUERY_TABLE_EXTRA_FILES_DELETE_BY_VIDEO_ID_AND_FILE = String.format("DELETE FROM %s WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_EXTRA_FILES, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE);
     // Table: Media Files
-    // TODO
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_MEDIA_FILES_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_MEDIA_FILES);
+    /**
+     * 1. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_MEDIA_FILES_DELETE_ALL_BY_VIDEO_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_MEDIA_FILES, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VIDEO_ID);
+    /**
+     * 1. Argument: Video ID
+     * <br>
+     * 2. Argument: File
+     */
+    public static final String QUERY_TABLE_MEDIA_FILES_DELETE_BY_VIDEO_ID_AND_FILE = String.format("DELETE FROM %s WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_MEDIA_FILES, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE);
     // Table: Playlists
     // TODO
     // Table: Playlist Videos
