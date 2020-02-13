@@ -20,7 +20,29 @@ package de.codemakers.download.database.entities.impl;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.AbstractVideo;
 
+import java.time.LocalDate;
+
 public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFile, YouTubeDatabase, YouTubePlaylist> {
+    
+    protected String altTitle = null;
+    
+    public YouTubeVideo() {
+        super();
+    }
+    
+    public YouTubeVideo(String videoId, String channelId, String title, String altTitle, long durationMillis, LocalDate uploadDate) {
+        super(videoId, channelId, title, durationMillis, uploadDate);
+        this.altTitle = altTitle;
+    }
+    
+    public String getAltTitle() {
+        return altTitle;
+    }
+    
+    public YouTubeVideo setAltTitle(String altTitle) {
+        this.altTitle = altTitle;
+        return this;
+    }
     
     @Override
     public int getIndexInPlaylist(String playlistId) {
@@ -29,12 +51,26 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
     
     @Override
     public boolean save() {
-        return false; //TODO
+        return useDatabaseOrFalse((database) -> database.setVideoByVideoId(this, getVideoId()));
     }
     
     @Override
     public void set(YouTubeVideo youTubeVideo) {
-        //TODO
+        if (youTubeVideo == null) {
+            //TODO Maybe just set every value in this object to null?
+            return;
+        }
+        setVideoId(youTubeVideo.getVideoId());
+        setChannelId(youTubeVideo.getChannelId());
+        setTitle(youTubeVideo.getTitle());
+        setAltTitle(youTubeVideo.getAltTitle());
+        setDurationMillis(youTubeVideo.getDurationMillis());
+        setUploadDate(youTubeVideo.getUploadDate());
+    }
+    
+    @Override
+    public String toString() {
+        return "YouTubeVideo{" + "altTitle='" + altTitle + '\'' + ", videoId='" + videoId + '\'' + ", channelId='" + channelId + '\'' + ", title='" + title + '\'' + ", durationMillis=" + durationMillis + ", uploadDate=" + uploadDate + '}';
     }
     
 }

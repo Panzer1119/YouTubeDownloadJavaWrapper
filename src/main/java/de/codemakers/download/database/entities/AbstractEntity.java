@@ -52,6 +52,10 @@ public abstract class AbstractEntity<T extends AbstractEntity, D extends Abstrac
         return useDatabase(databaseFunction, null);
     }
     
+    protected boolean useDatabaseOrFalse(ToughFunction<D, Boolean> databaseFunction) {
+        return useDatabase(databaseFunction, false);
+    }
+    
     protected <R> R useDatabase(ToughFunction<D, R> databaseFunction, R defaultValue) {
         final D database = getDatabase();
         if (database == null) {
