@@ -21,13 +21,20 @@ import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.AbstractVideo;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFile, YouTubeDatabase, YouTubePlaylist> {
+    
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_UPLOAD_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
     
     protected String altTitle = null;
     
     public YouTubeVideo() {
         super();
+    }
+    
+    public YouTubeVideo(String videoId, String channelId, String title, String altTitle, long durationMillis, String uploadDate) {
+        this(videoId, channelId, title, altTitle, durationMillis, uploadDateToLocalDate(uploadDate));
     }
     
     public YouTubeVideo(String videoId, String channelId, String title, String altTitle, long durationMillis, LocalDate uploadDate) {
@@ -71,6 +78,13 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
     @Override
     public String toString() {
         return "YouTubeVideo{" + "altTitle='" + altTitle + '\'' + ", videoId='" + videoId + '\'' + ", channelId='" + channelId + '\'' + ", title='" + title + '\'' + ", durationMillis=" + durationMillis + ", uploadDate=" + uploadDate + '}';
+    }
+    
+    public static LocalDate uploadDateToLocalDate(String uploadDate) {
+        if (uploadDate == null) {
+            return null;
+        }
+        return LocalDate.parse(uploadDate, DATE_TIME_FORMATTER_UPLOAD_DATE);
     }
     
 }

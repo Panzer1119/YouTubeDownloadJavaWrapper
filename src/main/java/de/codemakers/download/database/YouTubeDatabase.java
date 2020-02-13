@@ -275,6 +275,11 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public MediaFile getMediaFileByVideoIdAndFile(String videoId, String file) {
+        return null; //TODO
+    }
+    
+    @Override
     public List<MediaFile> getMediaFilesByVideoId(String videoId) {
         synchronized (preparedStatement_getMediaFilesByVideoId) {
             if (!setPreparedStatement(preparedStatement_getMediaFilesByVideoId, videoId)) {
@@ -285,8 +290,18 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
-    public List<ExtraFile> getExtraFilesByVideoId(String videoId) {
+    public ExtraFile getExtraFileByVideoIdAndFile(String videoId, String file) {
         return null; //TODO
+    }
+    
+    @Override
+    public List<ExtraFile> getExtraFilesByVideoId(String videoId) {
+        synchronized (preparedStatement_getExtraFilesByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getExtraFilesByVideoId, videoId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getExtraFilesByVideoId::executeQuery, YouTubeDatabase::resultSetToExtraFiles);
+        }
     }
     
     @Override
@@ -310,7 +325,17 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public boolean setMediaFileByVideoIdAndFile(MediaFile mediaFile, String videoId, String file) {
+        return false; //TODO
+    }
+    
+    @Override
     public boolean setMediaFilesByVideoId(List<MediaFile> mediaFiles, String videoId) {
+        return false; //TODO
+    }
+    
+    @Override
+    public boolean setExtraFileByVideoIdAndFile(ExtraFile extraFile, String videoId, String file) {
         return false; //TODO
     }
     
@@ -377,14 +402,42 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new YouTubeVideo(null, null, null, null, 0, null));
+        return Standard.silentError(() -> new YouTubeVideo(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE)));
+    }
+    
+    public static List<YouTubeVideo> resultSetToYouTubeVideos(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<YouTubeVideo> youTubeVideos = new ArrayList<>();
+        do {
+            final YouTubeVideo youTubeVideo = resultSetToYouTubeVideo(resultSet);
+            if (youTubeVideo != null) {
+                youTubeVideos.add(youTubeVideo);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return youTubeVideos;
     }
     
     public static YouTubePlaylist resultSetToYouTubePlaylist(ResultSet resultSet) {
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new YouTubePlaylist(null, null, null, null));
+        return Standard.silentError(() -> new YouTubePlaylist(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_TITLE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_PLAYLIST), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_UPLOADER_ID)));
+    }
+    
+    public static List<YouTubePlaylist> resultSetToYouTubePlaylists(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<YouTubePlaylist> youTubePlaylists = new ArrayList<>();
+        do {
+            final YouTubePlaylist youTubePlaylist = resultSetToYouTubePlaylist(resultSet);
+            if (youTubePlaylist != null) {
+                youTubePlaylists.add(youTubePlaylist);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return youTubePlaylists;
     }
     
     public static MediaFile resultSetToMediaFile(ResultSet resultSet) {
