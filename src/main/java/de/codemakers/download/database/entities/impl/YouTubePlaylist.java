@@ -22,19 +22,36 @@ import de.codemakers.download.database.entities.AbstractPlaylist;
 
 public class YouTubePlaylist extends AbstractPlaylist<YouTubePlaylist, MediaFile, ExtraFile, YouTubeDatabase, YouTubeVideo> {
     
+    public YouTubePlaylist() {
+        super();
+    }
+    
+    public YouTubePlaylist(String playlistId, String title, String playlist, String uploaderId) {
+        super(playlistId, title, playlist, uploaderId);
+    }
+    
     @Override
     public int getIndex(String videoId) {
-        return 0; //TODO
+        return useDatabase((database) -> database.getIndexInPlaylist(getPlaylistId(), videoId), -1);
     }
     
     @Override
     public boolean save() {
-        return false; //TODO
+        //IMPORTANT
+        //TODO
+        return false;
     }
     
     @Override
     public void set(YouTubePlaylist youTubePlaylist) {
-        //TODO
+        if (youTubePlaylist == null) {
+            //TODO Maybe just set every value in this object to null?
+            return;
+        }
+        setPlaylistId(youTubePlaylist.getPlaylistId());
+        setTitle(youTubePlaylist.getTitle());
+        setPlaylist(youTubePlaylist.getPlaylist());
+        setUploaderId(youTubePlaylist.getUploaderId());
     }
     
 }

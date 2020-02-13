@@ -28,6 +28,7 @@ import de.codemakers.download.database.entities.impl.YouTubeVideo;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, C> {
@@ -275,7 +276,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public List<MediaFile> getMediaFilesByVideoId(String videoId) {
-        return null; //TODO
+        synchronized (preparedStatement_getMediaFilesByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getMediaFilesByVideoId, videoId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getMediaFilesByVideoId::executeQuery, YouTubeDatabase::resultSetToMediaFiles);
+        }
     }
     
     @Override
@@ -371,8 +377,56 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (resultSet == null) {
             return null;
         }
-        
-        return null;
+        return Standard.silentError(() -> new YouTubeVideo(null, null, null, null, 0, null));
+    }
+    
+    public static YouTubePlaylist resultSetToYouTubePlaylist(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return Standard.silentError(() -> new YouTubePlaylist(null, null, null, null));
+    }
+    
+    public static MediaFile resultSetToMediaFile(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return Standard.silentError(() -> new MediaFile(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VIDEO_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE_TYPE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FORMAT), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VCODEC), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ACODEC), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_WIDTH), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_HEIGHT), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FPS), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ASR)));
+    }
+    
+    public static List<MediaFile> resultSetToMediaFiles(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<MediaFile> mediaFiles = new ArrayList<>();
+        do {
+            final MediaFile mediaFile = resultSetToMediaFile(resultSet);
+            if (mediaFile != null) {
+                mediaFiles.add(mediaFile);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return mediaFiles;
+    }
+    
+    public static ExtraFile resultSetToExtraFile(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return Standard.silentError(() -> new ExtraFile(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_VIDEO_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE_TYPE)));
+    }
+    
+    public static List<ExtraFile> resultSetToExtraFiles(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<ExtraFile> extraFiles = new ArrayList<>();
+        do {
+            final ExtraFile extraFile = resultSetToExtraFile(resultSet);
+            if (extraFile != null) {
+                extraFiles.add(extraFile);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return extraFiles;
     }
     
 }
