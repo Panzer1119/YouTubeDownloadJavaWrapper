@@ -17,12 +17,17 @@
 
 package de.codemakers.download.database;
 
+import de.codemakers.base.Standard;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughFunction;
+import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.database.entities.impl.ExtraFile;
 import de.codemakers.download.database.entities.impl.MediaFile;
 import de.codemakers.download.database.entities.impl.YouTubePlaylist;
 import de.codemakers.download.database.entities.impl.YouTubeVideo;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 
 public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, C> {
@@ -51,7 +56,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     // Table: Video Queue
     // TODO
     // Table: Videos
-     private transient PreparedStatement preparedStatement_getAllVideos = null;
+    private transient PreparedStatement preparedStatement_getAllVideos = null;
     private transient PreparedStatement preparedStatement_getVideoByVideoId = null;
     private transient PreparedStatement preparedStatement_getVideosByChannelId = null;
     //
@@ -225,7 +230,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public YouTubeVideo getVideoByVideoId(String videoId) {
-        return null; //TODO
+        synchronized (preparedStatement_getVideoByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getVideoByVideoId, videoId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getVideoByVideoId::executeQuery, YouTubeDatabase::resultSetToYouTubeVideo);
+        }
     }
     
     @Override
@@ -314,6 +324,55 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         } catch (Exception ex) {
             return null;
         }
+    }
+    
+    public static boolean setPreparedStatement(PreparedStatement preparedStatement, Object... arguments) {
+        try {
+            int offset = 0;
+            for (int i = 0; i < arguments.length - offset; i++) {
+                final Object object = arguments[i + offset];
+                final int index = i + 1 + offset;
+                if (object == null) {
+                    offset++;
+                    preparedStatement.setNull(index, (Integer) arguments[i + offset + 1]);
+                } else if (object instanceof String) {
+                    preparedStatement.setString(index, (String) object);
+                } else if (object instanceof Integer) {
+                    preparedStatement.setInt(index, (Integer) object);
+                } else if (object instanceof Long) {
+                    preparedStatement.setLong(index, (Long) object);
+                } else if (object instanceof Boolean) {
+                    preparedStatement.setBoolean(index, (Boolean) object);
+                } else {
+                    throw new IllegalArgumentException(String.format("The Class \"%s\" is not yet supported by \"setPreparedStatement\"!", object.getClass().getName()));
+                }
+            }
+            return true;
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return false;
+        }
+    }
+    
+    public static <R> R useResultSetAndClose(ToughSupplier<ResultSet> toughSupplier, ToughFunction<ResultSet, R> toughFunction) {
+        if (toughSupplier == null || toughFunction == null) {
+            return null;
+        }
+        final ResultSet resultSet = toughSupplier.getWithoutException();
+        if (resultSet == null || !Standard.silentError(resultSet::next)) {
+            return null;
+        }
+        final R r = toughFunction.applyWithoutException(resultSet);
+        Standard.silentError(resultSet::close);
+        return r;
+    }
+    
+    public static YouTubeVideo resultSetToYouTubeVideo(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        
+        return null;
     }
     
 }
