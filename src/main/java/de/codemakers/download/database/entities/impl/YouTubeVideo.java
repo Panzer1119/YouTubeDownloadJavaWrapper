@@ -51,6 +51,13 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
         return this;
     }
     
+    public String getUploadDateAsString() {
+        if (uploadDate == null) {
+            return null;
+        }
+        return uploadDate.format(DATE_TIME_FORMATTER_UPLOAD_DATE);
+    }
+    
     @Override
     public int getIndexInPlaylist(String playlistId) {
         return useDatabase((database) -> database.getIndexInPlaylist(playlistId, getVideoId()), -1);

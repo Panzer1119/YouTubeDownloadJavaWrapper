@@ -276,7 +276,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public MediaFile getMediaFileByVideoIdAndFile(String videoId, String file) {
-        return null; //TODO
+        synchronized (preparedStatement_getMediaFileByVideoIdAndFile) {
+            if (!setPreparedStatement(preparedStatement_getMediaFileByVideoIdAndFile, videoId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getMediaFileByVideoIdAndFile::executeQuery, YouTubeDatabase::resultSetToMediaFile);
+        }
     }
     
     @Override
@@ -291,7 +296,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public ExtraFile getExtraFileByVideoIdAndFile(String videoId, String file) {
-        return null; //TODO
+        synchronized (preparedStatement_getExtraFileByVideoIdAndFile) {
+            if (!setPreparedStatement(preparedStatement_getExtraFileByVideoIdAndFile, videoId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getExtraFileByVideoIdAndFile::executeQuery, YouTubeDatabase::resultSetToExtraFile);
+        }
     }
     
     @Override
@@ -306,7 +316,15 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public boolean setVideoByVideoId(YouTubeVideo video, String videoId) {
-        return false; //TODO
+        if (video == null) {
+            return false;
+        }
+        synchronized (preparedStatement_setVideoByVideoId) {
+            if (!setPreparedStatement(preparedStatement_setVideoByVideoId, videoId, video.getChannelId(), video.getTitle(), video.getAltTitle(), video.getDurationMillis(), video.getUploadDateAsString(), video.getVideoId())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setVideoByVideoId.executeUpdate()) > 0;
+        }
     }
     
     @Override
