@@ -42,6 +42,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     // Table: Videos
      private transient PreparedStatement preparedStatement_getAllVideos = null;
     private transient PreparedStatement preparedStatement_getVideoByVideoId = null;
+    private transient PreparedStatement preparedStatement_getVideosByChannelId = null;
     //
     // // Inserts / Adds
     // Table: Channels
@@ -109,6 +110,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // Table: Videos
         preparedStatement_getAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL);
         preparedStatement_getVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_BY_VIDEO_ID);
+        preparedStatement_getVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL_BY_CHANNEL_ID);
         //
         // // Inserts / Adds
         // Table: Channels

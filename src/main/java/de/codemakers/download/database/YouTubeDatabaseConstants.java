@@ -113,6 +113,10 @@ public class YouTubeDatabaseConstants {
      * 1. Argument: Video ID
      */
     public static final String QUERY_TABLE_VIDEOS_SELECT_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID);
+    /**
+     * 1. Argument: Channel ID
+     */
+    public static final String QUERY_TABLE_VIDEOS_SELECT_ALL_BY_CHANNEL_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID);
     //
     // // Inserts
     // Table: Channels
