@@ -40,6 +40,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
         return (T) this;
     }
     
+    // Gets
+    
     public abstract V getVideoByVideoId(String videoId);
     
     public abstract List<V> getVideosByPlaylistId(String playlistId);
@@ -57,6 +59,28 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract List<M> getMediaFilesByVideoId(String videoId);
     
     public abstract List<E> getExtraFilesByVideoId(String videoId);
+    
+    // Sets
+    
+    public abstract boolean setVideoByVideoId(V video, String videoId);
+    
+    public abstract boolean setVideosByPlaylistId(List<V> videos, String playlistId);
+    
+    //public abstract boolean setVideoIdsByPlaylistId(List<String> videoIds, String playlistId);
+    
+    public abstract boolean setPlaylistByPlaylistId(P playlist, String playlistId);
+    
+    public abstract boolean setPlaylistsByVideoId(List<P> playlists, String videoId);
+    
+    //public abstract boolean setPlaylistIdsByVideoId(List<String> playlistIds, String videoId);
+    
+    //public abstract boolean playlistContainsVideo(String playlistId, String videoId);
+    
+    public abstract boolean setMediaFilesByVideoId(List<M> mediaFiles, String videoId);
+    
+    public abstract boolean setExtraFilesByVideoId(List<E> extraFiles, String videoId);
+    
+    //
     
     @Override
     public String toString() {
