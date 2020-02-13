@@ -82,55 +82,149 @@ public class YouTubeDatabaseConstants {
     // // // Queries
     // // Selects
     // Table: Channels
+    /**
+     * No arguments
+     */
     public static final String QUERY_TABLE_CHANNELS_SELECT_ALL = String.format("SELECT * FROM %s;", IDENTIFIER_TABLE_CHANNELS);
+    /**
+     * 1. Argument: Channel ID
+     */
     public static final String QUERY_TABLE_CHANNELS_SELECT_BY_CHANNEL_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_CHANNELS, IDENTIFIER_TABLE_CHANNELS_COLUMN_ID);
     // Table: Extra Files
     // Table: Media Files
     // Table: Playlists
     // Table: Playlist Videos
     // Table: Uploaders
+    /**
+     * No arguments
+     */
     public static final String QUERY_TABLE_UPLOADERS_SELECT_ALL = String.format("SELECT * FROM %s;", IDENTIFIER_TABLE_UPLOADERS);
+    /**
+     * 1. Argument: Uploader ID
+     */
     public static final String QUERY_TABLE_UPLOADERS_SELECT_BY_UPLOADER_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_UPLOADERS, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID);
     // Table: Video Queue
     // Table: Videos
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_VIDEOS_SELECT_ALL = String.format("SELECT * FROM %s;", IDENTIFIER_TABLE_VIDEOS);
+    /**
+     * 1. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_VIDEOS_SELECT_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID);
     //
     // // Inserts
     // Table: Channels
+    /**
+     * 1. Argument: Channel ID
+     * <br>
+     * 2. Argument: Name
+     */
     public static final String QUERY_TABLE_CHANNELS_INSERT = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);", IDENTIFIER_TABLE_CHANNELS, IDENTIFIER_TABLE_CHANNELS_COLUMN_ID, IDENTIFIER_TABLE_CHANNELS_COLUMN_NAME);
     // Table: Extra Files
     // Table: Media Files
     // Table: Playlists
     // Table: Playlist Videos
     // Table: Uploaders
+    /**
+     * 1. Argument: Uploader ID
+     * <br>
+     * 2. Argument: Name
+     */
     public static final String QUERY_TABLE_UPLOADERS_INSERT = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);", IDENTIFIER_TABLE_UPLOADERS, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID, IDENTIFIER_TABLE_UPLOADERS_COLUMN_NAME);
     // Table: Video Queue
     // Table: Videos
+    /**
+     * 1. Argument: Video ID
+     * <br>
+     * 2. Argument: Channel ID
+     * <br>
+     * 3. Argument: Title
+     * <br>
+     * 4. Argument: Alt Title
+     * <br>
+     * 5. Argument: Duration
+     * <br>
+     * 6. Argument: Upload Date
+     */
+    public static final String QUERY_TABLE_VIDEOS_INSERT = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?);", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE);
     //
     // // Updates
     // Table: Channels
+    /**
+     * 1. Argument: Name
+     * <br>
+     * 2. Argument: Channel ID
+     */
     public static final String QUERY_TABLE_CHANNELS_UPDATE_BY_CHANNEL_ID = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_CHANNELS, IDENTIFIER_TABLE_CHANNELS_COLUMN_NAME, IDENTIFIER_TABLE_CHANNELS_COLUMN_ID);
     // Table: Extra Files
     // Table: Media Files
     // Table: Playlists
     // Table: Playlist Videos
     // Table: Uploaders
+    /**
+     * 1. Argument: Name
+     * <br>
+     * 2. Argument: Uploader ID
+     */
     public static final String QUERY_TABLE_UPLOADERS_UPDATE_BY_UPLOADER_ID = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_UPLOADERS, IDENTIFIER_TABLE_UPLOADERS_COLUMN_NAME, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID);
     // Table: Video Queue
     // Table: Videos
+    /**
+     * 1. Argument: (Old) Video ID
+     * <br>
+     * 2. Argument: Channel ID
+     * <br>
+     * 3. Argument: Title
+     * <br>
+     * 4. Argument: Alt Title
+     * <br>
+     * 5. Argument: Duration
+     * <br>
+     * 6. Argument: Upload Date
+     * <br>
+     * 7. Argument: (New) Video ID
+     */
+    public static final String QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID);
     //
     // // Deletes
     // Table: Channels
+    /**
+     * No arguments
+     */
     public static final String QUERY_TABLE_CHANNELS_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_CHANNELS);
+    /**
+     * 1. Argument: Channel ID
+     */
     public static final String QUERY_TABLE_CHANNELS_DELETE_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_CHANNELS, IDENTIFIER_TABLE_CHANNELS_COLUMN_ID);
     // Table: Extra Files
     // Table: Media Files
     // Table: Playlists
     // Table: Playlist Videos
     // Table: Uploaders
+    /**
+     * No arguments
+     */
     public static final String QUERY_TABLE_UPLOADERS_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_UPLOADERS);
+    /**
+     * 1. Argument: Uploader ID
+     */
     public static final String QUERY_TABLE_UPLOADERS_DELETE_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_UPLOADERS, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID);
     // Table: Video Queue
     // Table: Videos
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_VIDEOS_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_VIDEOS);
+    /**
+     * 1. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_VIDEOS_DELETE_BY_VIDEO_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID);
+    /**
+     * 1. Argument: Channel ID
+     */
+    public static final String QUERY_TABLE_VIDEOS_DELETE_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID);
     //
     // //
     // // //
