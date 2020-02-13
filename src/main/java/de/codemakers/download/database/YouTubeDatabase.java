@@ -32,13 +32,24 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_getAllChannels = null;
     private transient PreparedStatement preparedStatement_getChannelByChannelId = null;
     // Table: Extra Files
+    private transient PreparedStatement preparedStatement_getAllExtraFiles = null;
+    private transient PreparedStatement preparedStatement_getExtraFilesByVideoId = null;
+    private transient PreparedStatement preparedStatement_getExtraFilesByFileType = null;
+    private transient PreparedStatement preparedStatement_getExtraFileByVideoIdAndFile = null;
     // Table: Media Files
+    private transient PreparedStatement preparedStatement_getAllMediaFiles = null;
+    private transient PreparedStatement preparedStatement_getMediaFilesByVideoId = null;
+    private transient PreparedStatement preparedStatement_getMediaFilesByFileType = null;
+    private transient PreparedStatement preparedStatement_getMediaFileByVideoIdAndFile = null;
     // Table: Playlists
+    // TODO
     // Table: Playlist Videos
+    // TODO
     // Table: Uploaders
     private transient PreparedStatement preparedStatement_getAllUploaders = null;
     private transient PreparedStatement preparedStatement_getUploaderByUploaderId = null;
     // Table: Video Queue
+    // TODO
     // Table: Videos
      private transient PreparedStatement preparedStatement_getAllVideos = null;
     private transient PreparedStatement preparedStatement_getVideoByVideoId = null;
@@ -48,12 +59,17 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     // Table: Channels
     private transient PreparedStatement preparedStatement_addChannel = null;
     // Table: Extra Files
+    private transient PreparedStatement preparedStatement_addExtraFile = null;
     // Table: Media Files
+    private transient PreparedStatement preparedStatement_addMediaFile = null;
     // Table: Playlists
+    // TODO
     // Table: Playlist Videos
+    // TODO
     // Table: Uploaders
     private transient PreparedStatement preparedStatement_addUploader = null;
     // Table: Video Queue
+    // TODO
     // Table: Videos
     private transient PreparedStatement preparedStatement_addVideo = null;
     //
@@ -61,12 +77,17 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     // Table: Channels
     private transient PreparedStatement preparedStatement_setChannelByChannelId = null;
     // Table: Extra Files
+    private transient PreparedStatement preparedStatement_setExtraFileByVideoIdAndFile = null;
     // Table: Media Files
+    private transient PreparedStatement preparedStatement_setMediaFileByVideoIdAndFile = null;
     // Table: Playlists
+    // TODO
     // Table: Playlist Videos
+    // TODO
     // Table: Uploaders
     private transient PreparedStatement preparedStatement_setUploaderByUploaderId = null;
     // Table: Video Queue
+    // TODO
     // Table: Videos
     private transient PreparedStatement preparedStatement_setVideoByVideoId = null;
     private transient PreparedStatement preparedStatement_setVideosByChannelId = null;
@@ -76,13 +97,22 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_removeAllChannels = null;
     private transient PreparedStatement preparedStatement_removeChannelByChannelId = null;
     // Table: Extra Files
+    private transient PreparedStatement preparedStatement_removeAllExtraFiles = null;
+    private transient PreparedStatement preparedStatement_removeExtraFilesByVideoId = null;
+    private transient PreparedStatement preparedStatement_removeExtraFileByVideoIdAndFile = null;
     // Table: Media Files
+    private transient PreparedStatement preparedStatement_removeAllMediaFiles = null;
+    private transient PreparedStatement preparedStatement_removeMediaFilesByVideoId = null;
+    private transient PreparedStatement preparedStatement_removeMediaFileByVideoIdAndFile = null;
     // Table: Playlists
+    // TODO
     // Table: Playlist Videos
+    // TODO
     // Table: Uploaders
     private transient PreparedStatement preparedStatement_removeAllUploaders = null;
     private transient PreparedStatement preparedStatement_removeUploaderByUploaderId = null;
     // Table: Video Queue
+    // TODO
     // Table: Videos
     private transient PreparedStatement preparedStatement_removeAllVideos = null;
     private transient PreparedStatement preparedStatement_removeVideoByVideoId = null;
@@ -100,13 +130,24 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_getAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_ALL);
         preparedStatement_getChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_BY_CHANNEL_ID);
         // Table: Extra Files
+        preparedStatement_getAllExtraFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_ALL);
+        preparedStatement_getExtraFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_ALL_BY_VIDEO_ID);
+        preparedStatement_getExtraFilesByFileType = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_ALL_BY_FILE_TYPE);
+        preparedStatement_getExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_BY_VIDEO_ID_AND_FILE);
         // Table: Media Files
+        preparedStatement_getAllMediaFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_ALL);
+        preparedStatement_getMediaFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_ALL_BY_VIDEO_ID);
+        preparedStatement_getMediaFilesByFileType = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_ALL_BY_FILE_TYPE);
+        preparedStatement_getMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_BY_VIDEO_ID_AND_FILE);
         // Table: Playlists
+        // TODO
         // Table: Playlist Videos
+        // TODO
         // Table: Uploaders
         preparedStatement_getAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_SELECT_ALL);
         preparedStatement_getUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_SELECT_BY_UPLOADER_ID);
         // Table: Video Queue
+        // TODO
         // Table: Videos
         preparedStatement_getAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL);
         preparedStatement_getVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_BY_VIDEO_ID);
@@ -116,12 +157,17 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // Table: Channels
         preparedStatement_addChannel = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_INSERT);
         // Table: Extra Files
+        preparedStatement_addExtraFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_INSERT);
         // Table: Media Files
+        preparedStatement_addMediaFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_INSERT);
         // Table: Playlists
+        // TODO
         // Table: Playlist Videos
+        // TODO
         // Table: Uploaders
         preparedStatement_addUploader = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_INSERT);
         // Table: Video Queue
+        // TODO
         // Table: Videos
         preparedStatement_addVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_INSERT);
         //
@@ -129,12 +175,17 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // Table: Channels
         preparedStatement_setChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_UPDATE_BY_CHANNEL_ID);
         // Table: Extra Files
+        preparedStatement_setExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE);
         // Table: Media Files
+        preparedStatement_setMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE);
         // Table: Playlists
+        // TODO
         // Table: Playlist Videos
+        // TODO
         // Table: Uploaders
         preparedStatement_setUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_UPDATE_BY_UPLOADER_ID);
         // Table: Video Queue
+        // TODO
         // Table: Videos
         preparedStatement_setVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID);
         preparedStatement_setVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_UPDATE_ALL_BY_CHANNEL_ID);
@@ -144,13 +195,22 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_removeAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_ALL);
         preparedStatement_removeChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_BY_CHANNEL_ID);
         // Table: Extra Files
+        preparedStatement_removeAllExtraFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_DELETE_ALL);
+        preparedStatement_removeExtraFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_DELETE_ALL_BY_VIDEO_ID);
+        preparedStatement_removeExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_DELETE_BY_VIDEO_ID_AND_FILE);
         // Table: Media Files
+        preparedStatement_removeAllMediaFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_DELETE_ALL);
+        preparedStatement_removeMediaFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_DELETE_ALL_BY_VIDEO_ID);
+        preparedStatement_removeMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_DELETE_BY_VIDEO_ID_AND_FILE);
         // Table: Playlists
+        // TODO
         // Table: Playlist Videos
+        // TODO
         // Table: Uploaders
         preparedStatement_removeAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_DELETE_ALL);
         preparedStatement_removeUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_DELETE_BY_CHANNEL_ID);
         // Table: Video Queue
+        // TODO
         // Table: Videos
         preparedStatement_removeAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_ALL);
         preparedStatement_removeVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_BY_VIDEO_ID);
