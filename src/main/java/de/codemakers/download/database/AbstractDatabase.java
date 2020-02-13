@@ -20,6 +20,8 @@ package de.codemakers.download.database;
 import de.codemakers.download.database.entities.AbstractFile;
 import de.codemakers.download.database.entities.AbstractPlaylist;
 import de.codemakers.download.database.entities.AbstractVideo;
+import de.codemakers.download.database.entities.impl.ExtraFile;
+import de.codemakers.download.database.entities.impl.MediaFile;
 
 import java.util.List;
 
@@ -58,7 +60,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract boolean playlistContainsVideo(String playlistId, String videoId);
     
+    public abstract M getMediaFileByVideoIdAndFile(String videoId, String file);
+    
     public abstract List<M> getMediaFilesByVideoId(String videoId);
+    
+    public abstract E getExtraFileByVideoIdAndFile(String videoId, String file);
     
     public abstract List<E> getExtraFilesByVideoId(String videoId);
     
@@ -78,7 +84,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     //public abstract boolean playlistContainsVideo(String playlistId, String videoId);
     
+    public abstract boolean setMediaFileByVideoIdAndFile(MediaFile mediaFile, String videoId, String file);
+    
     public abstract boolean setMediaFilesByVideoId(List<M> mediaFiles, String videoId);
+    
+    public abstract boolean setExtraFileByVideoIdAndFile(ExtraFile extraFile, String videoId, String file);
     
     public abstract boolean setExtraFilesByVideoId(List<E> extraFiles, String videoId);
     

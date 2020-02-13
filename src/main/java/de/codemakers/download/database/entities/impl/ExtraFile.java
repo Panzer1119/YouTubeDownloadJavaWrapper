@@ -22,19 +22,38 @@ import de.codemakers.download.database.entities.AbstractFile;
 
 public class ExtraFile extends AbstractFile<ExtraFile, YouTubeDatabase> {
     
+    public ExtraFile() {
+        super();
+    }
+    
+    public ExtraFile(String videoId, String file, String fileType) {
+        super(videoId, file, fileType);
+    }
+    
     @Override
     protected ExtraFile getFromDatabase() {
-        return null; //TODO
+        return (ExtraFile) useDatabaseOrNull((database) -> database.getExtraFileByVideoIdAndFile(getVideoId(), getFile()));
     }
     
     @Override
     public boolean save() {
-        return false; //TODO
+        return useDatabaseOrFalse((database) -> database.setExtraFileByVideoIdAndFile(this, getVideoId(), getFile()));
     }
     
     @Override
     public void set(ExtraFile extraFile) {
-        //TODO
+        if (extraFile == null) {
+            //TODO Maybe just set every value in this object to null?
+            return;
+        }
+        setVideoId(extraFile.getVideoId());
+        setFile(extraFile.getFile());
+        setFileType(extraFile.getFileType());
+    }
+    
+    @Override
+    public String toString() {
+        return "ExtraFile{" + "videoId='" + videoId + '\'' + ", file='" + file + '\'' + ", fileType='" + fileType + '\'' + '}';
     }
     
 }
