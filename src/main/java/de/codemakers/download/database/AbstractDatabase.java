@@ -54,6 +54,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract List<String> getPlaylistIdsByVideoId(String videoId);
     
+    public abstract int getIndexInPlaylist(String playlistId, String videoId);
+    
     public abstract boolean playlistContainsVideo(String playlistId, String videoId);
     
     public abstract List<M> getMediaFilesByVideoId(String videoId);

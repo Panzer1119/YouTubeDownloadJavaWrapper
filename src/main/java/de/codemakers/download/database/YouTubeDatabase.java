@@ -254,6 +254,11 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public int getIndexInPlaylist(String playlistId, String videoId) {
+        return -1; //TODO
+    }
+    
+    @Override
     public boolean playlistContainsVideo(String playlistId, String videoId) {
         return false; //TODO
     }
