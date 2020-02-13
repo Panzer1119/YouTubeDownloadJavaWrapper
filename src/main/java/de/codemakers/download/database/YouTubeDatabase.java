@@ -207,6 +207,36 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public boolean setVideoByVideoId(YouTubeVideo video, String videoId) {
+        return false; //TODO
+    }
+    
+    @Override
+    public boolean setVideosByPlaylistId(List<YouTubeVideo> videos, String playlistId) {
+        return false; //TODO
+    }
+    
+    @Override
+    public boolean setPlaylistByPlaylistId(YouTubePlaylist playlist, String playlistId) {
+        return false; //TODO
+    }
+    
+    @Override
+    public boolean setPlaylistsByVideoId(List<YouTubePlaylist> playlists, String videoId) {
+        return false; //TODO
+    }
+    
+    @Override
+    public boolean setMediaFilesByVideoId(List<MediaFile> mediaFiles, String videoId) {
+        return false; //TODO
+    }
+    
+    @Override
+    public boolean setExtraFilesByVideoId(List<ExtraFile> extraFiles, String videoId) {
+        return false; //TODO
+    }
+    
+    @Override
     public String toString() {
         return "SQLDatabase{" + "connector=" + connector + '}';
     }
