@@ -187,6 +187,22 @@ public class YouTubeDatabaseConstants {
      * 7. Argument: (New) Video ID
      */
     public static final String QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID);
+    /**
+     * 1. Argument: Video ID
+     * <br>
+     * 2. Argument: (Old) Channel ID
+     * <br>
+     * 3. Argument: Title
+     * <br>
+     * 4. Argument: Alt Title
+     * <br>
+     * 5. Argument: Duration
+     * <br>
+     * 6. Argument: Upload Date
+     * <br>
+     * 7. Argument: (New) Channel ID
+     */
+    public static final String QUERY_TABLE_VIDEOS_UPDATE_BY_CHANNEL_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID);
     //
     // // Deletes
     // Table: Channels
