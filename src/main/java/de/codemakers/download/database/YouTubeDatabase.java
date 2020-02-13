@@ -135,7 +135,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // Table: Video Queue
         // Table: Videos
         preparedStatement_setVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID);
-        preparedStatement_setVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_UPDATE_BY_CHANNEL_ID);
+        preparedStatement_setVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_UPDATE_ALL_BY_CHANNEL_ID);
         //
         // // Deletes / Removes
         // Table: Channels
@@ -152,7 +152,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // Table: Videos
         preparedStatement_removeAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_ALL);
         preparedStatement_removeVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_BY_VIDEO_ID);
-        preparedStatement_removeVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_BY_CHANNEL_ID);
+        preparedStatement_removeVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_ALL_BY_CHANNEL_ID);
         //
         // //
     }
