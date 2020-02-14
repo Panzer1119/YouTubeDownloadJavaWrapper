@@ -264,13 +264,15 @@ public class YouTubeDatabaseConstants {
      * <br>
      * 2. Argument: Channel ID
      * <br>
-     * 3. Argument: Title
+     * 3. Argument: Uploader ID
      * <br>
-     * 4. Argument: Alt Title
+     * 4. Argument: Title
      * <br>
-     * 5. Argument: Duration
+     * 5. Argument: Alt Title
      * <br>
-     * 6. Argument: Upload Date
+     * 6. Argument: Duration
+     * <br>
+     * 7. Argument: Upload Date
      */
     public static final String QUERY_TABLE_VIDEOS_INSERT = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?);", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOADER_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE);
     //
@@ -368,33 +370,19 @@ public class YouTubeDatabaseConstants {
      * <br>
      * 2. Argument: Channel ID
      * <br>
-     * 3. Argument: Title
+     * 3. Argument: Uploader ID
      * <br>
-     * 4. Argument: Alt Title
+     * 4. Argument: Title
      * <br>
-     * 5. Argument: Duration
+     * 5. Argument: Alt Title
      * <br>
-     * 6. Argument: Upload Date
+     * 6. Argument: Duration
      * <br>
-     * 7. Argument: (Old) Video ID
+     * 7. Argument: Upload Date
+     * <br>
+     * 8. Argument: (Old) Video ID
      */
     public static final String QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOADER_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID);
-    /**
-     * 1. Argument: Video ID
-     * <br>
-     * 2. Argument: (New) Channel ID
-     * <br>
-     * 3. Argument: Title
-     * <br>
-     * 4. Argument: Alt Title
-     * <br>
-     * 5. Argument: Duration
-     * <br>
-     * 6. Argument: Upload Date
-     * <br>
-     * 7. Argument: (Old) Channel ID
-     */
-    public static final String QUERY_TABLE_VIDEOS_UPDATE_ALL_BY_CHANNEL_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID);
     //
     // // Deletes
     // Table: Channels
