@@ -32,9 +32,7 @@ public class YouTubePlaylist extends AbstractPlaylist<YouTubePlaylist, MediaFile
     
     @Override
     public boolean save() {
-        //IMPORTANT
-        //TODO
-        return false;
+        return useDatabaseOrFalse((database) -> database.setPlaylistByPlaylistId(this, getPlaylistId()));
     }
     
     @Override
@@ -47,6 +45,11 @@ public class YouTubePlaylist extends AbstractPlaylist<YouTubePlaylist, MediaFile
         setTitle(youTubePlaylist.getTitle());
         setPlaylist(youTubePlaylist.getPlaylist());
         setUploaderId(youTubePlaylist.getUploaderId());
+    }
+    
+    @Override
+    public String toString() {
+        return "YouTubePlaylist{" + "playlistId='" + playlistId + '\'' + ", title='" + title + '\'' + ", playlist='" + playlist + '\'' + ", uploaderId='" + uploaderId + '\'' + '}';
     }
     
 }
