@@ -168,8 +168,26 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_UPLOADERS_SELECT_BY_UPLOADER_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_UPLOADERS, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID);
     // Table: Video Queue
-    // TODO
-    // IMPORTANT
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL = String.format("SELECT * FROM %s;", IDENTIFIER_TABLE_VIDEO_QUEUE);
+    /**
+     * 1. Argument: ID
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_SELECT_BY_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID);
+    /**
+     * 1. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_BY_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID);
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_NEXT = String.format("SELECT * FROM %s ORDER BY %s DESC, %s, %s;", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID);
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_SELECT_NEXT = String.format("SELECT * FROM %s ORDER BY %s DESC, %s, %s LIMIT 1;", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID);
     // Table: Videos
     /**
      * No arguments
@@ -256,8 +274,22 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_UPLOADERS_INSERT = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);", IDENTIFIER_TABLE_UPLOADERS, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID, IDENTIFIER_TABLE_UPLOADERS_COLUMN_NAME);
     // Table: Video Queue
-    // TODO
-    // IMPORTANT
+    /**
+     * 1. Argument: ID
+     * <br>
+     * 2. Argument: Video ID
+     * <br>
+     * 3. Argument: Priority
+     * <br>
+     * 4. Argument: Requested
+     * <br>
+     * 5. Argument: Arguments
+     * <br>
+     * 6. Argument: Config File
+     * <br>
+     * 7. Argument: Output Directory
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_INSERT = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?);", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY);
     // Table: Videos
     /**
      * 1. Argument: Video ID
@@ -362,8 +394,24 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_UPLOADERS_UPDATE_BY_UPLOADER_ID = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_UPLOADERS, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID, IDENTIFIER_TABLE_UPLOADERS_COLUMN_NAME, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID);
     // Table: Video Queue
-    // TODO
-    // IMPORTANT
+    /**
+     * 1. Argument: (New) ID
+     * <br>
+     * 2. Argument: Video ID
+     * <br>
+     * 3. Argument: Priority
+     * <br>
+     * 4. Argument: Requested
+     * <br>
+     * 5. Argument: Arguments
+     * <br>
+     * 6. Argument: Config File
+     * <br>
+     * 7. Argument: Output Directory
+     * <br>
+     * 8. Argument: (Old) ID
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_UPDATE_BY_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID);
     // Table: Videos
     /**
      * 1. Argument: (New) Video ID
@@ -466,8 +514,18 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_UPLOADERS_DELETE_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_UPLOADERS, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID);
     // Table: Video Queue
-    // TODO
-    // IMPORTANT
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_DELETE_ALL = String.format("DELETE * FROM %s;", IDENTIFIER_TABLE_VIDEO_QUEUE);
+    /**
+     * 1. Argument: ID
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_DELETE_BY_ID = String.format("DELETE * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID);
+    /**
+     * 1. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_VIDEO_QUEUE_DELETE_ALL_BY_VIDEO_ID = String.format("DELETE * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID);
     // Table: Videos
     /**
      * No arguments
