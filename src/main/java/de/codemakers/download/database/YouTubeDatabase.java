@@ -336,7 +336,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return false;
         }
         synchronized (preparedStatement_setVideoByVideoId) {
-            if (!setPreparedStatement(preparedStatement_setVideoByVideoId, videoId, video.getChannelId(), video.getTitle(), video.getAltTitle(), video.getDurationMillis(), video.getUploadDateAsString(), video.getVideoId())) {
+            if (!setPreparedStatement(preparedStatement_setVideoByVideoId, video.getVideoId(), video.getChannelId(), video.getTitle(), video.getAltTitle(), video.getDurationMillis(), video.getUploadDateAsString(), videoId)) {
                 return false;
             }
             return Standard.silentError(() -> preparedStatement_setVideoByVideoId.executeUpdate()) > 0;
