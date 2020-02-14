@@ -56,13 +56,21 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract V getVideoByVideoId(String videoId);
     
+    public abstract List<V> getAllVideos();
+    
     public abstract List<V> getVideosByPlaylistId(String playlistId);
+    
+    public abstract List<String> getAllVideoIds();
     
     public abstract List<String> getVideoIdsByPlaylistId(String playlistId);
     
     public abstract P getPlaylistByPlaylistId(String playlistId);
     
+    public abstract List<P> getAllPlaylists();
+    
     public abstract List<P> getPlaylistsByVideoId(String videoId);
+    
+    public abstract List<String> getAllPlaylistIds();
     
     public abstract List<String> getPlaylistIdsByVideoId(String videoId);
     
