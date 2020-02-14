@@ -17,8 +17,10 @@
 
 package de.codemakers.download.database.entities.impl;
 
+import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.AbstractEntity;
+import de.codemakers.io.file.AdvancedFile;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -80,6 +82,7 @@ public class QueuedYouTubeVideo extends AbstractEntity<QueuedYouTubeVideo, YouTu
     }
     
     public Timestamp getRequestedAsTimestamp() {
+        final Instant requested = getRequested();
         if (requested == null) {
             return null;
         }
@@ -95,6 +98,14 @@ public class QueuedYouTubeVideo extends AbstractEntity<QueuedYouTubeVideo, YouTu
         return this;
     }
     
+    public String getArgumentsOrEmptyString() {
+        final String arguments = getArguments();
+        if (arguments == null) {
+            return "";
+        }
+        return " " + arguments;
+    }
+    
     public String getArguments() {
         return arguments;
     }
@@ -102,6 +113,14 @@ public class QueuedYouTubeVideo extends AbstractEntity<QueuedYouTubeVideo, YouTu
     public QueuedYouTubeVideo setArguments(String arguments) {
         this.arguments = arguments;
         return this;
+    }
+    
+    public AdvancedFile resolveConfigFile() {
+        final String configFile = getConfigFile();
+        if (configFile == null) {
+            return YouTubeDL.getConfigFile();
+        }
+        return new AdvancedFile(configFile);
     }
     
     public String getConfigFile() {
@@ -113,6 +132,14 @@ public class QueuedYouTubeVideo extends AbstractEntity<QueuedYouTubeVideo, YouTu
         return this;
     }
     
+    public AdvancedFile resolveOutputDirectory() {
+        final String outputDirectory = getOutputDirectory();
+        if (outputDirectory == null) {
+            return YouTubeDL.getDirectory();
+        }
+        return new AdvancedFile(outputDirectory);
+    }
+    
     public String getOutputDirectory() {
         return outputDirectory;
     }
@@ -122,14 +149,18 @@ public class QueuedYouTubeVideo extends AbstractEntity<QueuedYouTubeVideo, YouTu
         return this;
     }
     
+    public YouTubeVideo asYouTubeVideo() {
+        return useDatabaseOrNull((database) -> database.getVideoByVideoId(getVideoId()));
+    }
+    
     @Override
     protected QueuedYouTubeVideo getFromDatabase() {
-        return null; //TODO
+        return useDatabaseOrNull((database) -> database.getQueuedYouTubeVideoById(getId()));
     }
     
     @Override
     public boolean save() {
-        return false; //TODO
+        return useDatabaseOrNull((database) -> database.setQueuedYouTubeVideoById(this, getId()));
     }
     
     @Override
