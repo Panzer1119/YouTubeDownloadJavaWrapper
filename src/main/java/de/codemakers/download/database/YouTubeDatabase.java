@@ -25,6 +25,7 @@ import de.codemakers.download.database.entities.impl.ExtraFile;
 import de.codemakers.download.database.entities.impl.MediaFile;
 import de.codemakers.download.database.entities.impl.YouTubePlaylist;
 import de.codemakers.download.database.entities.impl.YouTubeVideo;
+import de.codemakers.io.IOUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -149,17 +150,31 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public boolean isConnected() {
-        return false; //TODO
+        if (connector == null) {
+            return false;
+        }
+        return connector.isConnected();
     }
     
     @Override
     public boolean start(String username, byte[] password) {
-        return false; //TODO
+        if (isConnected()) {
+            return false;
+        }
+        if (!connector.createConnection(username, password)) {
+            return false;
+        }
+        createStatements();
+        return true;
     }
     
     @Override
     public boolean stop() {
-        return false; //TODO
+        if (!isConnected()) {
+            return false;
+        }
+        closeStatements();
+        return connector.closeConnection();
     }
     
     private void createStatements() {
@@ -275,9 +290,115 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     private void closeStatements() {
-        //TODO
-        //FIXME
-        //IMPORTANT
+        // // Selects / Gets
+        // Table: Channels
+        IOUtil.closeQuietly(preparedStatement_getAllChannels);
+        IOUtil.closeQuietly(preparedStatement_getChannelByChannelId);
+        // Table: Extra Files
+        IOUtil.closeQuietly(preparedStatement_getAllExtraFiles);
+        IOUtil.closeQuietly(preparedStatement_getExtraFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getExtraFilesByFileType);
+        IOUtil.closeQuietly(preparedStatement_getExtraFileByVideoIdAndFile);
+        // Table: Media Files
+        IOUtil.closeQuietly(preparedStatement_getAllMediaFiles);
+        IOUtil.closeQuietly(preparedStatement_getMediaFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getMediaFilesByFileType);
+        IOUtil.closeQuietly(preparedStatement_getMediaFileByVideoIdAndFile);
+        // Table: Playlists
+        IOUtil.closeQuietly(preparedStatement_getAllPlaylists);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistsByUploaderId);
+        // Table: Playlist Videos
+        IOUtil.closeQuietly(preparedStatement_getAllPlaylistVideos);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistVideosByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistVideosByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId);
+        // Table: Uploaders
+        IOUtil.closeQuietly(preparedStatement_getAllUploaders);
+        IOUtil.closeQuietly(preparedStatement_getUploaderByUploaderId);
+        // Table: Video Queue
+        IOUtil.closeQuietly(preparedStatement_getAllQueuedVideos);
+        IOUtil.closeQuietly(preparedStatement_getQueuedVideoById);
+        IOUtil.closeQuietly(preparedStatement_getQueuedVideosByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getNextQueuedVideos);
+        IOUtil.closeQuietly(preparedStatement_getNextQueuedVideo);
+        // Table: Videos
+        IOUtil.closeQuietly(preparedStatement_getAllVideos);
+        IOUtil.closeQuietly(preparedStatement_getVideoByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getVideosByChannelId);
+        IOUtil.closeQuietly(preparedStatement_getVideosByUploaderId);
+        //
+        // // Inserts / Adds
+        // Table: Channels
+        IOUtil.closeQuietly(preparedStatement_addChannel);
+        // Table: Extra Files
+        IOUtil.closeQuietly(preparedStatement_addExtraFile);
+        // Table: Media Files
+        IOUtil.closeQuietly(preparedStatement_addMediaFile);
+        // Table: Playlists
+        IOUtil.closeQuietly(preparedStatement_addPlaylist);
+        // Table: Playlist Videos
+        IOUtil.closeQuietly(preparedStatement_addPlaylistVideo);
+        // Table: Uploaders
+        IOUtil.closeQuietly(preparedStatement_addUploader);
+        // Table: Video Queue
+        IOUtil.closeQuietly(preparedStatement_addQueuedVideo);
+        // Table: Videos
+        IOUtil.closeQuietly(preparedStatement_addVideo);
+        //
+        // // Updates / Sets
+        // Table: Channels
+        IOUtil.closeQuietly(preparedStatement_setChannelByChannelId);
+        // Table: Extra Files
+        IOUtil.closeQuietly(preparedStatement_setExtraFileByVideoIdAndFile);
+        // Table: Media Files
+        IOUtil.closeQuietly(preparedStatement_setMediaFileByVideoIdAndFile);
+        // Table: Playlists
+        IOUtil.closeQuietly(preparedStatement_setPlaylistByPlaylistId);
+        // Table: Playlist Videos
+        IOUtil.closeQuietly(preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId);
+        // Table: Uploaders
+        IOUtil.closeQuietly(preparedStatement_setUploaderByUploaderId);
+        // Table: Video Queue
+        IOUtil.closeQuietly(preparedStatement_setQueuedVideoById);
+        // Table: Videos
+        IOUtil.closeQuietly(preparedStatement_setVideoByVideoId);
+        //
+        // // Deletes / Removes
+        // Table: Channels
+        IOUtil.closeQuietly(preparedStatement_removeAllChannels);
+        IOUtil.closeQuietly(preparedStatement_removeChannelByChannelId);
+        // Table: Extra Files
+        IOUtil.closeQuietly(preparedStatement_removeAllExtraFiles);
+        IOUtil.closeQuietly(preparedStatement_removeExtraFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removeExtraFileByVideoIdAndFile);
+        // Table: Media Files
+        IOUtil.closeQuietly(preparedStatement_removeAllMediaFiles);
+        IOUtil.closeQuietly(preparedStatement_removeMediaFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removeMediaFileByVideoIdAndFile);
+        // Table: Playlists
+        IOUtil.closeQuietly(preparedStatement_removeAllPlaylists);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistsByUploaderId);
+        // Table: Playlist Videos
+        IOUtil.closeQuietly(preparedStatement_removeAllPlaylistVideos);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistVideosByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistVideosByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId);
+        // Table: Uploaders
+        IOUtil.closeQuietly(preparedStatement_removeAllUploaders);
+        IOUtil.closeQuietly(preparedStatement_removeUploaderByUploaderId);
+        // Table: Video Queue
+        IOUtil.closeQuietly(preparedStatement_removeAllQueuedVideos);
+        IOUtil.closeQuietly(preparedStatement_removeQueuedVideoById);
+        IOUtil.closeQuietly(preparedStatement_removeQueuedVideosByVideoId);
+        // Table: Videos
+        IOUtil.closeQuietly(preparedStatement_removeAllVideos);
+        IOUtil.closeQuietly(preparedStatement_removeVideoByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removeVideosByChannelId);
+        IOUtil.closeQuietly(preparedStatement_removeVideosByUploaderId);
+        //
+        // //
     }
     
     private PreparedStatement createPreparedStatement(String sql) {
