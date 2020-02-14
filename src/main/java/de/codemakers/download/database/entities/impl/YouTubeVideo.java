@@ -34,12 +34,13 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
         super();
     }
     
-    public YouTubeVideo(String videoId, String channelId, String title, String altTitle, long durationMillis, String uploadDate) {
-        this(videoId, channelId, title, altTitle, durationMillis, uploadDateToLocalDate(uploadDate));
+    public YouTubeVideo(String videoId, String channelId, String uploaderId, String title, String altTitle, long durationMillis, String uploadDate) {
+        this(videoId, channelId, uploaderId, title, altTitle, durationMillis, uploadDateToLocalDate(uploadDate));
     }
     
-    public YouTubeVideo(String videoId, String channelId, String title, String altTitle, long durationMillis, LocalDate uploadDate) {
+    public YouTubeVideo(String videoId, String channelId, String uploaderId, String title, String altTitle, long durationMillis, LocalDate uploadDate) {
         super(videoId, channelId, title, durationMillis, uploadDate);
+        this.uploaderId = uploaderId;
         this.altTitle = altTitle;
     }
     
