@@ -26,7 +26,7 @@ import java.util.List;
 public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractFile, E extends AbstractFile, D extends AbstractDatabase, P extends AbstractPlaylist> extends AbstractEntity<T, D> {
     
     protected String videoId;
-    protected String channelId;
+    protected String uploaderId;
     protected String title;
     protected long durationMillis;
     protected LocalDate uploadDate;
@@ -35,9 +35,9 @@ public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractF
         this(null, null, null, -1, null);
     }
     
-    public AbstractVideo(String videoId, String channelId, String title, long durationMillis, LocalDate uploadDate) {
+    public AbstractVideo(String videoId, String uploaderId, String title, long durationMillis, LocalDate uploadDate) {
         this.videoId = videoId;
-        this.channelId = channelId;
+        this.uploaderId = uploaderId;
         this.title = title;
         this.durationMillis = durationMillis;
         this.uploadDate = uploadDate;
@@ -52,12 +52,12 @@ public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractF
         return (T) this;
     }
     
-    public String getChannelId() {
-        return channelId;
+    public String getUploaderId() {
+        return uploaderId;
     }
     
-    public T setChannelId(String channelId) {
-        this.channelId = channelId;
+    public T setUploaderId(String uploaderId) {
+        this.uploaderId = uploaderId;
         return (T) this;
     }
     
@@ -137,6 +137,11 @@ public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractF
     
     public List<E> getExtraFiles() {
         return useDatabaseOrNull((database) -> database.getExtraFilesByVideoId(getVideoId()));
+    }
+    
+    @Override
+    public String toString() {
+        return "AbstractVideo{" + "videoId='" + videoId + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", durationMillis=" + durationMillis + ", uploadDate=" + uploadDate + '}';
     }
     
 }

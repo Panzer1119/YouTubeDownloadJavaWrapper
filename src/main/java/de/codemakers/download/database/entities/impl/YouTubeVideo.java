@@ -27,6 +27,7 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
     
     public static final DateTimeFormatter DATE_TIME_FORMATTER_UPLOAD_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
     
+    protected String channelId = null;
     protected String altTitle = null;
     
     public YouTubeVideo() {
@@ -40,6 +41,15 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
     public YouTubeVideo(String videoId, String channelId, String title, String altTitle, long durationMillis, LocalDate uploadDate) {
         super(videoId, channelId, title, durationMillis, uploadDate);
         this.altTitle = altTitle;
+    }
+    
+    public String getChannelId() {
+        return channelId;
+    }
+    
+    public YouTubeVideo setChannelId(String channelId) {
+        this.channelId = channelId;
+        return this;
     }
     
     public String getAltTitle() {
@@ -71,6 +81,7 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
         }
         setVideoId(youTubeVideo.getVideoId());
         setChannelId(youTubeVideo.getChannelId());
+        setUploaderId(youTubeVideo.getUploaderId());
         setTitle(youTubeVideo.getTitle());
         setAltTitle(youTubeVideo.getAltTitle());
         setDurationMillis(youTubeVideo.getDurationMillis());
@@ -79,7 +90,7 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
     
     @Override
     public String toString() {
-        return "YouTubeVideo{" + "altTitle='" + altTitle + '\'' + ", videoId='" + videoId + '\'' + ", channelId='" + channelId + '\'' + ", title='" + title + '\'' + ", durationMillis=" + durationMillis + ", uploadDate=" + uploadDate + '}';
+        return "YouTubeVideo{" + "channelId='" + channelId + '\'' + ", altTitle='" + altTitle + '\'' + ", videoId='" + videoId + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", durationMillis=" + durationMillis + ", uploadDate=" + uploadDate + '}';
     }
     
     public static LocalDate uploadDateToLocalDate(String uploadDate) {
