@@ -106,6 +106,8 @@ public abstract class AbstractPlaylist<T extends AbstractPlaylist, M extends Abs
         return getIndex(video.getVideoId());
     }
     
-    public abstract int getIndex(String videoId);
+    public int getIndex(String videoId) {
+        return useDatabase((database) -> database.getIndexInPlaylist(getPlaylistId(), videoId), -1);
+    }
     
 }

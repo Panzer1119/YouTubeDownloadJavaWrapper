@@ -31,11 +31,6 @@ public class YouTubePlaylist extends AbstractPlaylist<YouTubePlaylist, MediaFile
     }
     
     @Override
-    public int getIndex(String videoId) {
-        return useDatabase((database) -> database.getIndexInPlaylist(getPlaylistId(), videoId), -1);
-    }
-    
-    @Override
     public boolean save() {
         //IMPORTANT
         //TODO
