@@ -127,7 +127,9 @@ public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractF
         return getIndexInPlaylist(playlist.getPlaylistId());
     }
     
-    public abstract int getIndexInPlaylist(String playlistId);
+    public int getIndexInPlaylist(String playlistId) {
+        return useDatabase((database) -> database.getIndexInPlaylist(playlistId, getVideoId()), -1);
+    }
     
     public List<M> getMediaFiles() {
         return useDatabaseOrNull((database) -> database.getMediaFilesByVideoId(getVideoId()));

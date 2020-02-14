@@ -59,11 +59,6 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
     }
     
     @Override
-    public int getIndexInPlaylist(String playlistId) {
-        return useDatabase((database) -> database.getIndexInPlaylist(playlistId, getVideoId()), -1);
-    }
-    
-    @Override
     public boolean save() {
         return useDatabaseOrFalse((database) -> database.setVideoByVideoId(this, getVideoId()));
     }
