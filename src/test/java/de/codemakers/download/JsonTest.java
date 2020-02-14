@@ -30,6 +30,7 @@ public class JsonTest {
     
     public static void main(String[] args) throws Exception {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
+        /*
         final VideoInfo videoInfo_1 = new VideoInfo(args[0], "title", 0);
         System.out.println("videoInfo_1=" + videoInfo_1);
         //System.out.println("videoInfo_1.getUrl()=" + videoInfo_1.getUrl());
@@ -38,6 +39,7 @@ public class JsonTest {
         final JsonObject jsonObject_1 = videoInfo_1.toJsonObject();
         System.out.println("jsonObject_1=" + jsonObject_1);
         System.out.println("jsonObject_1.get(\"title\")=" + jsonObject_1.get("title"));
+        */
         final JsonObject jsonObject = YouTubeDL.downloadInfoEverything(args[0]);
         System.out.println();
         System.out.println();

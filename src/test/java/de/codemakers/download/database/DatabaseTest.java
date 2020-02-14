@@ -17,18 +17,10 @@
 
 package de.codemakers.download.database;
 
-import de.codemakers.base.Standard;
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
-import de.codemakers.download.database.entities.Playlist;
-import de.codemakers.download.database.entities.Video;
-import de.codemakers.io.file.AdvancedFile;
-
-import java.util.List;
-
 public class DatabaseTest {
     
     public static void main(String[] args) throws Exception {
+        /*
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
         final AdvancedFile databaseDirectory = new AdvancedFile(args[0]);
         Logger.log("databaseDirectory=" + databaseDirectory);
@@ -54,6 +46,7 @@ public class DatabaseTest {
         //video_0.setUploader(video_0.getUploader().toUpperCase()).save();
         Logger.log("video_0=" + video_0);
         System.exit(0);
+        */
     }
     
 }

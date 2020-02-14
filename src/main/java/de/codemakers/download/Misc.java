@@ -23,7 +23,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
-import de.codemakers.download.database.entities.Video;
+import de.codemakers.download.database.entities.impl.YouTubeVideo;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.BufferedWriter;
@@ -194,14 +194,14 @@ public class Misc {
         if (localDate == null) {
             return "--";
         }
-        return localDate.format(Video.DATE_TIME_FORMATTER_UPLOAD_DATE);
+        return localDate.format(YouTubeVideo.DATE_TIME_FORMATTER_UPLOAD_DATE);
     }
     
     public static LocalDate stringToLocalDate(String uploadDate) {
         if (uploadDate == null || uploadDate.equals("NA") || uploadDate.isEmpty()) {
             return null;
         }
-        return LocalDate.parse(uploadDate, Video.DATE_TIME_FORMATTER_UPLOAD_DATE);
+        return LocalDate.parse(uploadDate, YouTubeVideo.DATE_TIME_FORMATTER_UPLOAD_DATE);
     }
     
 }
