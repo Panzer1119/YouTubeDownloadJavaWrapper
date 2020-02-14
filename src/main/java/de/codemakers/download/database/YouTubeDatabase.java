@@ -527,7 +527,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || playlistId == null || playlistId.isEmpty() || videoId == null || videoId.isEmpty()) {
             return -1;
         }
-        return -1; //TODO
+        synchronized (preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId, playlistId, videoId)) {
+                return -1;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId::executeQuery, YouTubeDatabase::resultSetToPlaylistIndex);
+        }
     }
     
     @Override
@@ -535,7 +540,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || playlistId == null || playlistId.isEmpty() || videoId == null || videoId.isEmpty()) {
             return false;
         }
-        return false; //TODO
+        synchronized (preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId, playlistId, videoId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
@@ -667,7 +677,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || playlist == null || playlistId == null || playlistId.isEmpty()) {
             return false;
         }
-        return false; //TODO
+        synchronized (preparedStatement_setPlaylistByPlaylistId) {
+            if (!setPreparedStatement(preparedStatement_setPlaylistByPlaylistId, playlist.getPlaylistId(), playlist.getTitle(), playlist.getPlaylist(), playlist.getUploaderId(), playlistId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setPlaylistByPlaylistId.executeUpdate()) > 0;
+        }
     }
     
     @Override
@@ -683,7 +698,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || mediaFile == null || videoId == null || videoId.isEmpty() || file == null || file.isEmpty()) {
             return false;
         }
-        return false; //TODO
+        synchronized (preparedStatement_setMediaFileByVideoIdAndFile) {
+            if (!setPreparedStatement(preparedStatement_setMediaFileByVideoIdAndFile, mediaFile.getVideoId(), mediaFile.getFile(), mediaFile.getFileType(), mediaFile.getFormat(), mediaFile.getVcodec(), mediaFile.getAcodec(), mediaFile.getWidth(), mediaFile.getHeight(), mediaFile.getFps(), mediaFile.getAsr(), videoId, file)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setMediaFileByVideoIdAndFile.executeUpdate()) > 0;
+        }
     }
     
     @Override
@@ -699,7 +719,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || extraFile == null || videoId == null || videoId.isEmpty() || file == null || file.isEmpty()) {
             return false;
         }
-        return false; //TODO
+        synchronized (preparedStatement_setExtraFileByVideoIdAndFile) {
+            if (!setPreparedStatement(preparedStatement_setExtraFileByVideoIdAndFile, extraFile.getVideoId(), extraFile.getFile(), extraFile.getFileType(), videoId, file)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setExtraFileByVideoIdAndFile.executeUpdate()) > 0;
+        }
     }
     
     @Override
@@ -781,36 +806,40 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     private static List<String> resultSetPlaylistIdsFromPlaylists(ResultSet resultSet) {
-        return resultSetToStrings(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_ID));
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_ID));
     }
     
     private static List<String> resultSetVideoIdsFromVideos(ResultSet resultSet) {
-        return resultSetToStrings(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_ID));
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_ID));
     }
     
     private static List<String> resultSetPlaylistIdsFromPlaylistVideos(ResultSet resultSet) {
-        return resultSetToStrings(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID));
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID));
     }
     
     private static List<String> resultSetVideoIdsFromPlaylistVideos(ResultSet resultSet) {
-        return resultSetToStrings(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID));
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID));
     }
     
-    protected static List<String> resultSetToStrings(ResultSet resultSet, ToughFunction<ResultSet, String> toughFunction) {
+    protected static int resultSetToPlaylistIndex(ResultSet resultSet) {
+        return resultSetToR(resultSet, (resultSet_) -> resultSet_.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_INDEX));
+    }
+    
+    protected static <R> List<R> resultSetToRs(ResultSet resultSet, ToughFunction<ResultSet, R> toughFunction) {
         if (resultSet == null) {
             return null; //TODO Hmm Should this be an empty list?
         }
-        final List<String> videoIds = new ArrayList<>();
+        final List<R> rs = new ArrayList<>();
         do {
-            final String videoId = resultSetToString(resultSet, toughFunction);
-            if (videoId != null) {
-                videoIds.add(videoId);
+            final R r = resultSetToR(resultSet, toughFunction);
+            if (r != null) {
+                rs.add(r);
             }
         } while (Standard.silentError(resultSet::next));
-        return videoIds;
+        return rs;
     }
     
-    protected static String resultSetToString(ResultSet resultSet, ToughFunction<ResultSet, String> toughFunction) {
+    protected static <R> R resultSetToR(ResultSet resultSet, ToughFunction<ResultSet, R> toughFunction) {
         if (resultSet == null) {
             return null;
         }
