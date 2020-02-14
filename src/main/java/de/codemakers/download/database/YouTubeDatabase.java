@@ -29,6 +29,7 @@ import de.codemakers.io.IOUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -568,6 +569,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                     preparedStatement.setLong(index, (Long) object);
                 } else if (object instanceof Boolean) {
                     preparedStatement.setBoolean(index, (Boolean) object);
+                } else if (object instanceof Timestamp) {
+                    preparedStatement.setTimestamp(index, (Timestamp) object);
                 } else {
                     throw new IllegalArgumentException(String.format("The Class \"%s\" is not yet supported by \"setPreparedStatement\"!", object.getClass().getName()));
                 }
