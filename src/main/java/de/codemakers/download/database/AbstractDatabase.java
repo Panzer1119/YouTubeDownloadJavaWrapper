@@ -42,6 +42,16 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
         return (T) this;
     }
     
+    public abstract boolean isConnected();
+    
+    public boolean start() {
+        return start(null, null);
+    }
+    
+    public abstract boolean start(String username, byte[] password);
+    
+    public abstract boolean stop();
+    
     // Gets
     
     public abstract V getVideoByVideoId(String videoId);
@@ -68,6 +78,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract List<E> getExtraFilesByVideoId(String videoId);
     
+    // Adds
+    
     // Sets
     
     public abstract boolean setVideoByVideoId(V video, String videoId);
@@ -91,6 +103,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract boolean setExtraFileByVideoIdAndFile(ExtraFile extraFile, String videoId, String file);
     
     public abstract boolean setExtraFilesByVideoId(List<E> extraFiles, String videoId);
+    
+    // Removes
     
     //
     

@@ -145,6 +145,21 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         super(connector);
     }
     
+    @Override
+    public boolean isConnected() {
+        return false; //TODO
+    }
+    
+    @Override
+    public boolean start(String username, byte[] password) {
+        return false; //TODO
+    }
+    
+    @Override
+    public boolean stop() {
+        return false; //TODO
+    }
+    
     private void createStatements() {
         // // Selects / Gets
         // Table: Channels
@@ -534,6 +549,10 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             }
         } while (Standard.silentError(resultSet::next));
         return extraFiles;
+    }
+    
+    public static void createTables(YouTubeDatabase youTubeDatabase) {
+        //TODO Use the "database_create_tables.sql" to create (if not existing) tables...
     }
     
 }
