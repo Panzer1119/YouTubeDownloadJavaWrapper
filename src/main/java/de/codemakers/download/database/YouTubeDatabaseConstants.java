@@ -437,9 +437,37 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_MEDIA_FILES_DELETE_BY_VIDEO_ID_AND_FILE = String.format("DELETE FROM %s WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_MEDIA_FILES, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE);
     // Table: Playlists
-    // TODO
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_PLAYLISTS_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_PLAYLISTS);
+    /**
+     * 1. Argument: Playlist ID
+     */
+    public static final String QUERY_TABLE_PLAYLISTS_DELETE_BY_PLAYLIST_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_PLAYLISTS, IDENTIFIER_TABLE_PLAYLISTS_COLUMN_ID);
+    /**
+     * 1. Argument: Uploader ID
+     */
+    public static final String QUERY_TABLE_PLAYLISTS_DELETE_ALL_BY_UPLOADER_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_PLAYLISTS, IDENTIFIER_TABLE_PLAYLISTS_COLUMN_UPLOADER_ID);
     // Table: Playlist Videos
-    // TODO
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS);
+    /**
+     * 1. Argument: Playlist ID
+     */
+    public static final String QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_ALL_BY_PLAYLIST_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID);
+    /**
+     * 1. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_ALL_BY_VIDEO_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
+    /**
+     * 1. Argument: Playlist ID
+     * <br>
+     * 2. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_BY_PLAYLIST_ID_AND_VIDEO_ID = String.format("DELETE FROM %s WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
     // Table: Uploaders
     /**
      * No arguments
