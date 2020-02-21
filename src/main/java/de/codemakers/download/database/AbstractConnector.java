@@ -58,7 +58,7 @@ public abstract class AbstractConnector implements Closeable {
         return createConnectionIntern(null, null);
     }
     
-    public boolean closeConnection() {
+    protected boolean closeConnection() {
         if (connection == null) {
             return true;
         }
@@ -94,9 +94,7 @@ public abstract class AbstractConnector implements Closeable {
     
     @Override
     public void closeIntern() throws Exception {
-        if (connection != null) {
-            connection.close();
-        }
+        closeConnection();
     }
     
     @Override

@@ -90,14 +90,21 @@ public class SSHMySQLConnector extends MySQLConnector implements Closeable {
         return Standard.silentError(() -> jSch.setKnownHosts(advancedFile.getAbsolutePath())) == null;
     }
     
-    public Session createAndPrepareSession(String jumpServerUsername, byte[] jumpServerPassword, int jumpServerPort) {
-        setSession(Standard.silentError(() -> jSch.getSession(jumpServerUsername, new String(jumpServerPassword), jumpServerPort)));
+    public Session createAndPrepareSession(String jumpServerUsername, String jumpServerHost) {
+        setSession(Standard.silentError(() -> jSch.getSession(jumpServerUsername, jumpServerHost)));
+        prepareSession(getSession());
+        return session;
+    }
+    
+    public Session createAndPrepareSession(String jumpServerUsername, String jumpServerHost, int jumpServerPort) {
+        setSession(Standard.silentError(() -> jSch.getSession(jumpServerUsername, jumpServerHost, jumpServerPort)));
         prepareSession(getSession());
         return session;
     }
     
     private void prepareSession(Session session) {
         try {
+            session.setConfig("server_host_key","ecdsa-sha2-nistp256"); //FIXME Hmmm, and what if the host key is ssh-rsa? (Seems, that most have switched to ecdsa-sha2-nistp256)
             session.connect();
             setForwardedPort(session.setPortForwardingL(0, getHost(), getPort()));
         } catch (Exception ex) {

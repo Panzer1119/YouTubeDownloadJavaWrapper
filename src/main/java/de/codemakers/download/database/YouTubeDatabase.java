@@ -175,7 +175,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return false;
         }
         closeStatements();
-        return connector.closeConnection();
+        connector.closeWithoutException();
+        return true;
     }
     
     private void createStatements() {
