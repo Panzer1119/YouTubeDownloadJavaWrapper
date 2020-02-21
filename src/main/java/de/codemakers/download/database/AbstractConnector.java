@@ -20,10 +20,11 @@ package de.codemakers.download.database;
 import de.codemakers.base.Standard;
 import de.codemakers.base.action.ClosingAction;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.interfaces.Closeable;
 
 import java.sql.*;
 
-public abstract class AbstractConnector {
+public abstract class AbstractConnector implements Closeable {
     
     protected transient Connection connection;
     
@@ -89,6 +90,13 @@ public abstract class AbstractConnector {
             return null;
         }
         return connection.prepareStatement(sql);
+    }
+    
+    @Override
+    public void closeIntern() throws Exception {
+        if (connection != null) {
+            connection.close();
+        }
     }
     
     @Override
