@@ -96,7 +96,7 @@ public abstract class AbstractPlaylist<T extends AbstractPlaylist, M extends Abs
     }
     
     public boolean containsVideo(final String videoId) {
-        return useDatabase((database) -> database.playlistContainsVideo(getPlaylistId(), videoId), false);
+         return useDatabaseOrFalse((database) -> database.playlistContainsVideo(getPlaylistId(), videoId));
     }
     
     public int getIndex(V video) {
