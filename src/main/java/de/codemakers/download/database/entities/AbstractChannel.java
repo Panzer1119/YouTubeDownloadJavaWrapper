@@ -66,15 +66,15 @@ public abstract class AbstractChannel<T extends AbstractChannel, D extends Abstr
         return useDatabaseOrNull((database) -> database.getVideoIdsByChannelId(getChannelId()));
     }
     
-    public boolean hasVideo(V video) {
+    public boolean hasVideoOnChannel(V video) {
         if (video == null) {
             return false;
         }
-        return hasVideo(video.getVideoId());
+        return hasVideoOnChannel(video.getVideoId());
     }
     
-    public boolean hasVideo(final String videoId) {
-        return useDatabaseOrFalse((database) -> database.hasVideo(getChannelId(), videoId));
+    public boolean hasVideoOnChannel(final String videoId) {
+        return useDatabaseOrFalse((database) -> database.hasVideoOnChannel(getChannelId(), videoId));
     }
     
     @Override

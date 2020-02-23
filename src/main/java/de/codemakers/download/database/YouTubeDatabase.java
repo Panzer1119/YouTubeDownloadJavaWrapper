@@ -652,7 +652,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
-    public boolean hasVideo(String channelId, String videoId) {
+    public boolean hasVideoOnChannel(String channelId, String videoId) {
         if (!isConnected() || channelId == null || channelId.isEmpty() || videoId == null || videoId.isEmpty()) {
             return false;
         }
