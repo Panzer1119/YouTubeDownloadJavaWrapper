@@ -17,16 +17,13 @@
 
 package de.codemakers.download.database;
 
-import de.codemakers.download.database.entities.AbstractChannel;
-import de.codemakers.download.database.entities.AbstractFile;
-import de.codemakers.download.database.entities.AbstractPlaylist;
-import de.codemakers.download.database.entities.AbstractVideo;
+import de.codemakers.download.database.entities.*;
 import de.codemakers.download.database.entities.impl.ExtraFile;
 import de.codemakers.download.database.entities.impl.MediaFile;
 
 import java.util.List;
 
-public abstract class AbstractDatabase<T extends AbstractDatabase, M extends AbstractFile, E extends AbstractFile, V extends AbstractVideo, P extends AbstractPlaylist, CH extends AbstractChannel, C extends AbstractConnector> {
+public abstract class AbstractDatabase<T extends AbstractDatabase, M extends AbstractFile, E extends AbstractFile, V extends AbstractVideo, P extends AbstractPlaylist, CH extends AbstractChannel, U extends AbstractUploader, C extends AbstractConnector> {
     
     protected C connector;
     
@@ -91,11 +88,23 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract CH getChannelByChannelId(String channelId);
     
-    public abstract <V extends AbstractVideo> List<V> getVideosByChannelId(String channelId);
+    public abstract List<V> getVideosByChannelId(String channelId);
     
     public abstract List<String> getVideoIdsByChannelId(String channelId);
     
     public abstract boolean hasVideoOnChannel(String channelId, String videoId);
+    
+    public abstract U getUploaderByUploaderId(String uploaderId);
+    
+    public abstract List<V> getVideosByUploaderId(String uploaderId);
+    
+    public abstract List<String> getVideoIdsByUploaderId(String uploaderId);
+    
+    public abstract boolean hasVideoUploaded(String uploaderId, String videoId);
+    
+    public abstract List<P> getPlaylistsByUploaderId(String uploaderId);
+    
+    public abstract List<String> getPlaylistIdsByUploaderId(String uploaderId);
     
     // Adds
     
@@ -124,6 +133,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract boolean setExtraFilesByVideoId(List<E> extraFiles, String videoId);
     
     public abstract boolean setChannelByChannelId(CH channel, String channelId);
+    
+    public abstract boolean setUploaderByUploaderId(U uploader, String uploaderId);
     
     // Removes
     
