@@ -18,6 +18,7 @@
 package de.codemakers.download.database;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
@@ -33,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, C> {
+public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, YouTubeChannel, C> {
     
     // // Selects / Gets
     // Table: Channels
@@ -601,6 +602,67 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
+    @Override
+    public List<YouTubeChannel> getAllChannels() {
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllChannels) {
+            return useResultSetAndClose(preparedStatement_getAllChannels::executeQuery, YouTubeDatabase::resultSetToChannels);
+        }
+    }
+    
+    @Override
+    public YouTubeChannel getChannelByChannelId(String channelId) {
+        if (!isConnected() || channelId == null || channelId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getChannelByChannelId) {
+            if (!setPreparedStatement(preparedStatement_getChannelByChannelId, channelId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getChannelByChannelId::executeQuery, YouTubeDatabase::resultSetToChannel);
+        }
+    }
+    
+    @Override
+    public List<YouTubeVideo> getVideosByChannelId(String channelId) {
+        if (!isConnected() || channelId == null || channelId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getVideosByChannelId) {
+            if (!setPreparedStatement(preparedStatement_getVideosByChannelId, channelId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getVideosByChannelId::executeQuery, YouTubeDatabase::resultSetToYouTubeVideos);
+        }
+    }
+    
+    @Override
+    public List<String> getVideoIdsByChannelId(String channelId) {
+        if (!isConnected() || channelId == null || channelId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getVideosByChannelId) {
+            if (!setPreparedStatement(preparedStatement_getVideosByChannelId, channelId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getVideosByChannelId::executeQuery, YouTubeDatabase::resultSetVideoIdsFromVideos);
+        }
+    }
+    
+    @Override
+    public boolean hasVideo(String channelId, String videoId) {
+        if (!isConnected() || channelId == null || channelId.isEmpty() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        final YouTubeVideo youTubeVideo = getVideoByVideoId(videoId);
+        if (youTubeVideo == null) {
+            return false;
+        }
+        return Objects.equals(channelId, youTubeVideo.getChannelId());
+    }
+    
     public QueuedYouTubeVideo getQueuedYouTubeVideoById(int id) {
         if (!isConnected()) {
             return null;
@@ -670,7 +732,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || videos == null || playlistId == null || playlistId.isEmpty()) {
             return false;
         }
-        return false; //TODO
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase:setVideosByPlaylistId");
     }
     
     @Override
@@ -691,7 +753,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || playlists == null || videoId == null || videoId.isEmpty()) {
             return false;
         }
-        return false; //TODO
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase:setPlaylistsByVideoId");
     }
     
     @Override
@@ -712,7 +774,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || mediaFiles == null || videoId == null || videoId.isEmpty()) {
             return false;
         }
-        return false; //TODO
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase:setMediaFilesByVideoId");
     }
     
     @Override
@@ -733,7 +795,20 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || extraFiles == null || videoId == null || videoId.isEmpty()) {
             return false;
         }
-        return false; //TODO
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase:setExtraFilesByVideoId");
+    }
+    
+    @Override
+    public boolean setChannelByChannelId(YouTubeChannel channel, String channelId) {
+        if (!isConnected() || channel == null || channelId == null || channelId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setChannelByChannelId) {
+            if (!setPreparedStatement(preparedStatement_setChannelByChannelId, channel.getChannelId(), channel.getName(), channelId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setChannelByChannelId.executeUpdate()) > 0;
+        }
     }
     
     public boolean setQueuedYouTubeVideoById(QueuedYouTubeVideo queuedYouTubeVideo, int id) {
@@ -950,6 +1025,27 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             }
         } while (Standard.silentError(resultSet::next));
         return extraFiles;
+    }
+    
+    protected static YouTubeChannel resultSetToChannel(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return Standard.silentError(() -> new YouTubeChannel(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNELS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNELS_COLUMN_NAME)));
+    }
+    
+    protected static List<YouTubeChannel> resultSetToChannels(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<YouTubeChannel> youTubeChannels = new ArrayList<>();
+        do {
+            final YouTubeChannel youTubeChannel = resultSetToChannel(resultSet);
+            if (youTubeChannel != null) {
+                youTubeChannels.add(youTubeChannel);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return youTubeChannels;
     }
     
     protected static void createTables(YouTubeDatabase youTubeDatabase) {

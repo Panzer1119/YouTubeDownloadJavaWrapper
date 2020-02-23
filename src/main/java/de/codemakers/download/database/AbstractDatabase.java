@@ -87,6 +87,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract List<E> getExtraFilesByVideoId(String videoId);
     
+    public abstract List<CH> getAllChannels();
+    
     public abstract CH getChannelByChannelId(String channelId);
     
     public abstract <V extends AbstractVideo> List<V> getVideosByChannelId(String channelId);
