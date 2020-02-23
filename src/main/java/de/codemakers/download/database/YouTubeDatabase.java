@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, YouTubeChannel, C> {
+public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, YouTubeChannel, YouTubeUploader, C> {
     
     // // Selects / Gets
     // Table: Channels
@@ -663,6 +663,93 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return Objects.equals(channelId, youTubeVideo.getChannelId());
     }
     
+    @Override
+    public List<YouTubeUploader> getAllUploaders() {
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllUploaders) {
+            return useResultSetAndClose(preparedStatement_getAllUploaders::executeQuery, YouTubeDatabase::resultSetToUploaders);
+        }
+    }
+    
+    @Override
+    public YouTubeUploader getUploaderByUploaderId(String uploaderId) {
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getUploaderByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getUploaderByUploaderId, uploaderId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getUploaderByUploaderId::executeQuery, YouTubeDatabase::resultSetToUploader);
+        }
+    }
+    
+    @Override
+    public List<YouTubeVideo> getVideosByUploaderId(String uploaderId) {
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getVideosByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getVideosByUploaderId, uploaderId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getVideosByUploaderId::executeQuery, YouTubeDatabase::resultSetToYouTubeVideos);
+        }
+    }
+    
+    @Override
+    public List<String> getVideoIdsByUploaderId(String uploaderId) {
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getVideosByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getVideosByUploaderId, uploaderId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getVideosByUploaderId::executeQuery, YouTubeDatabase::resultSetVideoIdsFromVideos);
+        }
+    }
+    
+    @Override
+    public boolean hasVideoUploaded(String uploaderId, String videoId) {
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        final YouTubeVideo youTubeVideo = getVideoByVideoId(videoId);
+        if (youTubeVideo == null) {
+            return false;
+        }
+        return Objects.equals(uploaderId, youTubeVideo.getUploaderId());
+    }
+    
+    @Override
+    public List<YouTubePlaylist> getPlaylistsByUploaderId(String uploaderId) {
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getPlaylistsByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistsByUploaderId, uploaderId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistsByUploaderId::executeQuery, YouTubeDatabase::resultSetToYouTubePlaylists);
+        }
+    }
+    
+    @Override
+    public List<String> getPlaylistIdsByUploaderId(String uploaderId) {
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getPlaylistsByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistsByUploaderId, uploaderId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistsByUploaderId::executeQuery, YouTubeDatabase::resultSetPlaylistIdsFromPlaylists);
+        }
+    }
+    
     public QueuedYouTubeVideo getQueuedYouTubeVideoById(int id) {
         if (!isConnected()) {
             return null;
@@ -808,6 +895,19 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                 return false;
             }
             return Standard.silentError(() -> preparedStatement_setChannelByChannelId.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean setUploaderByUploaderId(YouTubeUploader uploader, String uploaderId) {
+        if (!isConnected() || uploader == null || uploaderId == null || uploaderId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setUploaderByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_setUploaderByUploaderId, uploader.getUploaderId(), uploader.getName(), uploaderId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setUploaderByUploaderId.executeUpdate()) > 0;
         }
     }
     
@@ -1046,6 +1146,27 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             }
         } while (Standard.silentError(resultSet::next));
         return youTubeChannels;
+    }
+    
+    protected static YouTubeUploader resultSetToUploader(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return Standard.silentError(() -> new YouTubeUploader(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADERS_COLUMN_NAME)));
+    }
+    
+    protected static List<YouTubeUploader> resultSetToUploaders(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<YouTubeUploader> youTubeUploaders = new ArrayList<>();
+        do {
+            final YouTubeUploader youTubeUploader = resultSetToUploader(resultSet);
+            if (youTubeUploader != null) {
+                youTubeUploaders.add(youTubeUploader);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return youTubeUploaders;
     }
     
     protected static void createTables(YouTubeDatabase youTubeDatabase) {

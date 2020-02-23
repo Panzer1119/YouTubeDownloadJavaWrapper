@@ -94,6 +94,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract boolean hasVideoOnChannel(String channelId, String videoId);
     
+    public abstract List<U> getAllUploaders();
+    
     public abstract U getUploaderByUploaderId(String uploaderId);
     
     public abstract List<V> getVideosByUploaderId(String uploaderId);
