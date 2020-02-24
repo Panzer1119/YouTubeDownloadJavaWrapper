@@ -184,6 +184,11 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
     }
     
     @Override
+    public boolean save() {
+        return useDatabaseOrFalse((database) -> database.setQueuedVideoById(this, getId()));
+    }
+    
+    @Override
     public String toString() {
         return "AbstractQueuedVideo{" + "id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + ", configFileResolved='" + configFileResolved + '\'' + ", outputDirectoryResolved='" + outputDirectoryResolved + '\'' + '}';
     }
