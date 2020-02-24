@@ -108,15 +108,15 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract List<String> getPlaylistIdsByUploaderId(String uploaderId);
     
-    public abstract Q getQueuedYouTubeVideoById(int id);
+    public abstract Q getQueuedVideoById(int id);
     
-    public abstract List<Q> getAllQueuedYouTubeVideos();
+    public abstract List<Q> getAllQueuedVideos();
     
-    public abstract List<Q> getQueuedYouTubeVideosByVideoId(String videoId);
+    public abstract List<Q> getQueuedVideosByVideoId(String videoId);
     
-    public abstract Q getNextQueuedYouTubeVideo();
+    public abstract Q getNextQueuedVideo();
     
-    public abstract List<Q> getNextQueuedYouTubeVideos();
+    public abstract List<Q> getNextQueuedVideos();
     
     public abstract List<R> getAllRequesters();
     
