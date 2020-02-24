@@ -27,6 +27,7 @@ public class YouTubeDatabaseConstants {
     public static final String IDENTIFIER_TABLE_MEDIA_FILES = "mediaFiles";
     public static final String IDENTIFIER_TABLE_PLAYLISTS = "playlists";
     public static final String IDENTIFIER_TABLE_PLAYLIST_VIDEOS = "playlistVideos";
+    public static final String IDENTIFIER_TABLE_REQUESTERS = "requesters";
     public static final String IDENTIFIER_TABLE_UPLOADERS = "uploaders";
     public static final String IDENTIFIER_TABLE_VIDEO_QUEUE = "videoQueue";
     public static final String IDENTIFIER_TABLE_VIDEOS = "videos";
@@ -59,6 +60,10 @@ public class YouTubeDatabaseConstants {
     public static final String IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID = "playlistId";
     public static final String IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID = "videoId";
     public static final String IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_INDEX = "playlistIndex";
+    // Table: Requesters
+    public static final String IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID = "id";
+    public static final String IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG = "tag";
+    public static final String IDENTIFIER_TABLE_REQUESTERS_COLUMN_NAME = "name";
     // Table: Uploaders
     public static final String IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID = "id";
     public static final String IDENTIFIER_TABLE_UPLOADERS_COLUMN_NAME = "name";
@@ -67,6 +72,7 @@ public class YouTubeDatabaseConstants {
     public static final String IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID = "videoId";
     public static final String IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY = "priority";
     public static final String IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED = "requested";
+    public static final String IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_FILE_TYPE = "fileType";
     public static final String IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS = "arguments";
     public static final String IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE = "configFile";
     public static final String IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY = "outputDirectory";
@@ -158,6 +164,19 @@ public class YouTubeDatabaseConstants {
      * 2. Argument: Video ID
      */
     public static final String QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_BY_PLAYLIST_ID_AND_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
+    // Table: Requesters
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_REQUESTERS_SELECT_ALL = String.format("SELECT * FROM %s;", IDENTIFIER_TABLE_REQUESTERS);
+    /**
+     * 1. Argument: Requester ID
+     */
+    public static final String QUERY_TABLE_REQUESTERS_SELECT_BY_REQUESTER_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_REQUESTERS, IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID);
+    /**
+     * 1. Argument: Tag
+     */
+    public static final String QUERY_TABLE_REQUESTERS_SELECT_BY_TAG = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_REQUESTERS, IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG);
     // Table: Uploaders
     /**
      * No arguments
@@ -266,6 +285,15 @@ public class YouTubeDatabaseConstants {
      * 3. Argument: Playlist Index
      */
     public static final String QUERY_TABLE_PLAYLIST_VIDEOS_INSERT = String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?);", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_INDEX);
+    // Table: Requesters
+    /**
+     * 1. Argument: Requester ID
+     * <br>
+     * 2. Argument: Tag
+     * <br>
+     * 3. Argument: Name
+     */
+    public static final String QUERY_TABLE_REQUESTERS_INSERT = String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?);", IDENTIFIER_TABLE_REQUESTERS, IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID, IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG, IDENTIFIER_TABLE_REQUESTERS_COLUMN_NAME);
     // Table: Uploaders
     /**
      * 1. Argument: Uploader ID
@@ -384,6 +412,25 @@ public class YouTubeDatabaseConstants {
      * 5. Argument: (Old) Video ID
      */
     public static final String QUERY_TABLE_PLAYLIST_VIDEOS_UPDATE_BY_PLAYLIST_ID_AND_VIDEO_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ? WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_INDEX, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
+    // Table: Requesters
+    /**
+     * 1. Argument: (New) Requester ID
+     * <br>
+     * 2. Argument: Tag
+     * <br>
+     * 3. Argument: Name
+     * <br>
+     * 4. Argument: (Old) Requester ID
+     */
+    public static final String QUERY_TABLE_REQUESTERS_UPDATE_BY_REQUESTER_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_REQUESTERS, IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID, IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG, IDENTIFIER_TABLE_REQUESTERS_COLUMN_NAME, IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID);
+    /**
+     * 1. Argument: (New) Tag
+     * <br>
+     * 2. Argument: Name
+     * <br>
+     * 3. Argument: (Old) Tag
+     */
+    public static final String QUERY_TABLE_REQUESTERS_UPDATE_BY_TAG = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_REQUESTERS, IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG, IDENTIFIER_TABLE_REQUESTERS_COLUMN_NAME, IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG);
     // Table: Uploaders
     /**
      * 1. Argument: (New) Uploader ID
@@ -504,6 +551,19 @@ public class YouTubeDatabaseConstants {
      * 2. Argument: Video ID
      */
     public static final String QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_BY_PLAYLIST_ID_AND_VIDEO_ID = String.format("DELETE FROM %s WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
+    // Table: Requesters
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_REQUESTERS_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_REQUESTERS);
+    /**
+     * 1. Argument: Requester ID
+     */
+    public static final String QUERY_TABLE_REQUESTERS_DELETE_BY_REQUESTER_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_REQUESTERS, IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID);
+    /**
+     * 1. Argument: Tag
+     */
+    public static final String QUERY_TABLE_REQUESTERS_DELETE_BY_TAG = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_REQUESTERS, IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG);
     // Table: Uploaders
     /**
      * No arguments
