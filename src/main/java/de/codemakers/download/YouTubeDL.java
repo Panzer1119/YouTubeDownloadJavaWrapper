@@ -671,17 +671,127 @@ public class YouTubeDL {
      * Needs one sub argument: FORMAT
      */
     public static final String ARGUMENT_FORMAT = "--format";
-    //TODO
-    
+    /**
+     * Download all available video formats
+     */
+    public static final String ARGUMENT_ALL_FORMATS = "--all-formats";
+    /**
+     * Prefer free video formats unless a specific
+     * one is requested
+     */
+    public static final String ARGUMENT_PREFER_FREE_FORMATS = "--prefer-free-formats";
+    /**
+     * List all available formats of requested
+     * videos
+     */
+    public static final String ARGUMENT_LIST_FORMATS = "--list-formats";
+    /**
+     * Do not download the DASH manifests and
+     * related data on YouTube videos
+     */
+    public static final String ARGUMENT_YOUTUBE_SKIP_DASH_MANIFEST = "--youtube-skip-dash-manifest";
+    /**
+     * If a merge is required (e.g.
+     * bestvideo+bestaudio), output to given
+     * container format. One of mkv, mp4, ogg,
+     * webm, flv. Ignored if no merge is required
+     * <p>
+     * Needs one sub argument: FORMAT
+     */
+    public static final String ARGUMENT_MERGE_OUTPUT_FORMAT = "--merge-output-format";
     // Subtitle Options
-    //TODO
-    
+    /**
+     * Write subtitle file
+     */
+    public static final String ARGUMENT_WRITE_SUB = "--write-sub";
+    /**
+     * Write automatically generated subtitle file
+     * (YouTube only)
+     */
+    public static final String ARGUMENT_WRITE_AUTO_SUB = "--write-auto-sub";
+    /**
+     * Download all the available subtitles of the
+     * video
+     */
+    public static final String ARGUMENT_ALL_SUBS = "--all-subs";
+    /**
+     * List all available subtitles for the video
+     */
+    public static final String ARGUMENT_LIST_SUBS = "--list-subs";
+    /**
+     * Subtitle format, accepts formats
+     * preference, for example: "srt" or
+     * "ass/srt/best"
+     * <p>
+     * Needs one sub argument: FORMAT
+     */
+    public static final String ARGUMENT_SUB_FORMAT = "--sub-format";
+    /**
+     * Languages of the subtitles to download
+     * (optional) separated by commas, use --list-
+     * subs for available language tags
+     * <p>
+     * Needs one sub argument: LANGS
+     */
+    public static final String ARGUMENT_SUB_LANG = "--sub-lang";
     // Authentication Options
-    //TODO
-    
+    /**
+     * Login with this account ID
+     * <p>
+     * Needs one sub argument: USERNAME
+     */
+    public static final String ARGUMENT_USERNAME = "--username";
+    /**
+     * Account password. If this option is left
+     * out, youtube-dl will ask interactively.
+     * <p>
+     * Needs one sub argument: PASSWORD
+     */
+    public static final String ARGUMENT_PASSWORD = "--password";
+    /**
+     * Two-factor authentication code
+     * <p>
+     * Needs one sub argument: TWOFACTOR
+     */
+    public static final String ARGUMENT_TWOFACTOR = "--twofactor";
+    /**
+     * Use .netrc authentication data
+     */
+    public static final String ARGUMENT_NETRC = "--netrc";
+    /**
+     * Video password (vimeo, smotri, youku)
+     * <p>
+     * Needs one sub argument: PASSWORD
+     */
+    public static final String ARGUMENT_VIDEO_PASSWORD = "--video-password";
     // Adobe Pass Options
-    //TODO
-    
+    /**
+     * Adobe Pass multiple-system operator (TV
+     * provider) identifier, use --ap-list-mso for
+     * a list of available MSOs
+     * <p>
+     * Needs one sub argument: MSO
+     */
+    public static final String ARGUMENT_AP_MSO = "--ap-mso";
+    /**
+     * Multiple-system operator account login
+     * <p>
+     * Needs one sub argument: USERNAME
+     */
+    public static final String ARGUMENT_AP_USERNAME = "--ap-username";
+    /**
+     * Multiple-system operator account password.
+     * If this option is left out, youtube-dl will
+     * ask interactively.
+     * <p>
+     * Needs one sub argument: PASSWORD
+     */
+    public static final String ARGUMENT_AP_PASSWORD = "--ap-password";
+    /**
+     * List all supported multiple-system
+     * operators
+     */
+    public static final String ARGUMENT_AP_LIST_MSO = "--ap-list-mso";
     // Post-processing Options
     //TODO
     
