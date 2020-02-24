@@ -17,19 +17,22 @@
 
 package de.codemakers.download.entities.impl;
 
-import de.codemakers.download.DownloadSettings;
-import de.codemakers.download.entities.DownloadContainer;
+import de.codemakers.download.database.YouTubeDatabase;
+import de.codemakers.download.database.entities.impl.YouTubePlaylist;
+import de.codemakers.download.database.entities.impl.YouTubeVideo;
+import de.codemakers.download.entities.AbstractDownloadContainer;
+import de.codemakers.download.entities.DownloadSettings;
 import de.codemakers.download.sources.YouTubeSource;
 
-public class YouTubeDownloadContainer extends DownloadContainer<YouTubeSource, YouTubeDLDownloadProgress> {
+public class YouTubeDownloadContainer extends AbstractDownloadContainer<YouTubeDatabase, YouTubeSource, YouTubeDLDownloadProgress, YouTubeVideo, YouTubePlaylist> {
     
-    public YouTubeDownloadContainer(YouTubeSource source, DownloadSettings downloadSettings) {
-        super(source, downloadSettings, new YouTubeDLDownloadProgress(downloadSettings.getExpectedDownloads()));
+    public YouTubeDownloadContainer(YouTubeDatabase youTubeDatabase, YouTubeSource source, DownloadSettings downloadSettings) {
+        super(youTubeDatabase, source, downloadSettings, new YouTubeDLDownloadProgress(downloadSettings.getExpectedDownloads()));
     }
     
     @Override
     public String toString() {
-        return "YouTubeDownloadContainer{" + "source=" + source + ", downloadSettings=" + downloadSettings + ", downloadProgress=" + downloadProgress + '}';
+        return "YouTubeDownloadContainer{" + "database=" + database + ", source=" + source + ", downloadSettings=" + downloadSettings + ", downloadProgress=" + downloadProgress + '}';
     }
     
 }

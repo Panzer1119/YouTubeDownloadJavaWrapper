@@ -15,7 +15,7 @@
  *
  */
 
-package de.codemakers.download;
+package de.codemakers.download.entities;
 
 import de.codemakers.io.file.AdvancedFile;
 
