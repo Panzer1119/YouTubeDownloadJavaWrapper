@@ -154,6 +154,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract boolean setUploaderByUploaderId(U uploader, String uploaderId);
     
+    public abstract boolean setQueuedVideoById(Q queuedVideo, int id);
+    
     public abstract boolean setRequesterByRequesterId(R requester, int requesterId);
     
     // Removes
