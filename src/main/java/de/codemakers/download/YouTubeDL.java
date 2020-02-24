@@ -260,13 +260,276 @@ public class YouTubeDL {
      */
     public static final String ARGUMENT_GEO_BYPASS_IP_BLOCK = "--geo-bypass-ip-block";
     // Video selection
-    //TODO
-    
+    /**
+     * Playlist video to start at (default is 1)
+     * <p>
+     * Needs one sub argument: NUMBER
+     */
+    public static final String ARGUMENT_PLAYLIST_START = "--playlist-start";
+    /**
+     * Playlist video to end at (default is last)
+     * <p>
+     * Needs one sub argument: NUMBER
+     */
+    public static final String ARGUMENT_PLAYLIST_END = "--playlist-end";
+    /**
+     * Playlist video items to download. Specify
+     * indices of the videos in the playlist
+     * separated by commas like: "--playlist-items
+     * 1,2,5,8" if you want to download videos
+     * indexed 1, 2, 5, 8 in the playlist. You can
+     * specify range: "--playlist-items
+     * 1-3,7,10-13", it will download the videos
+     * at index 1, 2, 3, 7, 10, 11, 12 and 13.
+     * <p>
+     * Needs one sub argument: ITEM_SPEC
+     */
+    public static final String ARGUMENT_PLAYLIST_ITEMS = "--playlist-items";
+    /**
+     * Download only matching titles (regex or
+     * caseless sub-string)
+     * <p>
+     * Needs one sub argument: REGEX
+     */
+    public static final String ARGUMENT_MATCH_TITLE = "--match-title";
+    /**
+     * Skip download for matching titles (regex or
+     * caseless sub-string)
+     * <p>
+     * Needs one sub argument: REGEX
+     */
+    public static final String ARGUMENT_REJECT_TITLE = "--reject-title";
+    /**
+     * Abort after downloading NUMBER files
+     * <p>
+     * Needs one sub argument: NUMBER
+     */
+    public static final String ARGUMENT_MAX_DOWNLOADS = "--max-downloads";
+    /**
+     * Do not download any videos smaller than
+     * SIZE (e.g. 50k or 44.6m)
+     * <p>
+     * Needs one sub argument: SIZE
+     */
+    public static final String ARGUMENT_MIN_FILESIZE = "--min-filesize";
+    /**
+     * Do not download any videos larger than SIZE
+     * (e.g. 50k or 44.6m)
+     * <p>
+     * Needs one sub argument: SIZE
+     */
+    public static final String ARGUMENT_MAX_FILESIZE = "--max-filesize";
+    /**
+     * Download only videos uploaded in this date
+     * <p>
+     * Needs one sub argument: DATE
+     */
+    public static final String ARGUMENT_DATE = "--date";
+    /**
+     * Download only videos uploaded on or before
+     * this date (i.e. inclusive)
+     * <p>
+     * Needs one sub argument: DATE
+     */
+    public static final String ARGUMENT_DATEBEFORE = "--datebefore";
+    /**
+     * Download only videos uploaded on or after
+     * this date (i.e. inclusive)
+     * <p>
+     * Needs one sub argument: DATE
+     */
+    public static final String ARGUMENT_DATEAFTER = "--dateafter";
+    /**
+     * Do not download any videos with less than
+     * COUNT views
+     * <p>
+     * Needs one sub argument: COUNT
+     */
+    public static final String ARGUMENT_MIN_VIEWS = "--min-views";
+    /**
+     * Do not download any videos with more than
+     * COUNT views
+     * <p>
+     * Needs one sub argument: COUNT
+     */
+    public static final String ARGUMENT_MAX_VIEWS = "--max-views";
+    /**
+     * Generic video filter. Specify any key (see
+     * the "OUTPUT TEMPLATE" for a list of
+     * available keys) to match if the key is
+     * present, !key to check if the key is not
+     * present, key > NUMBER (like "comment_count
+     * > 12", also works with >=, <, <=, !=, =) to
+     * compare against a number, key = 'LITERAL'
+     * (like "uploader = 'Mike Smith'", also works
+     * with !=) to match against a string literal
+     * and & to require multiple matches. Values
+     * which are not known are excluded unless you
+     * put a question mark (?) after the operator.
+     * For example, to only match videos that have
+     * been liked more than 100 times and disliked
+     * less than 50 times (or the dislike
+     * functionality is not available at the given
+     * service), but who also have a description,
+     * use --match-filter "like_count > 100 &
+     * dislike_count <? 50 & description" .
+     * <p>
+     * Needs one sub argument: FILTER
+     */
+    public static final String ARGUMENT_MATCH_FILTER = "--match-filter";
+    /**
+     * Download only the video, if the URL refers
+     * to a video and a playlist.
+     */
+    public static final String ARGUMENT_NO_PLAYLIST = "--no-playlist";
+    /**
+     * Download the playlist, if the URL refers to
+     * a video and a playlist.
+     */
+    public static final String ARGUMENT_YES_PLAYLIST = "--yes-playlist";
+    /**
+     * Download only videos suitable for the given
+     * age
+     * <p>
+     * Needs one sub argument: YEARS
+     */
+    public static final String ARGUMENT_AGE_LIMIT = "--age-limit";
+    /**
+     * Download only videos not listed in the
+     * archive file. Record the IDs of all
+     * downloaded videos in it.
+     * <p>
+     * Needs one sub argument: FILE
+     */
+    public static final String ARGUMENT_DOWNLOAD_ARCHIVE = "--download-archive";
+    /**
+     * Download advertisements as well
+     * (experimental)
+     */
+    public static final String ARGUMENT_INCLUDE_ADS = "--include-ads";
     // Download Options
-    //TODO
-    
+    /**
+     * Maximum download rate in bytes per second
+     * (e.g. 50K or 4.2M)
+     * <p>
+     * Needs one sub argument: RATE
+     */
+    public static final String ARGUMENT_LIMIT_RATE = "--limit-rate";
+    /**
+     * Number of retries (default is 10), or
+     * "infinite".
+     * <p>
+     * Needs one sub argument: RETRIES
+     */
+    public static final String ARGUMENT_RETRIES = "--retries";
+    /**
+     * Number of retries for a fragment (default
+     * is 10), or "infinite" (DASH, hlsnative and
+     * ISM)
+     * <p>
+     * Needs one sub argument: RETRIES
+     */
+    public static final String ARGUMENT_FRAGMENT_RETRIES = "--fragment-retries";
+    /**
+     * Skip unavailable fragments (DASH, hlsnative
+     * and ISM)
+     */
+    public static final String ARGUMENT_SKIP_UNAVAILABLE_FRAGMENTS = "--skip-unavailable-fragments";
+    /**
+     * Abort downloading when some fragment is not
+     * available
+     */
+    public static final String ARGUMENT_ABORT_ON_UNAVAILABLE_FRAGMENTS = "--abort-on-unavailable-fragments";
+    /**
+     * Keep downloaded fragments on disk after
+     * downloading is finished; fragments are
+     * erased by default
+     */
+    public static final String ARGUMENT_KEEP_FRAGMENTS = "--keep-fragments";
+    /**
+     * Size of download buffer (e.g. 1024 or 16K)
+     * (default is 1024)
+     * <p>
+     * Needs one sub argument: SIZE
+     */
+    public static final String ARGUMENT_BUFFER_SIZE = "--buffer-size";
+    /**
+     * Do not automatically adjust the buffer
+     * size. By default, the buffer size is
+     * automatically resized from an initial value
+     * of SIZE.
+     */
+    public static final String ARGUMENT_NO_RESIZE_BUFFER = "--no-resize-buffer";
+    /**
+     * Size of a chunk for chunk-based HTTP
+     * downloading (e.g. 10485760 or 10M) (default
+     * is disabled). May be useful for bypassing
+     * bandwidth throttling imposed by a webserver
+     * (experimental)
+     * <p>
+     * Needs one sub argument: SIZE
+     */
+    public static final String ARGUMENT_HTTP_CHUNK_SIZE = "--http-chunk-size";
+    /**
+     * Download playlist videos in reverse order
+     */
+    public static final String ARGUMENT_PLAYLIST_REVERSE = "--playlist-reverse";
+    /**
+     * Download playlist videos in random order
+     */
+    public static final String ARGUMENT_PLAYLIST_RANDOM = "--playlist-random";
+    /**
+     * Set file xattribute ytdl.filesize with
+     * expected file size
+     */
+    public static final String ARGUMENT_XATTR_SET_FILESIZE = "--xattr-set-filesize";
+    /**
+     * Use the native HLS downloader instead of
+     * ffmpeg
+     */
+    public static final String ARGUMENT_HLS_PREFER_NATIVE = "--hls-prefer-native";
+    /**
+     * Use ffmpeg instead of the native HLS
+     * downloader
+     */
+    public static final String ARGUMENT_HLS_PREFER_FFMPEG = "--hls-prefer-ffmpeg";
+    /**
+     * Use the mpegts container for HLS videos,
+     * allowing to play the video while
+     * downloading (some players may not be able
+     * to play it)
+     */
+    public static final String ARGUMENT_HLS_USE_MPEGTS = "--hls-use-mpegts";
+    /**
+     * Use the specified external downloader.
+     * Currently supports
+     * <br>
+     * aria2c,avconv,axel,curl,ffmpeg,httpie,wget
+     * <p>
+     * Needs one sub argument: COMMAND
+     */
+    public static final String ARGUMENT_EXTERNAL_DOWNLOADER = "--external-downloader";
+    /**
+     * Give these arguments to the external
+     * downloader
+     * <p>
+     * Needs one sub argument: ARGS
+     */
+    public static final String ARGUMENT_EXTERNAL_DOWNLOADER_ARGS = "--external-downloader-args";
     // Filesystem Options
-    //TODO
+    /**
+     * File containing URLs to download ('-' for
+     * stdin), one URL per line. Lines starting
+     * with '#', ';' or ']' are considered as
+     * comments and ignored.
+     * <p>
+     * Needs one sub argument: FILE
+     */
+    public static final String ARGUMENT_BATCH_FILE = "--batch-file";
+    /**
+     * Use only video ID in file name
+     */
+    public static final String ARGUMENT_ID = "--id";
     /**
      * Output filename template, see the "OUTPUT
      * TEMPLATE" for all the info
@@ -274,11 +537,108 @@ public class YouTubeDL {
      * Needs one sub argument: TEMPLATE
      */
     public static final String ARGUMENT_OUTPUT = "--output";
-    //TODO
-    
+    /**
+     * Specify the start value for %(autonumber)s
+     * (default is 1)
+     * <p>
+     * Needs one sub argument: NUMBER
+     */
+    public static final String ARGUMENT_AUTONUMBER_START = "--autonumber-start";
+    /**
+     * Restrict filenames to only ASCII
+     * characters, and avoid "&" and spaces in
+     * filenames
+     */
+    public static final String ARGUMENT_RESTRICT_FILENAMES = "--restrict-filenames";
+    /**
+     * Do not overwrite files
+     */
+    public static final String ARGUMENT_NO_OVERWRITES = "--no-overwrites";
+    /**
+     * Force resume of partially downloaded files.
+     * By default, youtube-dl will resume
+     * downloads if possible.
+     */
+    public static final String ARGUMENT_CONTINUE = "--continue";
+    /**
+     * Do not resume partially downloaded files
+     * (restart from beginning)
+     */
+    public static final String ARGUMENT_NO_CONTINUE = "--no-continue";
+    /**
+     * Do not use .part files - write directly
+     * into output file
+     */
+    public static final String ARGUMENT_NO_PART = "--no-part";
+    /**
+     * Do not use the Last-modified header to set
+     * the file modification time
+     */
+    public static final String ARGUMENT_NO_MTIME = "--no-mtime";
+    /**
+     * Write video description to a .description
+     * file
+     */
+    public static final String ARGUMENT_WRITE_DESCRIPTION = "--write-description";
+    /**
+     * Write video metadata to a .info.json file
+     */
+    public static final String ARGUMENT_WRITE_INFO_JSON = "--write-info-json";
+    /**
+     * Write video annotations to a
+     * .annotations.xml file
+     */
+    public static final String ARGUMENT_WRITE_ANNOTATIONS = "--write-annotations";
+    /**
+     * JSON file containing the video information
+     * (created with the "--write-info-json"
+     * option)
+     * <p>
+     * Needs one sub argument: FILE
+     */
+    public static final String ARGUMENT_LOAD_INFO_JSON = "--load-info-json";
+    /**
+     * File to read cookies from and dump cookie
+     * jar in
+     * <p>
+     * Needs one sub argument: FILE
+     */
+    public static final String ARGUMENT_COOKIES = "--cookies";
+    /**
+     * Location in the filesystem where youtube-dl
+     * can store some downloaded information
+     * permanently. By default
+     * $XDG_CACHE_HOME/youtube-dl or
+     * ~/.cache/youtube-dl . At the moment, only
+     * YouTube player files (for videos with
+     * obfuscated signatures) are cached, but that
+     * may change.
+     * <p>
+     * Needs one sub argument: DIR
+     */
+    public static final String ARGUMENT_CACHE_DIR = "--cache-dir";
+    /**
+     * Disable filesystem caching
+     */
+    public static final String ARGUMENT_NO_CACHE_DIR = "--no-cache-dir";
+    /**
+     * Delete all filesystem cache files
+     */
+    public static final String ARGUMENT_RM_CACHE_DIR = "--rm-cache-dir";
     // Thumbnail images
-    //TODO
-    
+    /**
+     * Write thumbnail image to disk
+     */
+    public static final String ARGUMENT_WRITE_THUMBNAIL = "--write-thumbnail";
+    /**
+     * Write all thumbnail image formats to disk
+     */
+    public static final String ARGUMENT_WRITE_ALL_THUMBNAILS = "--write-all-thumbnails";
+    /**
+     * Simulate and list all available thumbnail
+     * formats
+     */
+    public static final String ARGUMENT_LIST_THUMBNAIL = "--list-thumnnails";
     // Verbosity / Simulation Options
     //TODO
     /**
