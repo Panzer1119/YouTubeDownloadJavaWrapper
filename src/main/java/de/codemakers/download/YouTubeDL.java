@@ -941,12 +941,133 @@ public class YouTubeDL {
      */
     public static final String ARGUMENT_AP_LIST_MSO = "--ap-list-mso";
     // Post-processing Options
-    //TODO
-    
     /**
-     *
+     * Convert video files to audio-only files
+     * (requires ffmpeg or avconv and ffprobe or
+     * avprobe)
      */
-    public static final String ARGUMENT_ = "";
+    public static final String ARGUMENT_EXTRACT_AUDIO = "--extract-audio";
+    /**
+     * Specify audio format: "best", "aac",
+     * "flac", "mp3", "m4a", "opus", "vorbis", or
+     * "wav"; "best" by default; No effect without
+     * -x
+     * <p>
+     * Needs one sub argument: FORMAT
+     */
+    public static final String ARGUMENT_AUDIO_FORMAT = "--audio-format";
+    /**
+     * Specify ffmpeg/avconv audio quality, insert
+     * a value between 0 (better) and 9 (worse)
+     * for VBR or a specific bitrate like 128K
+     * (default 5)
+     * <p>
+     * Needs one sub argument: QUALITY
+     */
+    public static final String ARGUMENT_AUDIO_QUALITY = "--audio-quality";
+    /**
+     * Encode the video to another format if
+     * necessary (currently supported:
+     * <br>
+     * mp4|flv|ogg|webm|mkv|avi)
+     * <p>
+     * Needs one sub argument: FORMAT
+     */
+    public static final String ARGUMENT_RECODE_VIDEO = "--recode-video";
+    /**
+     * Give these arguments to the postprocessor
+     * <p>
+     * Needs one sub argument: ARGS
+     */
+    public static final String ARGUMENT_POSTPROCESSOR_ARGS = "--postprocessor-args";
+    /**
+     * Keep the video file on disk after the post-
+     * processing; the video is erased by default
+     */
+    public static final String ARGUMENT_KEEP_VIDEO = "--keep-video";
+    /**
+     * Do not overwrite post-processed files; the
+     * post-processed files are overwritten by
+     * default
+     */
+    public static final String ARGUMENT_NO_POST_OVERWRITES = "--no-post-overwrites";
+    /**
+     * Embed subtitles in the video (only for mp4,
+     * webm and mkv videos)
+     */
+    public static final String ARGUMENT_EMBED_SUBS = "--embed-subs";
+    /**
+     * Embed thumbnail in the audio as cover art
+     */
+    public static final String ARGUMENT_EMBED_THUMBNAIL = "--embed-thumbnail";
+    /**
+     * Write metadata to the video file
+     */
+    public static final String ARGUMENT_ADD_METADATA = "--add-metadata";
+    /**
+     * Parse additional metadata like song title /
+     * artist from the video title. The format
+     * syntax is the same as --output. Regular
+     * expression with named capture groups may
+     * also be used. The parsed parameters replace
+     * existing values. Example: --metadata-from-
+     * title "%(artist)s - %(title)s" matches a
+     * title like "Coldplay - Paradise". Example
+     * (regex): --metadata-from-title
+     * "(?P<artist>.+?) - (?P<title>.+)"
+     * <p>
+     * Needs one sub argument: FORMAT
+     */
+    public static final String ARGUMENT_METADATA_FROM_TITLE = "--metadata-from-title";
+    /**
+     * Write metadata to the video file's xattrs
+     * (using dublin core and xdg standards)
+     */
+    public static final String ARGUMENT_XATTRS = "--xattrs";
+    /**
+     * Automatically correct known faults of the
+     * file. One of never (do nothing), warn (only
+     * emit a warning), detect_or_warn (the
+     * default; fix file if we can, warn
+     * otherwise)
+     * <p>
+     * Needs one sub argument: POLICY
+     */
+    public static final String ARGUMENT_FIXUP = "--fixup";
+    /**
+     * Prefer avconv over ffmpeg for running the
+     * postprocessors
+     */
+    public static final String ARGUMENT_PREFER_AVCONV = "--prefer-avconv";
+    /**
+     * Prefer ffmpeg over avconv for running the
+     * postprocessors (default)
+     */
+    public static final String ARGUMENT_PREFER_FFMPEG = "--prefer-ffmpeg";
+    /**
+     * Location of the ffmpeg/avconv binary;
+     * either the path to the binary or its
+     * containing directory.
+     * <p>
+     * Needs one sub argument: PATH
+     */
+    public static final String ARGUMENT_FFMPEG_LOCATION = "--ffmpeg-location";
+    /**
+     * Execute a command on the file after
+     * downloading, similar to find's -exec
+     * syntax. Example: --exec 'adb push {}
+     * /sdcard/Music/ && rm {}'
+     * <p>
+     * Needs one sub argument: CMD
+     */
+    public static final String ARGUMENT_EXEC = "--exec";
+    /**
+     * Convert the subtitles to other format
+     * (currently supported: srt|ass|vtt|lrc)
+     * <p>
+     * Needs one sub argument: FORMAT
+     */
+    public static final String ARGUMENT_CONVERT_SUBS = "--convert-subs";
     // //
     
     //Other
