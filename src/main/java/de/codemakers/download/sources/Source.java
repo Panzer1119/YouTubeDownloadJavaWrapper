@@ -28,4 +28,12 @@ public interface Source extends Serializable {
         return null;
     }
     
+    default boolean isVideo() {
+        return true;
+    }
+    
+    default boolean isPlaylist() {
+        return false;
+    }
+    
 }
