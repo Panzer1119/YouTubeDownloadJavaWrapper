@@ -70,11 +70,6 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
     }
     
     @Override
-    public boolean save() {
-        return useDatabaseOrFalse((database) -> database.setVideoByVideoId(this, getVideoId()));
-    }
-    
-    @Override
     public void set(YouTubeVideo youTubeVideo) {
         if (youTubeVideo == null) {
             //TODO Maybe just set every value in this object to null?

@@ -58,6 +58,11 @@ public abstract class AbstractChannel<T extends AbstractChannel, D extends Abstr
         return (T) useDatabaseOrNull((database) -> database.getChannelByChannelId(getChannelId()));
     }
     
+    @Override
+    public boolean save() {
+        return useDatabaseOrFalse((database) -> database.setChannelByChannelId(this, getChannelId()));
+    }
+    
     public List<V> getVideos() {
         return useDatabaseOrNull((database) -> database.getVideosByChannelId(getChannelId()));
     }

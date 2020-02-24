@@ -31,11 +31,6 @@ public class YouTubePlaylist extends AbstractPlaylist<YouTubePlaylist, MediaFile
     }
     
     @Override
-    public boolean save() {
-        return useDatabaseOrFalse((database) -> database.setPlaylistByPlaylistId(this, getPlaylistId()));
-    }
-    
-    @Override
     public void set(YouTubePlaylist youTubePlaylist) {
         if (youTubePlaylist == null) {
             //TODO Maybe just set every value in this object to null?

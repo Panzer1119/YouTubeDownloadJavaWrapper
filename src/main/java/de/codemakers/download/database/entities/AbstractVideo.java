@@ -101,6 +101,11 @@ public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractF
         return (T) useDatabaseOrNull((database) -> database.getVideoByVideoId(getVideoId()));
     }
     
+    @Override
+    public boolean save() {
+        return useDatabaseOrFalse((database) -> database.setVideoByVideoId(this, getVideoId()));
+    }
+    
     public List<P> getPlaylists() {
         return useDatabaseOrNull((database) -> database.getPlaylistsByVideoId(getVideoId()));
     }

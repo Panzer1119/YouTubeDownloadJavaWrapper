@@ -58,6 +58,11 @@ public abstract class AbstractUploader<T extends AbstractUploader, D extends Abs
         return (T) useDatabaseOrNull((database) -> database.getUploaderByUploaderId(getUploaderId()));
     }
     
+    @Override
+    public boolean save() {
+        return useDatabaseOrFalse((database) -> database.setUploaderByUploaderId(this, getUploaderId()));
+    }
+    
     public List<V> getVideos() {
         return useDatabaseOrNull((database) -> database.getVideosByUploaderId(getUploaderId()));
     }

@@ -80,6 +80,11 @@ public abstract class AbstractPlaylist<T extends AbstractPlaylist, M extends Abs
         return (T) useDatabaseOrNull((database) -> database.getPlaylistByPlaylistId(getPlaylistId()));
     }
     
+    @Override
+    public boolean save() {
+        return useDatabaseOrFalse((database) -> database.setPlaylistByPlaylistId(this, getPlaylistId()));
+    }
+    
     public List<V> getVideos() {
         return useDatabaseOrNull((database) -> database.getVideosByPlaylistId(getPlaylistId()));
     }

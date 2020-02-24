@@ -31,11 +31,6 @@ public class YouTubeChannel extends AbstractChannel<YouTubeChannel, YouTubeDatab
     }
     
     @Override
-    public boolean save() {
-        return useDatabaseOrFalse((database) -> database.setChannelByChannelId(this, getChannelId()));
-    }
-    
-    @Override
     public void set(YouTubeChannel youTubeChannel) {
         if (youTubeChannel == null) {
             //TODO Maybe just set every value in this object to null?

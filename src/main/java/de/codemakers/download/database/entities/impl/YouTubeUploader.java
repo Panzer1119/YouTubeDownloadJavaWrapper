@@ -31,11 +31,6 @@ public class YouTubeUploader extends AbstractUploader<YouTubeUploader, YouTubeDa
     }
     
     @Override
-    public boolean save() {
-        return useDatabaseOrFalse((database) -> database.setUploaderByUploaderId(this, getUploaderId()));
-    }
-    
-    @Override
     public void set(YouTubeUploader youTubeUploader) {
         if (youTubeUploader == null) {
             //TODO Maybe just set every value in this object to null?
