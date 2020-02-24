@@ -23,7 +23,7 @@ import de.codemakers.download.database.entities.impl.MediaFile;
 
 import java.util.List;
 
-public abstract class AbstractDatabase<T extends AbstractDatabase, M extends AbstractFile, E extends AbstractFile, V extends AbstractVideo, P extends AbstractPlaylist, CH extends AbstractChannel, U extends AbstractUploader, C extends AbstractConnector> {
+public abstract class AbstractDatabase<T extends AbstractDatabase, M extends AbstractFile, E extends AbstractFile, V extends AbstractVideo, P extends AbstractPlaylist, Q extends AbstractQueuedVideo, CH extends AbstractChannel, U extends AbstractUploader, R extends AbstractRequester, C extends AbstractConnector> {
     
     protected C connector;
     
@@ -108,6 +108,22 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract List<String> getPlaylistIdsByUploaderId(String uploaderId);
     
+    public abstract Q getQueuedYouTubeVideoById(int id);
+    
+    public abstract List<Q> getAllQueuedYouTubeVideos();
+    
+    public abstract List<Q> getQueuedYouTubeVideosByVideoId(String videoId);
+    
+    public abstract Q getNextQueuedYouTubeVideo();
+    
+    public abstract List<Q> getNextQueuedYouTubeVideos();
+    
+    public abstract List<R> getAllRequesters();
+    
+    public abstract List<String> getAllRequesterIds();
+    
+    public abstract R getRequesterByRequesterId(int requesterId);
+    
     // Adds
     
     // Sets
@@ -137,6 +153,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract boolean setChannelByChannelId(CH channel, String channelId);
     
     public abstract boolean setUploaderByUploaderId(U uploader, String uploaderId);
+    
+    public abstract boolean setRequesterByRequesterId(R requester, int requesterId);
     
     // Removes
     
