@@ -20,10 +20,12 @@ package de.codemakers.download.database.entities.impl;
 import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.AbstractEntity;
+import de.codemakers.download.util.StringResolver;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Objects;
 
 public class QueuedYouTubeVideo extends AbstractEntity<QueuedYouTubeVideo, YouTubeDatabase> {
     
@@ -34,6 +36,9 @@ public class QueuedYouTubeVideo extends AbstractEntity<QueuedYouTubeVideo, YouTu
     protected String arguments = null;
     protected String configFile = null;
     protected String outputDirectory = null;
+    //
+    protected transient String configFileResolved = null;
+    protected transient String outputDirectoryResolved = null;
     
     public QueuedYouTubeVideo() {
         super();
@@ -115,12 +120,30 @@ public class QueuedYouTubeVideo extends AbstractEntity<QueuedYouTubeVideo, YouTu
         return this;
     }
     
-    public AdvancedFile resolveConfigFile() {
-        final String configFile = getConfigFile();
+    public boolean resolveStrings(StringResolver stringResolver) {
+        Objects.requireNonNull(stringResolver, "stringResolver");
         if (configFile == null) {
-            return YouTubeDL.getConfigFile();
+            configFileResolved = null;
+        } else {
+            configFileResolved = stringResolver.resolve(configFile);
         }
-        return new AdvancedFile(configFile);
+        if (outputDirectory == null) {
+            outputDirectoryResolved = null;
+        } else {
+            outputDirectoryResolved = stringResolver.resolve(outputDirectory);
+        }
+        //FIXME Initiate the downloading into the temp folder if the paths could not be resolved
+        return ((configFile == null) == (configFileResolved == null)) && ((outputDirectory == null) == (outputDirectoryResolved == null));
+    }
+    
+    public AdvancedFile getResolvedConfigFile() {
+        if (configFile == null) {
+            return YouTubeDL.getConfigFile(); //Default Config File
+        }
+        if (configFileResolved == null) {
+            return null;
+        }
+        return new AdvancedFile(configFileResolved);
     }
     
     public String getConfigFile() {
@@ -132,12 +155,15 @@ public class QueuedYouTubeVideo extends AbstractEntity<QueuedYouTubeVideo, YouTu
         return this;
     }
     
-    public AdvancedFile resolveOutputDirectory() {
-        final String outputDirectory = getOutputDirectory();
+    public AdvancedFile getResolvedOutputDirectory() {
         if (outputDirectory == null) {
-            return YouTubeDL.getDirectory();
+            //FIXME What todo if there has never been an output directory set? (auto detect it with the file type?)
+            return null;
         }
-        return new AdvancedFile(outputDirectory);
+        if (outputDirectoryResolved == null) {
+            return null;
+        }
+        return new AdvancedFile(outputDirectoryResolved);
     }
     
     public String getOutputDirectory() {
