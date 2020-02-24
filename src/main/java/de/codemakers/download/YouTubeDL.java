@@ -1553,52 +1553,41 @@ public class YouTubeDL {
         return jsonObject;
     }
     
-    private static JsonObject downloadInfoEverything(FileInfo fileInfo) {
+    private static VideoInstanceInfo downloadVideoInstanceInfo(FileInfo fileInfo) {
         if (fileInfo == null || fileInfo.getVideoInfo() == null) {
             return null;
         }
-        return downloadInfoEverything(fileInfo.getVideoInfo().getId());
+        return downloadVideoInstanceInfo(fileInfo.getVideoInfo().getId());
     }
     
-    protected static JsonObject downloadInfoEverything(String videoId) {
+    protected static VideoInstanceInfo downloadVideoInstanceInfo(String videoId) {
         if (videoId == null || videoId.isEmpty()) {
             return null;
         }
         final DownloadInfo downloadInfo = new DownloadInfo(YouTubeSource.ofId(videoId));
         downloadInfo.setUseConfig(false);
-        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_GET_FILENAME, ARGUMENT_OUTPUT, OUTPUT_FORMAT_EVERYTHING);
+        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_GET_FILENAME, ARGUMENT_OUTPUT, VideoInstanceInfo.OUTPUT_FORMAT_EVERYTHING);
         try {
-            final AtomicReference<JsonObject> jsonObjectAtomicReference = new AtomicReference<>(null);
+            final AtomicReference<VideoInstanceInfo> videoInstanceInfoAtomicReference = new AtomicReference<>(null);
             final AtomicBoolean errored = new AtomicBoolean(false);
             final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), (normal) -> {
-                final Matcher matcher = PATTERN_OUTPUT_FORMAT_EVERYTHING.matcher(normal);
+                final Matcher matcher = VideoInstanceInfo.PATTERN_OUTPUT_FORMAT_EVERYTHING.matcher(normal);
                 if (matcher.matches()) {
-                    jsonObjectAtomicReference.set(outputInfoToJsonObject(normal));
+                    videoInstanceInfoAtomicReference.set(VideoInstanceInfo.outputInfoToVideoInstanceInfo(normal));
                 } else {
-                    jsonObjectAtomicReference.set(null);
+                    videoInstanceInfoAtomicReference.set(null);
                 }
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
             System.out.println("downloadInfoEverything: exitValue=" + exitValue); //DEBUG Remove this
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return;
             }
-            return jsonObjectAtomicReference.get();
+            return videoInstanceInfoAtomicReference.get();
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
         }
     }
-    
-    private static JsonObject outputInfoToJsonObject(String outputInfo) {
-        if (outputInfo == null) {
-            return null;
-        }
-        return Misc.GSON.fromJson(outputInfo.replaceAll("(?:\\{\\{\\{###\\{\\{\\{)|(?:\\}\\}\\}###\\}\\}\\})", "\"").replaceAll("=", ":"), JsonObject.class);
-    }
-    
-    private static final String OUTPUT_FORMAT_EVERYTHING = new String(new AdvancedFile(INTERN_FOLDER, "youtube-dl_output_format_everything.txt").readBytesWithoutException());
-    private static final String OUTPUT_FORMAT_EVERYTHING_REGEX = new String(new AdvancedFile(INTERN_FOLDER, "youtube-dl_output_format_everything_regex.txt").readBytesWithoutException());
-    private static final Pattern PATTERN_OUTPUT_FORMAT_EVERYTHING = Pattern.compile(OUTPUT_FORMAT_EVERYTHING_REGEX);
     
     @Deprecated
     private static final String OUTPUT_TEMPLATE_EXTRAS = "\"id={%(id)s},uploader={%(uploader)s},uploaderId={%(uploader_id)s},title={%(title)s},altTitle={%(alt_title)s},duration={%(duration)s},uploadDate={%(upload_date)s},format={%(format)s},width={%(width)s},height={%(height)s},fps={%(fps)s},asr={%(asr)s},playlist={%(playlist)s},playlistId={%(playlist_id)s},playlistTitle={%(playlist_title)s},playlistIndex={%(playlist_index)s},playlistUploader={%(playlist_uploader)s},playlistUploaderId={%(playlist_uploader_id)s}\"";

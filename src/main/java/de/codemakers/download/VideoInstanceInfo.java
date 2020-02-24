@@ -18,8 +18,15 @@
 package de.codemakers.download;
 
 import com.google.gson.JsonObject;
+import de.codemakers.io.file.AdvancedFile;
+
+import java.util.regex.Pattern;
 
 public class VideoInstanceInfo {
+    
+    protected static final String OUTPUT_FORMAT_EVERYTHING = new String(new AdvancedFile(YouTubeDL.INTERN_FOLDER, "youtube-dl_output_format_everything.txt").readBytesWithoutException());
+    protected static final String OUTPUT_FORMAT_EVERYTHING_REGEX = new String(new AdvancedFile(YouTubeDL.INTERN_FOLDER, "youtube-dl_output_format_everything_regex.txt").readBytesWithoutException());
+    protected static final Pattern PATTERN_OUTPUT_FORMAT_EVERYTHING = Pattern.compile(OUTPUT_FORMAT_EVERYTHING_REGEX);
     
     protected String id = null;
     protected String title = null;
@@ -936,6 +943,21 @@ public class VideoInstanceInfo {
         videoInstanceInfo.setDisc_number(jsonObject.has("disc_number") ? jsonObject.get("disc_number").getAsLong() : null);
         videoInstanceInfo.setRelease_year(jsonObject.has("release_year") ? jsonObject.get("release_year").getAsLong() : null);
         return videoInstanceInfo;
+    }
+    
+    public static JsonObject outputInfoToJsonObject(String outputInfo) {
+        if (outputInfo == null) {
+            return null;
+        }
+        return Misc.GSON.fromJson(outputInfo.replaceAll("(?:\\{\\{\\{###\\{\\{\\{)|(?:\\}\\}\\}###\\}\\}\\})", "\"").replaceAll("=", ":"), JsonObject.class);
+    }
+    
+    public static VideoInstanceInfo outputInfoToVideoInstanceInfo(String outputInfo) {
+        final JsonObject jsonObject = outputInfoToJsonObject(outputInfo);
+        if (jsonObject == null) {
+            return null;
+        }
+        return ofJsonObject(jsonObject);
     }
     
 }
