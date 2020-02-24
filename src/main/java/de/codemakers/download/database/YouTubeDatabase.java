@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, YouTubeChannel, YouTubeUploader, C> {
+public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, QueuedYouTubeVideo, YouTubeChannel, YouTubeUploader, YouTubeRequester, C> {
     
     // // Selects / Gets
     // Table: Channels
@@ -792,7 +792,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
-    public QueuedYouTubeVideo getQueuedYouTubeVideoById(int id) {
+    @Override
+    public QueuedYouTubeVideo getQueuedVideoById(int id) {
         if (!isConnected()) {
             return null;
         }
@@ -804,7 +805,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
-    public List<QueuedYouTubeVideo> getAllQueuedYouTubeVideos() {
+    @Override
+    public List<QueuedYouTubeVideo> getAllQueuedVideos() {
         if (!isConnected()) {
             return null;
         }
@@ -813,7 +815,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
-    public List<QueuedYouTubeVideo> getQueuedYouTubeVideosByVideoId(String videoId) {
+    @Override
+    public List<QueuedYouTubeVideo> getQueuedVideosByVideoId(String videoId) {
         if (!isConnected() || videoId == null || videoId.isEmpty()) {
             return null;
         }
@@ -825,7 +828,18 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
-    public QueuedYouTubeVideo getNextQueuedYouTubeVideo() {
+    @Override
+    public List<QueuedYouTubeVideo> getQueuedVideosByRequesterId(int requesterId) {
+    
+    }
+    
+    @Override
+    public List<String> getQueuedVideoIdsByRequesterId(int requesterId) {
+    
+    }
+    
+    @Override
+    public QueuedYouTubeVideo getNextQueuedVideo() {
         if (!isConnected()) {
             return null;
         }
@@ -834,13 +848,29 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
-    public List<QueuedYouTubeVideo> getNextQueuedYouTubeVideos() {
+    @Override
+    public List<QueuedYouTubeVideo> getNextQueuedVideos() {
         if (!isConnected()) {
             return null;
         }
         synchronized (preparedStatement_getNextQueuedVideos) {
             return useResultSetAndClose(preparedStatement_getNextQueuedVideos::executeQuery, YouTubeDatabase::resultSetToQueuedYouTubeVideos);
         }
+    }
+    
+    @Override
+    public List<YouTubeRequester> getAllRequesters() {
+    
+    }
+    
+    @Override
+    public List<String> getAllRequesterIds() {
+    
+    }
+    
+    @Override
+    public YouTubeRequester getRequesterByRequesterId(int requesterId) {
+    
     }
     
     @Override
@@ -953,7 +983,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
-    public boolean setQueuedYouTubeVideoById(QueuedYouTubeVideo queuedYouTubeVideo, int id) {
+    @Override
+    public boolean setQueuedVideoById(QueuedYouTubeVideo queuedYouTubeVideo, int id) {
         if (!isConnected() || queuedYouTubeVideo == null) {
             return false;
         }
@@ -963,6 +994,11 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             }
             return Standard.silentError(() -> preparedStatement_setQueuedVideoById.executeUpdate()) > 0;
         }
+    }
+    
+    @Override
+    public boolean setRequesterByRequesterId(YouTubeRequester requester, int requesterId) {
+    
     }
     
     @Override
