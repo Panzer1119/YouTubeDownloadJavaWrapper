@@ -70,6 +70,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_getAllQueuedVideos = null;
     private transient PreparedStatement preparedStatement_getQueuedVideoById = null;
     private transient PreparedStatement preparedStatement_getQueuedVideosByVideoId = null;
+    private transient PreparedStatement preparedStatement_getQueuedVideosByRequesterId = null;
     private transient PreparedStatement preparedStatement_getNextQueuedVideos = null;
     private transient PreparedStatement preparedStatement_getNextQueuedVideo = null;
     // Table: Videos
@@ -229,6 +230,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_getAllQueuedVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL);
         preparedStatement_getQueuedVideoById = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_BY_ID);
         preparedStatement_getQueuedVideosByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_BY_VIDEO_ID);
+        preparedStatement_getQueuedVideosByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_BY_REQUESTER_ID);
         preparedStatement_getNextQueuedVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_NEXT);
         preparedStatement_getNextQueuedVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_NEXT);
         // Table: Videos
@@ -355,6 +357,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_getAllQueuedVideos);
         IOUtil.closeQuietly(preparedStatement_getQueuedVideoById);
         IOUtil.closeQuietly(preparedStatement_getQueuedVideosByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getQueuedVideosByRequesterId);
         IOUtil.closeQuietly(preparedStatement_getNextQueuedVideos);
         IOUtil.closeQuietly(preparedStatement_getNextQueuedVideo);
         // Table: Videos
@@ -655,6 +658,16 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public List<String> getAllChannelIds() {
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllChannels) {
+            return useResultSetAndClose(preparedStatement_getAllChannels::executeQuery, YouTubeDatabase::resultSetChannelIdsFromChannels);
+        }
+    }
+    
+    @Override
     public YouTubeChannel getChannelByChannelId(String channelId) {
         if (!isConnected() || channelId == null || channelId.isEmpty()) {
             return null;
@@ -712,6 +725,16 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
         synchronized (preparedStatement_getAllUploaders) {
             return useResultSetAndClose(preparedStatement_getAllUploaders::executeQuery, YouTubeDatabase::resultSetToUploaders);
+        }
+    }
+    
+    @Override
+    public List<String> getAllUploaderIds() {
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllChannels) {
+            return useResultSetAndClose(preparedStatement_getAllChannels::executeQuery, YouTubeDatabase::resultSetUploaderIdsFromUploaders);
         }
     }
     
@@ -830,12 +853,28 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public List<QueuedYouTubeVideo> getQueuedVideosByRequesterId(int requesterId) {
-    
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getQueuedVideosByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_getQueuedVideosByRequesterId, requesterId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getQueuedVideosByRequesterId::executeQuery, YouTubeDatabase::resultSetToQueuedYouTubeVideos);
+        }
     }
     
     @Override
     public List<String> getQueuedVideoIdsByRequesterId(int requesterId) {
-    
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getQueuedVideosByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_getQueuedVideosByRequesterId, requesterId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getQueuedVideosByRequesterId::executeQuery, YouTubeDatabase::resultSetVideoIdsFromQueuedVideos);
+        }
     }
     
     @Override
@@ -860,17 +899,48 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public List<YouTubeRequester> getAllRequesters() {
-    
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllRequesters) {
+            return useResultSetAndClose(preparedStatement_getAllRequesters::executeQuery, YouTubeDatabase::resultSetToRequesters);
+        }
     }
     
     @Override
-    public List<String> getAllRequesterIds() {
-    
+    public List<Integer> getAllRequesterIds() {
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllRequesters) {
+            return useResultSetAndClose(preparedStatement_getAllRequesters::executeQuery, YouTubeDatabase::resultSetRequesterIdsFromRequesters);
+        }
     }
     
     @Override
     public YouTubeRequester getRequesterByRequesterId(int requesterId) {
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getRequesterByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_getRequesterByRequesterId, requesterId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getRequesterByRequesterId::executeQuery, YouTubeDatabase::resultSetToRequester);
+        }
+    }
     
+    @Override
+    public YouTubeRequester getRequesterByTag(String tag) {
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getRequesterByTag) {
+            if (!setPreparedStatement(preparedStatement_getRequesterByTag, tag)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getRequesterByTag::executeQuery, YouTubeDatabase::resultSetToRequester);
+        }
     }
     
     @Override
@@ -998,7 +1068,28 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public boolean setRequesterByRequesterId(YouTubeRequester requester, int requesterId) {
+        if (!isConnected() || requester == null) {
+            return false;
+        }
+        synchronized (preparedStatement_setRequesterByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_setRequesterByRequesterId, requester.getRequesterId(), requester.getTag(), requester.getName(), requesterId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setRequesterByRequesterId.executeUpdate()) > 0;
+        }
+    }
     
+    @Override
+    public boolean setRequesterByRequesterId(YouTubeRequester requester, String tag) {
+        if (!isConnected() || requester == null || tag == null || tag.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setRequesterByTag) {
+            if (!setPreparedStatement(preparedStatement_setRequesterByTag, requester.getTag(), requester.getName(), tag)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setRequesterByTag.executeUpdate()) > 0;
+        }
     }
     
     @Override
@@ -1065,6 +1156,22 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     private static List<String> resultSetVideoIdsFromVideos(ResultSet resultSet) {
         return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_ID));
+    }
+    
+    private static List<String> resultSetChannelIdsFromChannels(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNELS_COLUMN_ID));
+    }
+    
+    private static List<String> resultSetUploaderIdsFromUploaders(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID));
+    }
+    
+    private static List<Integer> resultSetRequesterIdsFromRequesters(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID));
+    }
+    
+    private static List<String> resultSetVideoIdsFromQueuedVideos(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID));
     }
     
     private static List<String> resultSetPlaylistIdsFromPlaylistVideos(ResultSet resultSet) {
@@ -1245,6 +1352,27 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             }
         } while (Standard.silentError(resultSet::next));
         return youTubeUploaders;
+    }
+    
+    protected static YouTubeRequester resultSetToRequester(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return Standard.silentError(() -> new YouTubeRequester(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_NAME)));
+    }
+    
+    protected static List<YouTubeRequester> resultSetToRequesters(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<YouTubeRequester> youTubeRequesters = new ArrayList<>();
+        do {
+            final YouTubeRequester youTubeRequester = resultSetToRequester(resultSet);
+            if (youTubeRequester != null) {
+                youTubeRequesters.add(youTubeRequester);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return youTubeRequesters;
     }
     
     protected static void createTables(YouTubeDatabase youTubeDatabase) {

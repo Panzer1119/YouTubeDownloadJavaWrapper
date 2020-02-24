@@ -86,6 +86,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract List<CH> getAllChannels();
     
+    public abstract List<String> getAllChannelIds();
+    
     public abstract CH getChannelByChannelId(String channelId);
     
     public abstract List<V> getVideosByChannelId(String channelId);
@@ -95,6 +97,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract boolean hasVideoOnChannel(String channelId, String videoId);
     
     public abstract List<U> getAllUploaders();
+    
+    public abstract List<String> getAllUploaderIds();
     
     public abstract U getUploaderByUploaderId(String uploaderId);
     
@@ -124,9 +128,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract List<R> getAllRequesters();
     
-    public abstract List<String> getAllRequesterIds();
+    public abstract List<Integer> getAllRequesterIds();
     
     public abstract R getRequesterByRequesterId(int requesterId);
+    
+    public abstract R getRequesterByTag(String tag);
     
     // Adds
     
@@ -161,6 +167,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract boolean setQueuedVideoById(Q queuedVideo, int id);
     
     public abstract boolean setRequesterByRequesterId(R requester, int requesterId);
+    
+    public abstract boolean setRequesterByRequesterId(R requester, String tag);
     
     // Removes
     
