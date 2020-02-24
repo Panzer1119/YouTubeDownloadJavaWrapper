@@ -640,7 +640,27 @@ public class YouTubeDL {
      */
     public static final String ARGUMENT_LIST_THUMBNAIL = "--list-thumnnails";
     // Verbosity / Simulation Options
-    //TODO
+    /**
+     * Activate quiet mode
+     */
+    public static final String ARGUMENT_QUIET = "--quiet";
+    /**
+     * Ignore warnings
+     */
+    public static final String ARGUMENT_NO_WARNINGS = "--no-warnings";
+    /**
+     * Do not download the video and do not write
+     * anything to disk
+     */
+    public static final String ARGUMENT_SIMULATE = "--simulate";
+    /**
+     * Do not download the video
+     */
+    public static final String ARGUMENT_SKIP_DOWNLOAD = "--skip-download";
+    /**
+     * Simulate, quiet but print URL
+     */
+    public static final String ARGUMENT_GET_URL = "--get-url";
     /**
      * Simulate, quiet but print title
      */
@@ -649,7 +669,14 @@ public class YouTubeDL {
      * Simulate, quiet but print id
      */
     public static final String ARGUMENT_GET_ID = "--get-id";
-    //TODO
+    /**
+     * Simulate, quiet but print thumbnail URL
+     */
+    public static final String ARGUMENT_GET_THUMBNAIL = "--get-thumbnail";
+    /**
+     * Simulate, quiet but print video description
+     */
+    public static final String ARGUMENT_GET_DESCRIPTION = "--get-description";
     /**
      * Simulate, quiet but print video length
      */
@@ -658,11 +685,132 @@ public class YouTubeDL {
      * Simulate, quiet but print output filename
      */
     public static final String ARGUMENT_GET_FILENAME = "--get-filename";
-    //TODO
-    
+    /**
+     * Simulate, quiet but print output format
+     */
+    public static final String ARGUMENT_GET_FORMAT = "--get-format";
+    /**
+     * Simulate, quiet but print JSON information.
+     * See the "OUTPUT TEMPLATE" for a description
+     * of available keys.
+     */
+    public static final String ARGUMENT_DUMP_JSON = "--dump-json";
+    /**
+     * Simulate, quiet but print JSON information
+     * for each command-line argument. If the URL
+     * refers to a playlist, dump the whole
+     * playlist information in a single line.
+     */
+    public static final String ARGUMENT_DUMP_SINGLE_JSON = "--dump-single-json";
+    /**
+     * Be quiet and print the video information as
+     * JSON (video is still being downloaded).
+     */
+    public static final String ARGUMENT_PRINT_JSON = "--print-json";
+    /**
+     * Output progress bar as new lines
+     */
+    public static final String ARGUMENT_NEWLINE = "--newline";
+    /**
+     * Do not print progress bar
+     */
+    public static final String ARGUMENT_NO_PROGRESS = "--no-progress";
+    /**
+     * Display progress in console titlebar
+     */
+    public static final String ARGUMENT_CONSOLE_TITLE = "--console-title";
+    /**
+     * Print various debugging information
+     */
+    public static final String ARGUMENT_VERBOSE = "--verbose";
+    /**
+     * Print downloaded pages encoded using base64
+     * to debug problems (very verbose)
+     */
+    public static final String ARGUMENT_DUMP_PAGES = "--dump-pages";
+    /**
+     * Write downloaded intermediary pages to
+     * files in the current directory to debug
+     * problems
+     */
+    public static final String ARGUMENT_WRITE_PAGES = "--write-pages";
+    /**
+     * Display sent and read HTTP traffic
+     */
+    public static final String ARGUMENT_PRINT_TRAFFIC = "--print-traffic";
+    /**
+     * Contact the youtube-dl server for debugging
+     */
+    public static final String ARGUMENT_CALL_HOME = "--call-home";
+    /**
+     * Do NOT contact the youtube-dl server for
+     * debugging
+     */
+    public static final String ARGUMENT_NO_CALL_HOME = "--no-call-home";
     // Workarounds
-    //TODO
-    
+    /**
+     * Force the specified encoding (experimental)
+     * <p>
+     * Needs one sub argument: ENCODING
+     */
+    public static final String ARGUMENT_ENCODING = "--encoding";
+    /**
+     * Suppress HTTPS certificate validation
+     */
+    public static final String ARGUMENT_NO_CHECK_CERTIFICATE = "--no-check-certificate";
+    /**
+     * Use an unencrypted connection to retrieve
+     * information about the video. (Currently
+     * supported only for YouTube)
+     */
+    public static final String ARGUMENT_PREFER_INSECURE = "--prefer-insecure";
+    /**
+     * Specify a custom user agent
+     * <p>
+     * Needs one sub argument: UA
+     */
+    public static final String ARGUMENT_USER_AGENT = "--user-agent";
+    /**
+     * Specify a custom referer, use if the video
+     * access is restricted to one domain
+     * <p>
+     * Needs one sub argument: URL
+     */
+    public static final String ARGUMENT_REFERER = "--referer";
+    /**
+     * Specify a custom HTTP header and its value,
+     * separated by a colon ':'. You can use this
+     * option multiple times
+     * <p>
+     * Needs two sub arguments: FIELD:VALUE
+     */
+    public static final String ARGUMENT_ADD_HEADER = "--add-header";
+    /**
+     * Work around terminals that lack
+     * bidirectional text support. Requires bidiv
+     * or fribidi executable in PATH
+     */
+    public static final String ARGUMENT_BIDI_WORKAROUND = "--bidi-workaround";
+    /**
+     * Number of seconds to sleep before each
+     * download when used alone or a lower bound
+     * of a range for randomized sleep before each
+     * download (minimum possible number of
+     * seconds to sleep) when used along with
+     * --max-sleep-interval.
+     * <p>
+     * Needs one sub argument: SECONDS
+     */
+    public static final String ARGUMENT_SLEEP_INTERVAL = "--sleep-interval";
+    /**
+     * Upper bound of a range for randomized sleep
+     * before each download (maximum possible
+     * number of seconds to sleep). Must only be
+     * used along with --[min-]sleep-interval.
+     * <p>
+     * Needs one sub argument: SECONDS
+     */
+    public static final String ARGUMENT_MAX_SLEEP_INTERVAL = "--max-sleep-interval";
     // Video Format Options
     /**
      * Video format code, see the "FORMAT
