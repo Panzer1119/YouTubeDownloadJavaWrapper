@@ -19,6 +19,7 @@ package de.codemakers.download;
 
 import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.download.util.Misc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

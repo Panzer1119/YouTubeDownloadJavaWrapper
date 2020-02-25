@@ -17,15 +17,8 @@
 
 package de.codemakers.download;
 
-import com.google.gson.JsonObject;
 import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
-import de.codemakers.base.multiplets.Doublet;
-import de.codemakers.download.sources.YouTubeSource;
-import de.codemakers.download.util.Misc;
-
-import java.util.List;
-import java.util.concurrent.Future;
 
 public class JsonTest {
     
@@ -41,6 +34,8 @@ public class JsonTest {
         System.out.println("jsonObject_1=" + jsonObject_1);
         System.out.println("jsonObject_1.get(\"title\")=" + jsonObject_1.get("title"));
         */
+        /*
+        //TODO Rework this too
         final JsonObject jsonObject = YouTubeDL.downloadInfoEverything(args[0]);
         System.out.println();
         System.out.println();
@@ -51,6 +46,7 @@ public class JsonTest {
         final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = YouTubeDL.downloadFileInfosAndThenAsync(YouTubeSource.ofId(args[0]));
         doublet.getB().get();
         System.out.println(doublet.getA());
+        */
     }
     
 }
