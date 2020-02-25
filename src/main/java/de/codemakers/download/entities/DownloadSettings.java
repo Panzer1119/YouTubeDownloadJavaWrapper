@@ -17,8 +17,11 @@
 
 package de.codemakers.download.entities;
 
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.ArrayUtil;
 import de.codemakers.io.file.AdvancedFile;
 
+import java.io.BufferedWriter;
 import java.util.Arrays;
 
 public class DownloadSettings {
@@ -93,6 +96,32 @@ public class DownloadSettings {
         return this;
     }
     
+    public boolean logError(Object object) {
+        return logIntern("[ERROR]: " + object);
+    }
+    
+    public boolean log(Object object) {
+        return logIntern("[INFO ]: " + object);
+    }
+    
+    protected boolean logIntern(Object object) {
+        if (logFile == null || object == null) {
+            return false;
+        }
+        try (final BufferedWriter bufferedWriter = logFile.createBufferedWriter(true)) {
+            bufferedWriter.write(object.toString());
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+        }
+        return true;
+    }
+    
+    public boolean isLogging() {
+        return logFile != null;
+    }
+    
     public AdvancedFile getLogFile() {
         return logFile;
     }
@@ -117,6 +146,25 @@ public class DownloadSettings {
     
     public boolean hasArguments() {
         return arguments != null && arguments.length > 0;
+    }
+    
+    public boolean hasArgument(String argument) {
+        if (arguments == null || arguments.length == 0 || argument == null || argument.isEmpty()) {
+            return false;
+        }
+        return ArrayUtil.arrayContains(arguments, argument);
+    }
+    
+    public DownloadSettings addArgument(String argument) {
+        if (argument == null) {
+            return this;
+        }
+        if (arguments == null) {
+            return setArguments(argument);
+        }
+        arguments = Arrays.copyOf(arguments, arguments.length + 1);
+        arguments[arguments.length - 1] = argument;
+        return this;
     }
     
     public DownloadSettings setArguments(String... arguments) {

@@ -25,12 +25,14 @@ import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.entities.impl.YouTubeVideo;
+import de.codemakers.download.entities.impl.YouTubeDownloadContainer;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -126,6 +128,26 @@ public class Misc {
     
     public static int monitorProcessDebug(Process process) {
         return monitorProcess(process, System.out::println, System.err::println);
+    }
+    
+    public static int monitorProcess(Process process, YouTubeDownloadContainer downloadContainer) {
+        Objects.requireNonNull(downloadContainer, "downloadContainer");
+        final int exitValue = monitorProcess(process, (normal) -> {
+            if (downloadContainer.isUsingDownloadProgress()) {
+                downloadContainer.getDownloadProgress().nextLine(normal);
+            }
+            if (downloadContainer.getDownloadSettings().isLogging()) {
+                downloadContainer.getDownloadSettings().log(normal);
+            }
+        }, (error) -> {
+            if (downloadContainer.getDownloadSettings().isLogging()) {
+                downloadContainer.getDownloadSettings().logError(error);
+            }
+        });
+        if (downloadContainer.isUsingDownloadProgress()) {
+            //Arrays.fill(downloadContainer.getDownloadProgress().getProgresses(), 1.0F); //FIXME Good? Because what if something failed and has not finished? Than this overrides it...
+        }
+        return exitValue;
     }
     
     public static int monitorProcess(Process process, ToughConsumer<String> normal) {
