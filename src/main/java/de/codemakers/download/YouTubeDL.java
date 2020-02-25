@@ -23,6 +23,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.entities.VideoInstanceInfo;
 import de.codemakers.download.sources.Source;
 import de.codemakers.download.sources.YouTubeSource;
 import de.codemakers.download.util.Misc;

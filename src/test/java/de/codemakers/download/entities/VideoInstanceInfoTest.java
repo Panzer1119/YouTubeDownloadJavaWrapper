@@ -15,7 +15,7 @@
  *
  */
 
-package de.codemakers.download;/*
+package de.codemakers.download.entities;/*
  *    Copyright 2019 - 2020 Paul Hagedorn (Panzer1119)
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");

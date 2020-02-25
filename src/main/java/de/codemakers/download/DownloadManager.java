@@ -29,6 +29,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+@Deprecated
 public class DownloadManager implements Stoppable {
     
     protected static final DownloadManager INSTANCE = new DownloadManager(CJP.getInstance());
@@ -73,11 +74,13 @@ public class DownloadManager implements Stoppable {
         return cjp.getFixedExecutorService().submit(callable);
     }
     
+    /*
     public DownloadProgress submitDownload(DownloadInfo downloadInfo) {
         final DownloadProgress downloadProgress = new DownloadProgress(downloadInfo);
         submit(() -> YouTubeDL.downloadDirect(downloadProgress));
         return downloadProgress;
     }
+    */
     
     public Future<List<String>> submitDownloadIds(String source) {
         return submitDownloadIds(YouTubeSource.ofString(source));
@@ -87,6 +90,7 @@ public class DownloadManager implements Stoppable {
         return submit(() -> YouTubeDL.downloadIdsDirect(source));
     }
     
+    /*
     public Future<List<VideoInfo>> submitDownloadVideoInfos(String source) {
         return submitDownloadVideoInfos(YouTubeSource.ofString(source));
     }
@@ -102,5 +106,6 @@ public class DownloadManager implements Stoppable {
     public Future<List<VideoInfo>> submitDownloadVideoInfos(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
         return submit(() -> YouTubeDL.downloadVideoInfosDirect(source, videoInfoGenerator));
     }
+    */
     
 }

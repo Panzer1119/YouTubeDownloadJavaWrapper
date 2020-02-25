@@ -15,11 +15,12 @@
  *
  */
 
-package de.codemakers.download;
+package de.codemakers.download.entities;
 
 import com.google.gson.JsonObject;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughFunction;
+import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.util.Misc;
 import de.codemakers.io.file.AdvancedFile;
 
