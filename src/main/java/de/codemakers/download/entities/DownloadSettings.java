@@ -31,7 +31,7 @@ public class DownloadSettings {
     private int expectedDownloads;
     
     public DownloadSettings() {
-        this(null, null, null, true, null, 2);
+        this(null, null, null, false, null, 2);
     }
     
     public DownloadSettings(AdvancedFile outputDirectory, AdvancedFile configFile, AdvancedFile logFile, boolean useConfig, String[] arguments, int expectedDownloads) {
@@ -41,6 +41,10 @@ public class DownloadSettings {
         this.useConfig = useConfig;
         this.arguments = arguments;
         this.expectedDownloads = expectedDownloads;
+    }
+    
+    public static DownloadSettings empty() {
+        return new DownloadSettings().setExpectedDownloads(0);
     }
     
     protected String getOutputDirectoryAbsolutePathQuoted() {
