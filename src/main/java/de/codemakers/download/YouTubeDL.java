@@ -19,13 +19,13 @@ package de.codemakers.download;
 
 import com.google.gson.JsonObject;
 import de.codemakers.base.Standard;
-import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.database.YouTubeDatabase;
+import de.codemakers.download.entities.AbstractDownloadContainer;
 import de.codemakers.download.entities.DownloadSettings;
 import de.codemakers.download.entities.VideoInstanceInfo;
 import de.codemakers.download.entities.impl.YouTubeDownloadContainer;
@@ -89,21 +89,29 @@ public class YouTubeDL {
      */
     public static final Pattern PATTERN_YOUTUBE_CHANNEL_URL = Pattern.compile(PATTERN_YOUTUBE_CHANNEL_URL_STRING);
     // //
-    public static final String TEMPLATE_LOG_FILE_NAME = "log_%s_%s.txt";
-    public static final String UNKNOWN_YOUTUBE_ID = "UNKNOWN";
     
+    // Intern
     public static final AdvancedFile INTERN_FOLDER = new AdvancedFile(Standard.MAIN_FOLDER, "download");
-    
-    public static final String DEFAULT_CONFIG_NAME = "youtube-dl.conf";
-    private static AdvancedFile CONFIG_FILE = new AdvancedFile(DEFAULT_CONFIG_NAME);
+    // Program Name
     public static final String DEFAULT_PROGRAM_NAME = "youtube-dl";
     private static String PROGRAM_NAME = DEFAULT_PROGRAM_NAME;
-    protected static final AdvancedFile DEFAULT_DIRECTORY = new AdvancedFile();
-    private static AdvancedFile DIRECTORY = DEFAULT_DIRECTORY;
-    public static final String DEFAULT_LOG_NAME = "log.txt";
-    private static AdvancedFile LOG_FILE = new AdvancedFile(DEFAULT_LOG_NAME);
-    public static final String DEFAULT_LOGS_NAME = "logs";
-    private static AdvancedFile LOGS_DIRECTORY = new AdvancedFile(DEFAULT_LOGS_NAME);
+    // Config File
+    public static final String DEFAULT_CONFIG_FILE_NAME = "youtube-dl.conf";
+    public static final AdvancedFile DEFAULT_CONFIG_FILE = new AdvancedFile(DEFAULT_CONFIG_FILE_NAME);
+    private static AdvancedFile CONFIG_FILE = DEFAULT_CONFIG_FILE;
+    // Output Directory
+    private static final AdvancedFile DEFAULT_OUTPUT_DIRECTORY = new AdvancedFile();
+    private static AdvancedFile OUTPUT_DIRECTORY = DEFAULT_OUTPUT_DIRECTORY;
+    // Single Log
+    public static final String DEFAULT_LOG_FILE_NAME = "log.txt";
+    public static final AdvancedFile DEFAULT_LOG_FILE = new AdvancedFile(DEFAULT_LOG_FILE_NAME);
+    private static AdvancedFile LOG_FILE = DEFAULT_LOG_FILE;
+    // Multiple Logs
+    public static final String DEFAULT_LOG_FILE_NAME_TEMPLATE = "log_%s_%s.txt";
+    private static String LOG_FILE_NAME_TEMPLATE = DEFAULT_LOG_FILE_NAME_TEMPLATE;
+    public static final String DEFAULT_LOGS_DIRECTORY_NAME = "logs";
+    public static final AdvancedFile DEFAULT_LOGS_DIRECTORY = new AdvancedFile(DEFAULT_LOGS_DIRECTORY_NAME);
+    private static AdvancedFile LOGS_DIRECTORY = DEFAULT_LOGS_DIRECTORY;
     // // Arguments
     // Source: https://github.com/ytdl-org/youtube-dl/
     // Options
@@ -1077,20 +1085,8 @@ public class YouTubeDL {
     public static final String ARGUMENT_CONVERT_SUBS = "--convert-subs";
     // //
     
-    //Other
+    // Other
     private static final Set<String> USED_LOG_NAMES = new HashSet<>();
-    
-    public static AdvancedFile getConfigFile() {
-        return CONFIG_FILE;
-    }
-    
-    public static void setConfigFile(AdvancedFile configFile) {
-        CONFIG_FILE = configFile;
-    }
-    
-    protected static String getConfigFileAbsoluteAndEscaped() {
-        return "\"" + getConfigFile().getAbsolutePath() + "\"";
-    }
     
     public static String getProgramName() {
         return PROGRAM_NAME;
@@ -1100,16 +1096,34 @@ public class YouTubeDL {
         PROGRAM_NAME = programName;
     }
     
-    public static AdvancedFile getDirectory() {
-        return DIRECTORY;
+    public static AdvancedFile getConfigFile() {
+        return CONFIG_FILE;
     }
     
-    protected static String getDirectoryAbsoluteAndEscaped() {
-        return "\"" + getDirectory().getAbsolutePath() + "\"";
+    public static void setConfigFile(AdvancedFile configFile) {
+        CONFIG_FILE = configFile;
     }
     
-    public static void setDirectory(AdvancedFile directory) {
-        DIRECTORY = directory;
+    public static String getConfigFileAbsoluteAndEscaped() {
+        if (getConfigFile() == null) {
+            return null;
+        }
+        return "\"" + getConfigFile().getAbsolutePath() + "\"";
+    }
+    
+    public static AdvancedFile getOutputDirectory() {
+        return OUTPUT_DIRECTORY;
+    }
+    
+    public static String getOutputDirectoryAbsoluteAndEscaped() {
+        if (getOutputDirectory() == null) {
+            return null;
+        }
+        return "\"" + getOutputDirectory().getAbsolutePath() + "\"";
+    }
+    
+    public static void setOutputDirectory(AdvancedFile outputDirectory) {
+        OUTPUT_DIRECTORY = outputDirectory;
     }
     
     public static AdvancedFile getLogFile() {
@@ -1120,12 +1134,79 @@ public class YouTubeDL {
         LOG_FILE = logFile;
     }
     
+    public static String getLogFileNameTemplate() {
+        return LOG_FILE_NAME_TEMPLATE;
+    }
+    
+    public static void setLogFileNameTemplate(String logFileNameTemplate) {
+        LOG_FILE_NAME_TEMPLATE = logFileNameTemplate;
+    }
+    
+    public static AdvancedFile createLogFile(Source source) {
+        if (source == null) {
+            return null;
+        }
+        final AdvancedFile directory = getLogsDirectory();
+        if (directory == null) {
+            return null;
+        }
+        directory.mkdirsWithoutException();
+        final String template = getLogFileNameTemplate();
+        if (template == null) {
+            return null;
+        }
+        final String id = source.getId();
+        if (id == null) {
+            return null;
+        }
+        while (true) {
+            final String name = String.format(template, id, ZonedDateTime.now().format(TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES));
+            synchronized (USED_LOG_NAMES) {
+                if (USED_LOG_NAMES.contains(name)) {
+                    continue;
+                }
+                USED_LOG_NAMES.add(name);
+            }
+            return new AdvancedFile(directory, name);
+        }
+    }
+    
     public static AdvancedFile getLogsDirectory() {
         return LOGS_DIRECTORY;
     }
     
     public static void setLogsDirectory(AdvancedFile logsDirectory) {
         LOGS_DIRECTORY = logsDirectory;
+    }
+    
+    public static String[] generateCommandStringArray(AbstractDownloadContainer downloadContainer) {
+        final DownloadSettings downloadSettings = downloadContainer.getDownloadSettings();
+        final boolean useExternalConfig = downloadSettings.isUsingExternalConfig();
+        final boolean hasArguments = downloadSettings.hasArguments();
+        final String sourceQuoted = downloadContainer.getSource().getSourceQuoted();
+        if (hasArguments) {
+            if (useExternalConfig) {
+                final String[] output = new String[3 + downloadSettings.getArguments().length + 1];
+                output[0] = PROGRAM_NAME;
+                output[1] = ARGUMENT_CONFIG_LOCATION;
+                output[2] = downloadSettings.getConfigFileAbsolutePathQuoted();
+                System.arraycopy(downloadSettings.getArguments(), 0, output, 3, downloadSettings.getArguments().length);
+                output[output.length - 1] = sourceQuoted;
+                return output;
+            } else {
+                final String[] output = new String[1 + downloadSettings.getArguments().length + 1];
+                output[0] = PROGRAM_NAME;
+                System.arraycopy(downloadSettings.getArguments(), 0, output, 1, downloadSettings.getArguments().length);
+                output[output.length - 1] = sourceQuoted;
+                return output;
+            }
+        } else {
+            if (useExternalConfig) {
+                return new String[] {PROGRAM_NAME, ARGUMENT_CONFIG_LOCATION, downloadSettings.getConfigFileAbsolutePathQuoted(), sourceQuoted};
+            } else {
+                return new String[] {PROGRAM_NAME, sourceQuoted};
+            }
+        }
     }
     
     @Deprecated
@@ -1157,10 +1238,12 @@ public class YouTubeDL {
         }
     }
     
+    @Deprecated
     public static Process createProcess(Source source) throws Exception {
         return createProcess(DIRECTORY, source);
     }
     
+    @Deprecated
     public static Process createProcess(AdvancedFile directory, Source source) throws Exception {
         return createProcess(directory, source, null);
     }
@@ -1175,9 +1258,8 @@ public class YouTubeDL {
         return createProcessIntern(downloadInfo.getDirectoryAbsolute(), generateCommandStringArray(downloadInfo));
     }
     
-    public static Process createProcess(YouTubeDownloadContainer downloadContainer) throws Exception {
-        //FIXME Implement
-        throw new NotYetImplementedRuntimeException("createProcess");
+    public static Process createProcess(AbstractDownloadContainer downloadContainer) throws Exception {
+        return createProcessIntern(downloadContainer.getDownloadSettings().getOutputDirectory(), generateCommandStringArray(downloadContainer));
     }
     
     private static Process createProcessIntern(AdvancedFile directory, String[] command) throws Exception {
@@ -1216,21 +1298,6 @@ public class YouTubeDL {
             return Misc.monitorProcess(process, downloadProgress) == 0;
         }
         return Misc.monitorProcessToFile(process, downloadProgress.getDownloadInfo().getLogFile(), false) == 0; //FIXME Remove the old thing
-    }
-    
-    protected static AdvancedFile createLogFile(Source source) {
-        LOGS_DIRECTORY.mkdirsWithoutException();
-        final String id = source.getId();
-        while (true) {
-            final String name = String.format(TEMPLATE_LOG_FILE_NAME, id, ZonedDateTime.now().format(TimeUtil.ISO_OFFSET_DATE_TIME_FIXED_LENGTH_FOR_FILES));
-            synchronized (USED_LOG_NAMES) {
-                if (USED_LOG_NAMES.contains(name)) {
-                    continue;
-                }
-                USED_LOG_NAMES.add(name);
-            }
-            return new AdvancedFile(LOGS_DIRECTORY, name);
-        }
     }
     
     public static String getIdFromYouTubeUrl(String url) { //FIXME What if i just supply the id? Maybe add an option to (direct) download by id?
@@ -1622,7 +1689,11 @@ public class YouTubeDL {
         }
     }
     
-    protected static boolean executeDownloadContainer(YouTubeDownloadContainer downloadContainer) {
+    public static boolean executeDownload(YouTubeSource source, DownloadSettings downloadSettings) {
+        return executeDownloadContainer(new YouTubeDownloadContainer(source, downloadSettings, null));
+    }
+    
+    public static boolean executeDownloadContainer(YouTubeDownloadContainer downloadContainer) {
         if (downloadContainer == null) {
             return false;
         }
