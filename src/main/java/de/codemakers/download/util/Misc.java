@@ -15,7 +15,7 @@
  *
  */
 
-package de.codemakers.download;
+package de.codemakers.download.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,6 +23,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.entities.impl.YouTubeVideo;
 import de.codemakers.io.file.AdvancedFile;
 
@@ -30,12 +31,9 @@ import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Misc {
@@ -66,6 +64,9 @@ public class Misc {
     
     private static final Pattern PATTERN_DOWNLOAD_PROGRESS = Pattern.compile("\\[download\\] +(\\d+(?:,|.\\d*)?)% of [0-9.,]+[a-zA-Z]+ at [0-9.,]+[a-zA-Z]+\\/s ETA.*");
     
+    /*
+    //FIXME
+    @Deprecated //TODO ?
     public static int monitorProcess(Process process, DownloadProgress downloadProgress) {
         Objects.requireNonNull(downloadProgress, "downloadProgress");
         final int exitValue = monitorProcess(process, (normal) -> {
@@ -87,6 +88,7 @@ public class Misc {
         Arrays.fill(downloadProgress.getProgresses(), 1.0F); //FIXME Good? Because what if something failed and has not finished? Than this overrides it...
         return exitValue;
     }
+    */
     
     public static int monitorProcessDefault(Process process) {
         return monitorProcessNothing(process);

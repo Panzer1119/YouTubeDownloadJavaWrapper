@@ -18,6 +18,9 @@
 package de.codemakers.download;
 
 import com.google.gson.JsonObject;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughFunction;
+import de.codemakers.download.util.Misc;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.util.regex.Pattern;
