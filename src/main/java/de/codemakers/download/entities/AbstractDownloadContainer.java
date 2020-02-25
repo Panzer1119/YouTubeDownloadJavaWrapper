@@ -33,11 +33,23 @@ public abstract class AbstractDownloadContainer<D extends AbstractDatabase, S ex
     protected final DownloadSettings downloadSettings;
     protected final PR downloadProgress;
     
+    public AbstractDownloadContainer(S source, DownloadSettings downloadSettings) {
+        this(null, source, downloadSettings, null);
+    }
+    
+    public AbstractDownloadContainer(S source, DownloadSettings downloadSettings, PR downloadProgress) {
+        this(null, source, downloadSettings, downloadProgress);
+    }
+    
+    public AbstractDownloadContainer(D database, S source, DownloadSettings downloadSettings) {
+        this(database, source, downloadSettings, null);
+    }
+    
     public AbstractDownloadContainer(D database, S source, DownloadSettings downloadSettings, PR downloadProgress) {
-        this.database = Objects.requireNonNull(database, "database");
+        this.database = database;
         this.source = Objects.requireNonNull(source, "source");
         this.downloadSettings = Objects.requireNonNull(downloadSettings, "downloadSettings");
-        this.downloadProgress = Objects.requireNonNull(downloadProgress, "downloadProgress");
+        this.downloadProgress = downloadProgress;
     }
     
     public D getDatabase() {
@@ -50,6 +62,10 @@ public abstract class AbstractDownloadContainer<D extends AbstractDatabase, S ex
     
     public DownloadSettings getDownloadSettings() {
         return downloadSettings;
+    }
+    
+    public boolean isUsingDownloadProgress() {
+        return downloadProgress != null;
     }
     
     public PR getDownloadProgress() {

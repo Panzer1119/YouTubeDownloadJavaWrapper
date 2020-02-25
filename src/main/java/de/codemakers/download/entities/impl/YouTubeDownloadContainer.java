@@ -26,8 +26,20 @@ import de.codemakers.download.sources.YouTubeSource;
 
 public class YouTubeDownloadContainer extends AbstractDownloadContainer<YouTubeDatabase, YouTubeSource, YouTubeDLDownloadProgress, YouTubeVideo, YouTubePlaylist> {
     
-    public YouTubeDownloadContainer(YouTubeDatabase youTubeDatabase, YouTubeSource source, DownloadSettings downloadSettings) {
-        super(youTubeDatabase, source, downloadSettings, new YouTubeDLDownloadProgress(downloadSettings.getExpectedDownloads()));
+    public YouTubeDownloadContainer(YouTubeSource source, DownloadSettings downloadSettings) {
+        super(source, downloadSettings, downloadSettings.getExpectedDownloads() > 0 ? new YouTubeDLDownloadProgress(downloadSettings.getExpectedDownloads()) : null);
+    }
+    
+    public YouTubeDownloadContainer(YouTubeSource source, DownloadSettings downloadSettings, YouTubeDLDownloadProgress downloadProgress) {
+        super(source, downloadSettings, downloadProgress);
+    }
+    
+    public YouTubeDownloadContainer(YouTubeDatabase database, YouTubeSource source, DownloadSettings downloadSettings) {
+        super(database, source, downloadSettings, downloadSettings.getExpectedDownloads() > 0 ? new YouTubeDLDownloadProgress(downloadSettings.getExpectedDownloads()) : null);
+    }
+    
+    public YouTubeDownloadContainer(YouTubeDatabase database, YouTubeSource source, DownloadSettings downloadSettings, YouTubeDLDownloadProgress downloadProgress) {
+        super(database, source, downloadSettings, downloadProgress);
     }
     
     @Override
