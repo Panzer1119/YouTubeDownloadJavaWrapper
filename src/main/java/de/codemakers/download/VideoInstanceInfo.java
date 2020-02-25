@@ -23,6 +23,8 @@ import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.download.util.Misc;
 import de.codemakers.io.file.AdvancedFile;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.regex.Pattern;
 
 public class VideoInstanceInfo {
@@ -330,7 +332,7 @@ public class VideoInstanceInfo {
         return this;
     }
     
-    public Long getDuration() {
+    public Long getDurationAsMillis() {
         return duration;
     }
     
@@ -852,6 +854,62 @@ public class VideoInstanceInfo {
         return this;
     }
     
+    public String getDurationAsString() {
+        if (duration == null) {
+            return null;
+        }
+        return Misc.durationToString(getDuration());
+    }
+    
+    public Duration getDuration() {
+        if (duration == null) {
+            return null;
+        }
+        return Duration.ofMillis(duration);
+    }
+    
+    public VideoInstanceInfo setDuration(String duration) {
+        if (duration == null || duration.isEmpty()) {
+            return setDuration(-1L);
+        }
+        return setDuration(Misc.stringToDuration(duration));
+    }
+    
+    public VideoInstanceInfo setDuration(Duration duration) {
+        if (duration == null) {
+            return setDuration(-1L);
+        }
+        return setDuration(duration.toMillis());
+    }
+    
+    public long getUploadDateAsLong() {
+        if (upload_date == null) {
+            return -1;
+        }
+        return Long.parseLong(getUpload_date());
+    }
+    
+    public LocalDate getUploadDate() {
+        if (upload_date == null) {
+            return null;
+        }
+        return Misc.stringToLocalDate(getUpload_date());
+    }
+    
+    public VideoInstanceInfo setUploadDate(Long uploadDate) {
+        if (uploadDate == null) {
+            return setUpload_date(null);
+        }
+        return setUpload_date("" + upload_date);
+    }
+    
+    public VideoInstanceInfo setUploadDate(LocalDate uploadDate) {
+        if (uploadDate == null) {
+            return setUpload_date(null);
+        }
+        return setUpload_date(Misc.localDateToString(uploadDate));
+    }
+    
     public JsonObject toJsonObject() {
         return Misc.GSON.fromJson(toJsonString(), JsonObject.class);
     }
@@ -952,7 +1010,14 @@ public class VideoInstanceInfo {
         if (outputInfo == null) {
             return null;
         }
-        return Misc.GSON.fromJson(outputInfo.replaceAll("(?:\\{\\{\\{###\\{\\{\\{)|(?:\\}\\}\\}###\\}\\}\\})", "\"").replaceAll("=", ":"), JsonObject.class);
+        outputInfo = outputInfo.replaceAll("\"", "\\\"").replaceAll("(?:\\{\\{\\{###\\{\\{\\{)|(?:\\}\\}\\}###\\}\\}\\})", "\"").replaceAll("\\=", ":");
+        if (!PATTERN_OUTPUT_FORMAT_EVERYTHING.matcher(outputInfo).matches()) {
+            Logger.logWarning(String.format("outputInfoToJsonObject: Didn't match \"%s\"", outputInfo)); //DEBUG
+            return null; //TODO Hmm notify someone, if this doesn't match?
+        }
+        outputInfo = outputInfo.replaceAll(",\"is_live\":NA", ",\"is_live\":false");
+        outputInfo = outputInfo.replaceAll(",\"([a-zA-Z_]+?)\":NA", ",\"$1\":-1");
+        return Misc.GSON.fromJson(outputInfo, JsonObject.class);
     }
     
     public static VideoInstanceInfo outputInfoToVideoInstanceInfo(String outputInfo) {
@@ -961,6 +1026,39 @@ public class VideoInstanceInfo {
             return null;
         }
         return ofJsonObject(jsonObject);
+    }
+    
+    public static String resolveStringFromYouTubeDLToString(String data) {
+        return resolveStringFromYouTubeDL(data, null, null);
+    }
+    
+    public static long resolveStringFromYouTubeDLToLong(String data) {
+        return resolveStringFromYouTubeDLToLong(data, -1);
+    }
+    
+    public static long resolveStringFromYouTubeDLToLong(String data, long defaultValue) {
+        return resolveStringFromYouTubeDL(data, Long::parseLong, defaultValue);
+    }
+    
+    public static boolean resolveStringFromYouTubeDLToBoolean(String data) {
+        return resolveStringFromYouTubeDLToBoolean(data, false);
+    }
+    
+    public static boolean resolveStringFromYouTubeDLToBoolean(String data, boolean defaultValue) {
+        return resolveStringFromYouTubeDL(data, Boolean::parseBoolean, defaultValue);
+    }
+    
+    public static <R> R resolveStringFromYouTubeDL(String data, ToughFunction<String, R> toughFunction, R defaultValue) {
+        if (data == null || data.isEmpty()) {
+            return defaultValue;
+        }
+        if (data.equalsIgnoreCase("NA")) {
+            return defaultValue;
+        }
+        if (toughFunction == null) {
+            return (R) data;
+        }
+        return toughFunction.applyWithoutException(data);
     }
     
 }
