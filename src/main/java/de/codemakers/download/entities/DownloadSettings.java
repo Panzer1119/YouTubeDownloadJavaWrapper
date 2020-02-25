@@ -19,6 +19,7 @@ package de.codemakers.download.entities;
 
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.ArrayUtil;
+import de.codemakers.download.YouTubeDL;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.BufferedWriter;
@@ -29,7 +30,7 @@ public class DownloadSettings {
     private AdvancedFile outputDirectory;
     private AdvancedFile configFile;
     private AdvancedFile logFile;
-    private boolean useConfig;
+    private boolean useExternalConfig;
     private String[] arguments;
     private int expectedDownloads;
     
@@ -37,11 +38,11 @@ public class DownloadSettings {
         this(null, null, null, false, null, 2);
     }
     
-    public DownloadSettings(AdvancedFile outputDirectory, AdvancedFile configFile, AdvancedFile logFile, boolean useConfig, String[] arguments, int expectedDownloads) {
+    public DownloadSettings(AdvancedFile outputDirectory, AdvancedFile configFile, AdvancedFile logFile, boolean useExternalConfig, String[] arguments, int expectedDownloads) {
         this.outputDirectory = outputDirectory;
         this.configFile = configFile;
         this.logFile = logFile;
-        this.useConfig = useConfig;
+        this.useExternalConfig = useExternalConfig;
         this.arguments = arguments;
         this.expectedDownloads = expectedDownloads;
     }
@@ -50,14 +51,14 @@ public class DownloadSettings {
         return new DownloadSettings().setExpectedDownloads(0);
     }
     
-    protected String getOutputDirectoryAbsolutePathQuoted() {
+    public String getOutputDirectoryAbsolutePathQuoted() {
         if (outputDirectory == null) {
             return null;
         }
         return "\"" + outputDirectory.getAbsolutePath() + "\"";
     }
     
-    protected AdvancedFile getOutputDirectoryAbsolute() {
+    public AdvancedFile getOutputDirectoryAbsolute() {
         if (outputDirectory == null) {
             return null;
         }
@@ -73,14 +74,14 @@ public class DownloadSettings {
         return this;
     }
     
-    protected String getConfigFileAbsolutePathQuoted() {
+    public String getConfigFileAbsolutePathQuoted() {
         if (configFile == null) {
             return null;
         }
         return "\"" + configFile.getAbsolutePath() + "\"";
     }
     
-    protected AdvancedFile getConfigFileAbsolute() {
+    public AdvancedFile getConfigFileAbsolute() {
         if (configFile == null) {
             return null;
         }
@@ -131,12 +132,15 @@ public class DownloadSettings {
         return this;
     }
     
-    public boolean isUseConfig() {
-        return useConfig;
+    public boolean isUsingExternalConfig() {
+        if (arguments != null && arguments.length > 0 && ArrayUtil.arrayContains(arguments, YouTubeDL.ARGUMENT_CONFIG_LOCATION)) {
+            return false;
+        }
+        return useExternalConfig;
     }
     
-    public DownloadSettings setUsingConfig(boolean useConfig) {
-        this.useConfig = useConfig;
+    public DownloadSettings setUseExternalConfig(boolean useExternalConfig) {
+        this.useExternalConfig = useExternalConfig;
         return this;
     }
     
@@ -183,7 +187,7 @@ public class DownloadSettings {
     
     @Override
     public String toString() {
-        return "DownloadSettings{" + "outputDirectory=" + outputDirectory + ", configFile=" + configFile + ", logFile=" + logFile + ", useConfig=" + useConfig + ", arguments=" + Arrays.toString(arguments) + ", expectedDownloads=" + expectedDownloads + '}';
+        return "DownloadSettings{" + "outputDirectory=" + outputDirectory + ", configFile=" + configFile + ", logFile=" + logFile + ", useConfig=" + useExternalConfig + ", arguments=" + Arrays.toString(arguments) + ", expectedDownloads=" + expectedDownloads + '}';
     }
     
 }

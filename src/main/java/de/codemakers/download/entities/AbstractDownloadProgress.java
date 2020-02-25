@@ -61,7 +61,9 @@ public abstract class AbstractDownloadProgress<T extends AbstractDownloadProgres
         setAlive(false);
         setStarted(false);
         setSuccessful(false);
-        Arrays.fill(progresses, 0.0F);
+        synchronized (progresses) {
+            Arrays.fill(progresses, 0.0F);
+        }
         return (T) this;
     }
     
@@ -75,39 +77,49 @@ public abstract class AbstractDownloadProgress<T extends AbstractDownloadProgres
         return true;
     }
     
-    public float[] getProgresses() {
+    private float[] getProgresses() {
         return progresses;
     }
     
     public int getNextProgressIndex() {
-        for (int i = 0; i < progresses.length; i++) {
-            if (progresses[i] < 1.0F) {
-                return i;
+        synchronized (progresses) {
+            for (int i = 0; i < progresses.length; i++) {
+                if (progresses[i] < 1.0F) {
+                    return i;
+                }
             }
+            return -1;
         }
-        return -1;
     }
     
     public float getProgress(int index) {
-        return progresses[index];
+        synchronized (progresses) {
+            return progresses[index];
+        }
     }
     
     public double getProgressOverall() {
-        double sum = 0.0;
-        for (float f : progresses) {
-            sum += f;
+        synchronized (progresses) {
+            double sum = 0.0;
+            for (float f : progresses) {
+                sum += f;
+            }
+            return sum / progresses.length;
         }
-        return sum / progresses.length;
     }
     
     public T setProgress(int index, float progress) {
-        progresses[index] = Math.min(1.0F, Math.max(progress, 0.0F));
-        return (T) this;
+        synchronized (progresses) {
+            progresses[index] = Math.min(1.0F, Math.max(progress, 0.0F));
+            return (T) this;
+        }
     }
     
     @Override
     public String toString() {
-        return "AbstractDownloadProgress{" + "progresses=" + Arrays.toString(progresses) + ", alive=" + alive + ", started=" + started + ", successful=" + successful + '}';
+        synchronized (progresses) {
+            return "AbstractDownloadProgress{" + "progresses=" + Arrays.toString(progresses) + ", alive=" + alive + ", started=" + started + ", successful=" + successful + '}';
+        }
     }
     
 }
