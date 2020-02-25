@@ -19,11 +19,16 @@ package de.codemakers.download;
 
 import com.google.gson.JsonObject;
 import de.codemakers.base.Standard;
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.TimeUtil;
+import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.database.YouTubeDatabase;
+import de.codemakers.download.entities.DownloadSettings;
 import de.codemakers.download.entities.VideoInstanceInfo;
+import de.codemakers.download.entities.impl.YouTubeDownloadContainer;
 import de.codemakers.download.sources.Source;
 import de.codemakers.download.sources.YouTubeSource;
 import de.codemakers.download.util.Misc;
@@ -1123,6 +1128,7 @@ public class YouTubeDL {
         LOGS_DIRECTORY = logsDirectory;
     }
     
+    @Deprecated
     public static String[] generateCommandStringArray(DownloadInfo downloadInfo) {
         final boolean useConfig = downloadInfo.isUsingConfig();
         final boolean hasArguments = downloadInfo.hasArguments();
@@ -1159,12 +1165,19 @@ public class YouTubeDL {
         return createProcess(directory, source, null);
     }
     
+    @Deprecated
     public static Process createProcess(AdvancedFile directory, Source source, AdvancedFile logFile) throws Exception {
         return createProcess(new DownloadInfo(directory, source, logFile));
     }
     
+    @Deprecated
     public static Process createProcess(DownloadInfo downloadInfo) throws Exception {
         return createProcessIntern(downloadInfo.getDirectoryAbsolute(), generateCommandStringArray(downloadInfo));
+    }
+    
+    public static Process createProcess(YouTubeDownloadContainer downloadContainer) throws Exception {
+        //FIXME Implement
+        throw new NotYetImplementedRuntimeException("createProcess");
     }
     
     private static Process createProcessIntern(AdvancedFile directory, String[] command) throws Exception {
@@ -1177,10 +1190,12 @@ public class YouTubeDL {
         return processBuilder.start();
     }
     
+    @Deprecated
     public static boolean downloadDirect(DownloadInfo downloadInfo) throws Exception {
         return downloadDirect(new DownloadProgress(downloadInfo));
     }
     
+    @Deprecated
     public static boolean downloadDirect(DownloadProgress downloadProgress) throws Exception {
         if (downloadProgress.isStarted() || downloadProgress.isAlive()) {
             return false;
@@ -1192,6 +1207,7 @@ public class YouTubeDL {
         return downloadProgress.isSuccessful();
     }
     
+    @Deprecated
     private static boolean downloadDirectIntern(DownloadProgress downloadProgress) throws Exception {
         final Process process = createProcess(downloadProgress.getDownloadInfo());
         //TODO Implement the progress Stuff (Read output and set the progress value accordingly)
@@ -1235,6 +1251,7 @@ public class YouTubeDL {
         return matcher.group(1);
     }
     
+    @Deprecated
     public static List<String> downloadIdsDirect(Source source) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
@@ -1253,10 +1270,12 @@ public class YouTubeDL {
         }
     }
     
+    @Deprecated
     public static List<VideoInfo> downloadVideoInfosDirect(Source source) {
         return downloadVideoInfosDirect(source, VideoInfo::new);
     }
     
+    @Deprecated
     public static List<VideoInfo> downloadVideoInfosDirect(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
@@ -1292,20 +1311,24 @@ public class YouTubeDL {
         }
     }
     
+    @Deprecated
     public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source) {
         return downloadFileInfosFromListAndThenAsync(source, false);
     }
     
+    @Deprecated
     public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
         return downloadFileInfosFromListAndThenAsync(source, fileInfoGenerator, false);
     }
     
+    @Deprecated
     public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, boolean getIndex) {
         final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = downloadFileInfosAndThenAsync(source);
         //addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex); //FIXME
         return doublet;
     }
     
+    @Deprecated
     public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator, boolean getIndex) {
         final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = downloadFileInfosAndThenAsync(source, fileInfoGenerator);
         //addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex); //FIXME
@@ -1385,14 +1408,17 @@ public class YouTubeDL {
     }
     */
     
+    @Deprecated
     public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(Source source) {
         return downloadFileInfosAndThenAsync(source, () -> new FileInfo(new VideoInfo()));
     }
     
+    @Deprecated
     public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
         return downloadFileInfosAndThenAsync(Misc.EXECUTOR_SERVICE_TOUGH_SUPPLIER, source, fileInfoGenerator);
     }
     
+    @Deprecated
     public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(ToughSupplier<ExecutorService> executorServiceSupplier, Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
@@ -1441,12 +1467,14 @@ public class YouTubeDL {
         }
     }
     
+    @Deprecated
     private static Future<List<FileInfo>> downloadFileInfosAsync(ToughSupplier<ExecutorService> executorServiceSupplier, List<FileInfo> fileInfos) {
         FutureTask<List<FileInfo>> futureTask = new FutureTask<>(() -> downloadFileInfosExtras(executorServiceSupplier, fileInfos));
         Standard.async(futureTask::run); //TODO Async extra info loading stuff
         return futureTask;
     }
     
+    @Deprecated
     private static List<FileInfo> downloadFileInfosExtras(ToughSupplier<ExecutorService> executorServiceSupplier, List<FileInfo> fileInfos) {
         final ExecutorService executorService = executorServiceSupplier.getWithoutException();
         //fileInfos.forEach((videoInfo) -> executorService.submit(() -> downloadFileInfoExtras(videoInfo)));
@@ -1535,6 +1563,7 @@ public class YouTubeDL {
         }
     }
     
+    @Deprecated
     private static JsonObject downloadInfoEverythingAndAddToFileInfo(FileInfo fileInfo) {
         final JsonObject jsonObject = downloadInfoEverything(fileInfo);
         if (jsonObject == null) {
@@ -1555,6 +1584,7 @@ public class YouTubeDL {
         return jsonObject;
     }
     
+    @Deprecated
     private static VideoInstanceInfo downloadVideoInstanceInfo(FileInfo fileInfo) {
         if (fileInfo == null || fileInfo.getVideoInfo() == null) {
             return null;
@@ -1562,6 +1592,7 @@ public class YouTubeDL {
         return downloadVideoInstanceInfo(fileInfo.getVideoInfo().getId());
     }
     
+    @Deprecated
     protected static VideoInstanceInfo downloadVideoInstanceInfo(String videoId) {
         if (videoId == null || videoId.isEmpty()) {
             return null;
@@ -1580,11 +1611,63 @@ public class YouTubeDL {
                     videoInstanceInfoAtomicReference.set(null);
                 }
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            System.out.println("downloadInfoEverything: exitValue=" + exitValue); //DEBUG Remove this
+            System.out.println("downloadInfoEverything:exitValue=" + exitValue); //DEBUG Remove this
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return;
             }
             return videoInstanceInfoAtomicReference.get();
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    protected static boolean executeDownloadContainer(YouTubeDownloadContainer downloadContainer) {
+        if (downloadContainer == null) {
+            return false;
+        }
+        try {
+            if (downloadContainer.isUsingDownloadProgress() && !downloadContainer.getDownloadSettings().hasArgument(ARGUMENT_NEWLINE)) {
+                downloadContainer.getDownloadSettings().addArgument(ARGUMENT_NEWLINE);
+            }
+            final Process process = createProcess(downloadContainer);
+            if (process == null) {
+                Logger.logError("executeDownloadContainer:process is null"); //DEBUG ?
+                return false;
+            }
+            return Misc.monitorProcess(process, downloadContainer) == 0;
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return false;
+        }
+    }
+    
+    public static VideoInstanceInfo downloadVideoInstanceInfo(YouTubeSource source) {
+        return downloadRFromFirstLine(source, VideoInstanceInfo::outputInfoToVideoInstanceInfo);
+    }
+    
+    protected static <R> R downloadRFromFirstLine(YouTubeSource source, ToughFunction<String, R> function) {
+        return downloadRFromFirstLine(source, DownloadSettings.empty(), function);
+    }
+    
+    protected static <R> R downloadRFromFirstLine(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+        return downloadRFromFirstLine(null, source, settings, function);
+    }
+    
+    protected static <R> R downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+        if (source == null || function == null) {
+            return null;
+        }
+        final YouTubeDownloadContainer downloadContainer = new YouTubeDownloadContainer(database, source, settings, null);
+        try {
+            final AtomicReference<R> atomicReference = new AtomicReference<>(null);
+            final AtomicBoolean errored = new AtomicBoolean(false);
+            final int exitValue = Misc.monitorProcess(createProcess(downloadContainer), (normal) -> atomicReference.set(function.applyWithoutException(normal)), (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
+            System.out.println("downloadRFromFirstLine:exitValue=" + exitValue); //DEBUG Remove this
+            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
+                //return;
+            }
+            return atomicReference.get();
         } catch (Exception ex) {
             Logger.handleError(ex);
             return null;
