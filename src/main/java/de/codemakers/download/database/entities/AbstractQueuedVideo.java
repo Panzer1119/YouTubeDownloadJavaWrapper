@@ -35,6 +35,7 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
     protected String arguments = null;
     protected String configFile = null;
     protected String outputDirectory = null;
+    protected QueuedVideoState state = null;
     //
     protected transient String configFileResolved = null;
     protected transient String outputDirectoryResolved = null;
@@ -43,11 +44,11 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
         super();
     }
     
-    public AbstractQueuedVideo(int id, String videoId, int priority, Timestamp requested, String arguments, String configFile, String outputDirectory) {
-        this(id, videoId, priority, requested.toInstant(), arguments, configFile, outputDirectory);
+    public AbstractQueuedVideo(int id, String videoId, int priority, Timestamp requested, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
+        this(id, videoId, priority, requested.toInstant(), arguments, configFile, outputDirectory, state);
     }
     
-    public AbstractQueuedVideo(int id, String videoId, int priority, Instant requested, String arguments, String configFile, String outputDirectory) {
+    public AbstractQueuedVideo(int id, String videoId, int priority, Instant requested, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
         super();
         this.id = id;
         this.videoId = videoId;
@@ -56,6 +57,7 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
         this.arguments = arguments;
         this.configFile = configFile;
         this.outputDirectory = outputDirectory;
+        setState(state);
     }
     
     public int getId() {
@@ -174,6 +176,15 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
         return (T) this;
     }
     
+    public QueuedVideoState getState() {
+        return state;
+    }
+    
+    public AbstractQueuedVideo setState(QueuedVideoState state) {
+        this.state = state == null ? QueuedVideoState.UNKNOWN : state;
+        return this;
+    }
+    
     public V asVideo() {
         return (V) useDatabaseOrNull((database) -> database.getVideoByVideoId(getVideoId()));
     }
@@ -190,7 +201,7 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
     
     @Override
     public String toString() {
-        return "AbstractQueuedVideo{" + "id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + ", configFileResolved='" + configFileResolved + '\'' + ", outputDirectoryResolved='" + outputDirectoryResolved + '\'' + '}';
+        return "AbstractQueuedVideo{" + "id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + ", state=" + state + ", configFileResolved='" + configFileResolved + '\'' + ", outputDirectoryResolved='" + outputDirectoryResolved + '\'' + '}';
     }
     
 }

@@ -19,6 +19,7 @@ package de.codemakers.download.database.entities.impl;
 
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.AbstractQueuedVideo;
+import de.codemakers.download.database.entities.QueuedVideoState;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -29,12 +30,12 @@ public class QueuedYouTubeVideo extends AbstractQueuedVideo<QueuedYouTubeVideo, 
         super();
     }
     
-    public QueuedYouTubeVideo(int id, String videoId, int priority, Timestamp requested, String arguments, String configFile, String outputDirectory) {
-        super(id, videoId, priority, requested, arguments, configFile, outputDirectory);
+    public QueuedYouTubeVideo(int id, String videoId, int priority, Timestamp requested, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
+        super(id, videoId, priority, requested, arguments, configFile, outputDirectory, state);
     }
     
-    public QueuedYouTubeVideo(int id, String videoId, int priority, Instant requested, String arguments, String configFile, String outputDirectory) {
-        super(id, videoId, priority, requested, arguments, configFile, outputDirectory);
+    public QueuedYouTubeVideo(int id, String videoId, int priority, Instant requested, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
+        super(id, videoId, priority, requested, arguments, configFile, outputDirectory, state);
     }
     
     @Override
@@ -50,11 +51,12 @@ public class QueuedYouTubeVideo extends AbstractQueuedVideo<QueuedYouTubeVideo, 
         setArguments(queuedYouTubeVideo.getArguments());
         setConfigFile(queuedYouTubeVideo.getConfigFile());
         setOutputDirectory(queuedYouTubeVideo.getOutputDirectory());
+        setState(queuedYouTubeVideo.getState());
     }
     
     @Override
     public String toString() {
-        return "QueuedYouTubeVideo{" + "id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + '}';
+        return "QueuedYouTubeVideo{" + "id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + ", state=" + state + ", configFileResolved='" + configFileResolved + '\'' + ", outputDirectoryResolved='" + outputDirectoryResolved + '\'' + '}';
     }
     
 }
