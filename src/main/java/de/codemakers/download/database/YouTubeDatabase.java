@@ -22,6 +22,7 @@ import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.database.entities.QueuedVideoState;
 import de.codemakers.download.database.entities.impl.*;
 import de.codemakers.io.IOUtil;
 
@@ -1059,7 +1060,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return false;
         }
         synchronized (preparedStatement_setQueuedVideoById) {
-            if (!setPreparedStatement(preparedStatement_setQueuedVideoById, queuedYouTubeVideo.getId(), queuedYouTubeVideo.getVideoId(), queuedYouTubeVideo.getPriority(), queuedYouTubeVideo.getRequestedAsTimestamp(), queuedYouTubeVideo.getArguments(), queuedYouTubeVideo.getConfigFile(), queuedYouTubeVideo.getOutputDirectory(), id)) {
+            if (!setPreparedStatement(preparedStatement_setQueuedVideoById, queuedYouTubeVideo.getId(), queuedYouTubeVideo.getVideoId(), queuedYouTubeVideo.getPriority(), queuedYouTubeVideo.getRequestedAsTimestamp(), queuedYouTubeVideo.getArguments(), queuedYouTubeVideo.getConfigFile(), queuedYouTubeVideo.getOutputDirectory(), queuedYouTubeVideo.getState().name(), id)) {
                 return false;
             }
             return Standard.silentError(() -> preparedStatement_setQueuedVideoById.executeUpdate()) > 0;
@@ -1253,7 +1254,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new QueuedYouTubeVideo(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY)));
+        return Standard.silentError(() -> new QueuedYouTubeVideo(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY), QueuedVideoState.ofState(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE))));
     }
     
     protected static List<QueuedYouTubeVideo> resultSetToQueuedYouTubeVideos(ResultSet resultSet) {
