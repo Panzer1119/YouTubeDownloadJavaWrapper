@@ -38,6 +38,9 @@ import java.util.stream.Collectors;
 public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, QueuedYouTubeVideo, YouTubeChannel, YouTubeUploader, YouTubeRequester, C> {
     
     // // Selects / Gets
+    // Table: Authorization Tokens
+    private transient PreparedStatement preparedStatement_getAllTokens = null;
+    private transient PreparedStatement preparedStatement_getAuthorizationTokenByToken = null;
     // Table: Channels
     private transient PreparedStatement preparedStatement_getAllChannels = null;
     private transient PreparedStatement preparedStatement_getChannelByChannelId = null;
@@ -81,6 +84,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_getVideosByUploaderId = null;
     //
     // // Inserts / Adds
+    // Table: Authorization Tokens
+    private transient PreparedStatement preparedStatement_addAuthorizationToken = null;
     // Table: Channels
     private transient PreparedStatement preparedStatement_addChannel = null;
     // Table: Extra Files
@@ -101,6 +106,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_addVideo = null;
     //
     // // Updates / Sets
+    // Table: Authorization Tokens
+    private transient PreparedStatement preparedStatement_setAuthorizationTokenByToken = null;
+    private transient PreparedStatement preparedStatement_setAuthorizationTokenTimesUsedByToken = null;
     // Table: Channels
     private transient PreparedStatement preparedStatement_setChannelByChannelId = null;
     // Table: Extra Files
@@ -122,6 +130,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_setVideoByVideoId = null;
     //
     // // Deletes / Removes
+    // Table: Authorization Tokens
+    private transient PreparedStatement preparedStatement_removeAllAuthorizationTokens = null;
+    private transient PreparedStatement preparedStatement_removeAuthorizationTokenByToken = null;
     // Table: Channels
     private transient PreparedStatement preparedStatement_removeAllChannels = null;
     private transient PreparedStatement preparedStatement_removeChannelByChannelId = null;
@@ -198,6 +209,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     private void createStatements() {
         // // Selects / Gets
+        // Table: Authorization Tokens
+        preparedStatement_getAllTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_ALL);
+        preparedStatement_getAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_BY_TOKEN);
         // Table: Channels
         preparedStatement_getAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_ALL);
         preparedStatement_getChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_BY_CHANNEL_ID);
@@ -241,6 +255,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_getVideosByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL_BY_UPLOADER_ID);
         //
         // // Inserts / Adds
+        // Table: Authorization Tokens
+        preparedStatement_addAuthorizationToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_INSERT);
         // Table: Channels
         preparedStatement_addChannel = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_INSERT);
         // Table: Extra Files
@@ -261,6 +277,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_addVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_INSERT);
         //
         // // Updates / Sets
+        // Table: Authorization Tokens
+        preparedStatement_setAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_UPDATE_BY_TOKEN);
+        preparedStatement_setAuthorizationTokenTimesUsedByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_UPDATE_USED_BY_TOKEN);
         // Table: Channels
         preparedStatement_setChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_UPDATE_BY_CHANNEL_ID);
         // Table: Extra Files
@@ -282,6 +301,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_setVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID);
         //
         // // Deletes / Removes
+        // Table: Authorization Tokens
+        preparedStatement_removeAllAuthorizationTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_DELETE_ALL);
+        preparedStatement_removeAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_DELETE_BY_TOKEN);
         // Table: Channels
         preparedStatement_removeAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_ALL);
         preparedStatement_removeChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_BY_CHANNEL_ID);
@@ -325,6 +347,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     private void closeStatements() {
         // // Selects / Gets
+        // Table: Authorization Tokens
+        IOUtil.closeQuietly(preparedStatement_getAllTokens);
+        IOUtil.closeQuietly(preparedStatement_getAuthorizationTokenByToken);
         // Table: Channels
         IOUtil.closeQuietly(preparedStatement_getAllChannels);
         IOUtil.closeQuietly(preparedStatement_getChannelByChannelId);
@@ -368,6 +393,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_getVideosByUploaderId);
         //
         // // Inserts / Adds
+        // Table: Authorization Tokens
+        IOUtil.closeQuietly(preparedStatement_addAuthorizationToken);
         // Table: Channels
         IOUtil.closeQuietly(preparedStatement_addChannel);
         // Table: Extra Files
@@ -388,6 +415,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_addVideo);
         //
         // // Updates / Sets
+        // Table: Authorization Tokens
+        IOUtil.closeQuietly(preparedStatement_setAuthorizationTokenByToken);
+        IOUtil.closeQuietly(preparedStatement_setAuthorizationTokenTimesUsedByToken);
         // Table: Channels
         IOUtil.closeQuietly(preparedStatement_setChannelByChannelId);
         // Table: Extra Files
@@ -409,6 +439,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_setVideoByVideoId);
         //
         // // Deletes / Removes
+        // Table: Authorization Tokens
+        IOUtil.closeQuietly(preparedStatement_removeAllAuthorizationTokens);
+        IOUtil.closeQuietly(preparedStatement_removeAuthorizationTokenByToken);
         // Table: Channels
         IOUtil.closeQuietly(preparedStatement_removeAllChannels);
         IOUtil.closeQuietly(preparedStatement_removeChannelByChannelId);
