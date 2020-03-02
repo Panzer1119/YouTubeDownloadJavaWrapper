@@ -24,6 +24,7 @@ public class YouTubeDatabaseConstants {
     // // // Identifiers
     // // Tables
     // Database: YouTube
+    public static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS = "authorizationTokens";
     public static final String IDENTIFIER_TABLE_CHANNELS = "channels";
     public static final String IDENTIFIER_TABLE_EXTRA_FILES = "extraFiles";
     public static final String IDENTIFIER_TABLE_MEDIA_FILES = "mediaFiles";
@@ -35,6 +36,12 @@ public class YouTubeDatabaseConstants {
     public static final String IDENTIFIER_TABLE_VIDEOS = "videos";
     //
     // // Columns
+    // Table: Authorization Tokens
+    public static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN = "token";
+    public static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_LEVEL = "level";
+    public static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_CREATED = "created";
+    public static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_EXPIRATION = "expiration";
+    public static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_USED = "used";
     // Table: Channels
     public static final String IDENTIFIER_TABLE_CHANNELS_COLUMN_ID = "id";
     public static final String IDENTIFIER_TABLE_CHANNELS_COLUMN_NAME = "name";
@@ -92,6 +99,15 @@ public class YouTubeDatabaseConstants {
     // //
     // // // Queries
     // // Selects
+    // Table: Authorization Tokens
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_ALL = String.format("SELECT * FROM %s;", IDENTIFIER_TABLE_AUTHORIZATION_TOKENS);
+    /**
+     * 1. Argument: Token
+     */
+    public static final String QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_BY_TOKEN = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_AUTHORIZATION_TOKENS, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN);
     // Table: Channels
     /**
      * No arguments
@@ -234,6 +250,17 @@ public class YouTubeDatabaseConstants {
     public static final String QUERY_TABLE_VIDEOS_SELECT_ALL_BY_UPLOADER_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOADER_ID);
     //
     // // Inserts
+    // Table: Authorization Tokens
+    /**
+     * 1. Argument: Token
+     * <br>
+     * 2. Argument: Level
+     * <br>
+     * 3. Argument: Created
+     * <br>
+     * 4. Argument: Expiration
+     */
+    public static final String QUERY_TABLE_AUTHORIZATION_TOKENS_INSERT = String.format("INSERT INTO * (%s, %s, %s, %s) VALUES (?, ?, ?, ?);", IDENTIFIER_TABLE_AUTHORIZATION_TOKENS, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_LEVEL, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_CREATED, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_EXPIRATION);
     // Table: Channels
     /**
      * 1. Argument: Channel ID
@@ -351,6 +378,27 @@ public class YouTubeDatabaseConstants {
     public static final String QUERY_TABLE_VIDEOS_INSERT = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?);", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOADER_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE);
     //
     // // Updates
+    // Table: Authorization Tokens
+    /**
+     * 1. Argument: (New) Token
+     * <br>
+     * 2. Argument: Level
+     * <br>
+     * 3. Argument: Created
+     * <br>
+     * 4. Argument: Expiration
+     * <br>
+     * 5. Argument: Times used
+     * <br>
+     * 6. Argument: (Old) Token
+     */
+    public static final String QUERY_TABLE_AUTHORIZATION_TOKENS_UPDATE_BY_TOKEN = String.format("UPDATE * SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_AUTHORIZATION_TOKENS, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_LEVEL, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_CREATED, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_EXPIRATION, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_USED, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN);
+    /**
+     * 1. Argument: Times used
+     * <br>
+     * 2. Argument: Token
+     */
+    public static final String QUERY_TABLE_AUTHORIZATION_TOKENS_UPDATE_USED_BY_TOKEN = String.format("UPDATE * SET %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_AUTHORIZATION_TOKENS, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_USED, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN);
     // Table: Channels
     /**
      * 1. Argument: (New) Channel ID
@@ -500,6 +548,15 @@ public class YouTubeDatabaseConstants {
     public static final String QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_VIDEOS, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOADER_ID, IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE, IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION, IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE, IDENTIFIER_TABLE_VIDEOS_COLUMN_ID);
     //
     // // Deletes
+    // Table: Authorization Tokens
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_AUTHORIZATION_TOKENS_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_AUTHORIZATION_TOKENS);
+    /**
+     * 1. Argument: Token
+     */
+    public static final String QUERY_TABLE_AUTHORIZATION_TOKENS_DELETE_BY_TOKEN = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_AUTHORIZATION_TOKENS, IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN);
     // Table: Channels
     /**
      * No arguments
