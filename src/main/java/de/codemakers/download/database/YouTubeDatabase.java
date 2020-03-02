@@ -22,6 +22,7 @@ import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.database.entities.AuthorizationToken;
 import de.codemakers.download.database.entities.QueuedVideoState;
 import de.codemakers.download.database.entities.impl.*;
 import de.codemakers.io.IOUtil;
@@ -39,7 +40,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     // // Selects / Gets
     // Table: Authorization Tokens
-    private transient PreparedStatement preparedStatement_getAllTokens = null;
+    private transient PreparedStatement preparedStatement_getAllAuthorizationTokens = null;
     private transient PreparedStatement preparedStatement_getAuthorizationTokenByToken = null;
     // Table: Channels
     private transient PreparedStatement preparedStatement_getAllChannels = null;
@@ -207,10 +208,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return true;
     }
     
+    private PreparedStatement createPreparedStatement(String sql) {
+        return createPreparedStatement(connector, sql);
+    }
+    
     private void createStatements() {
         // // Selects / Gets
         // Table: Authorization Tokens
-        preparedStatement_getAllTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_ALL);
+        preparedStatement_getAllAuthorizationTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_ALL);
         preparedStatement_getAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_BY_TOKEN);
         // Table: Channels
         preparedStatement_getAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_ALL);
@@ -348,7 +353,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private void closeStatements() {
         // // Selects / Gets
         // Table: Authorization Tokens
-        IOUtil.closeQuietly(preparedStatement_getAllTokens);
+        IOUtil.closeQuietly(preparedStatement_getAllAuthorizationTokens);
         IOUtil.closeQuietly(preparedStatement_getAuthorizationTokenByToken);
         // Table: Channels
         IOUtil.closeQuietly(preparedStatement_getAllChannels);
@@ -483,8 +488,40 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // //
     }
     
-    private PreparedStatement createPreparedStatement(String sql) {
-        return createPreparedStatement(connector, sql);
+    @Override
+    public List<AuthorizationToken> getAllAuthorizationTokens() {
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllAuthorizationTokens) {
+            return useResultSetAndClose(preparedStatement_getAllAuthorizationTokens::executeQuery, YouTubeDatabase::resultSetToAuthorizationTokens);
+        }
+    }
+    
+    @Override
+    public AuthorizationToken getAuthorizationTokenByToken(String token) {
+        if (!isConnected() || token == null || token.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAuthorizationTokenByToken) {
+            if (!setPreparedStatement(preparedStatement_getAuthorizationTokenByToken, token)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getAuthorizationTokenByToken::executeQuery, YouTubeDatabase::resultSetToAuthorizationToken);
+        }
+    }
+    
+    @Override
+    public boolean hasAuthorizationToken(String token) {
+        if (!isConnected() || token == null || token.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getAuthorizationTokenByToken) {
+            if (!setPreparedStatement(preparedStatement_getAuthorizationTokenByToken, token)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getAuthorizationTokenByToken::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
@@ -978,6 +1015,46 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public boolean addAuthorizationToken(AuthorizationToken authorizationToken) {
+        if (!isConnected() || authorizationToken == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addAuthorizationToken) {
+            if (!setPreparedStatement(preparedStatement_addAuthorizationToken, authorizationToken.getToken(), authorizationToken.getLevel().getLevel(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addAuthorizationToken.executeUpdate()) > 0;
+        }
+        
+    }
+    
+    @Override
+    public boolean setAuthorizationTokenByToken(AuthorizationToken authorizationToken, String oldToken) {
+        if (!isConnected() || authorizationToken == null || oldToken == null || oldToken.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setAuthorizationTokenByToken) {
+            if (!setPreparedStatement(preparedStatement_setAuthorizationTokenByToken, authorizationToken.getToken(), authorizationToken.getLevel().getLevel(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli(), authorizationToken.getUsed(), oldToken)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setAuthorizationTokenByToken.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean setAuthorizationTokenTimesUsedByToken(String token, int timesUsed) {
+        if (!isConnected() || token == null || token.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setAuthorizationTokenTimesUsedByToken) {
+            if (!setPreparedStatement(preparedStatement_setAuthorizationTokenTimesUsedByToken, timesUsed, token)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setAuthorizationTokenTimesUsedByToken.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
     public boolean setVideoByVideoId(YouTubeVideo video, String videoId) {
         if (!isConnected() || video == null || videoId == null || videoId.isEmpty()) {
             return false;
@@ -1127,6 +1204,19 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public boolean removeAuthorizationTokenByToken(String token) {
+        if (!isConnected() || token == null || token.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_removeAuthorizationTokenByToken) {
+            if (!setPreparedStatement(preparedStatement_removeAuthorizationTokenByToken, token)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removeAuthorizationTokenByToken.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
     public String toString() {
         return "SQLDatabase{" + "connector=" + connector + '}';
     }
@@ -1239,6 +1329,31 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return null;
         }
         return toughFunction.applyWithoutException(resultSet);
+    }
+    
+    protected static AuthorizationToken resultSetToAuthorizationToken(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        final AuthorizationToken authorizationToken = Standard.silentError(() -> new AuthorizationToken(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN), AuthorizationToken.AuthorizationTokenLevel.ofLevel(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_LEVEL)), Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_CREATED)), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_EXPIRATION) == 0 ? null : Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_EXPIRATION))));
+        if (authorizationToken != null) {
+            Standard.silentError(() -> authorizationToken.setUsed(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_USED)));
+        }
+        return authorizationToken;
+    }
+    
+    protected static List<AuthorizationToken> resultSetToAuthorizationTokens(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<AuthorizationToken> authorizationTokens = new ArrayList<>();
+        do {
+            final AuthorizationToken authorizationToken = resultSetToAuthorizationToken(resultSet);
+            if (authorizationToken != null) {
+                authorizationTokens.add(authorizationToken);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return authorizationTokens;
     }
     
     protected static YouTubeVideo resultSetToYouTubeVideo(ResultSet resultSet) {
