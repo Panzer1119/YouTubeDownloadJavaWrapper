@@ -52,6 +52,16 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     // Gets
     
+    public abstract List<AuthorizationToken> getAllAuthorizationTokens();
+    
+    public abstract AuthorizationToken getAuthorizationTokenByToken(String token);
+    
+    public boolean hasAuthorizationToken(AuthorizationToken authorizationToken) {
+        return authorizationToken != null && hasAuthorizationToken(authorizationToken.getToken());
+    }
+    
+    public abstract boolean hasAuthorizationToken(String token);
+    
     public abstract V getVideoByVideoId(String videoId);
     
     public abstract List<V> getAllVideos();
@@ -136,7 +146,13 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     // Adds
     
+    public abstract boolean addAuthorizationToken(AuthorizationToken authorizationToken);
+    
     // Sets
+    
+    public abstract boolean setAuthorizationTokenByToken(AuthorizationToken authorizationToken, String oldToken);
+    
+    public abstract boolean setAuthorizationTokenTimesUsedByToken(String token, int timesUsed);
     
     public abstract boolean setVideoByVideoId(V video, String videoId);
     
@@ -172,7 +188,39 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     // Removes
     
+    public abstract boolean removeAuthorizationTokenByToken(String token);
+    
     //
+    
+    public boolean isValidAuthorizationToken(AuthorizationToken authorizationToken) {
+        return authorizationToken != null && isValidAuthorizationToken(authorizationToken.getToken());
+    }
+    
+    public boolean isValidAuthorizationToken(String token) {
+        if (token == null || token.isEmpty() || !isConnected()) {
+            return false;
+        }
+        final AuthorizationToken authorizationToken = getAuthorizationTokenByToken(token);
+        if (authorizationToken == null || !authorizationToken.isValidNow()) {
+            return false;
+        }
+        return authorizationToken.getLevel().hasUnlimitedUses() || authorizationToken.getUsed() < authorizationToken.getLevel().getUses();
+    }
+    
+    public boolean useAuthorizationToken(AuthorizationToken authorizationToken) {
+        return authorizationToken != null && useAuthorizationToken(authorizationToken.getToken());
+    }
+    
+    public boolean useAuthorizationToken(String token) {
+        if (token == null || token.isEmpty() || !isConnected()) {
+            return false;
+        }
+        final AuthorizationToken authorizationToken = getAuthorizationTokenByToken(token);
+        if (authorizationToken == null || !authorizationToken.isValidNow()) {
+            return false;
+        }
+        return setAuthorizationTokenTimesUsedByToken(token, authorizationToken.getUsed() + 1);
+    }
     
     @Override
     public String toString() {
