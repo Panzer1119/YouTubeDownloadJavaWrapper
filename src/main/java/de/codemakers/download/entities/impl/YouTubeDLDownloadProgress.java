@@ -34,6 +34,7 @@ public class YouTubeDLDownloadProgress extends AbstractDownloadProgress<YouTubeD
         super(expectedDownloads);
     }
     
+    @Override
     public boolean nextLine(String line) {
         if (line == null) {
             return false;

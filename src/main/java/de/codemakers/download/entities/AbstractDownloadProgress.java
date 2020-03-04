@@ -115,6 +115,8 @@ public abstract class AbstractDownloadProgress<T extends AbstractDownloadProgres
         }
     }
     
+    public abstract boolean nextLine(String line);
+    
     @Override
     public String toString() {
         synchronized (progresses) {

@@ -25,7 +25,7 @@ import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.entities.impl.YouTubeVideo;
-import de.codemakers.download.entities.impl.YouTubeDownloadContainer;
+import de.codemakers.download.entities.AbstractDownloadContainer;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.BufferedWriter;
@@ -130,7 +130,7 @@ public class Misc {
         return monitorProcess(process, System.out::println, System.err::println);
     }
     
-    public static int monitorProcess(Process process, YouTubeDownloadContainer downloadContainer) {
+    public static int monitorProcess(Process process, AbstractDownloadContainer downloadContainer) {
         Objects.requireNonNull(downloadContainer, "downloadContainer");
         final int exitValue = monitorProcess(process, (normal) -> {
             if (downloadContainer.isUsingDownloadProgress()) {
