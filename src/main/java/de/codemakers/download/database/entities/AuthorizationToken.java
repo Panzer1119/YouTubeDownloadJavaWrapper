@@ -141,11 +141,20 @@ public class AuthorizationToken implements Comparable<AuthorizationToken> {
     }
     
     public JsonObject toJsonObject() {
-        return Misc.GSON.fromJson(toJson(), JsonObject.class);
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("token", getToken());
+        jsonObject.addProperty("level", getLevel().name());
+        jsonObject.addProperty("created", getCreated().toEpochMilli());
+        jsonObject.addProperty("expiration", getExpiration() == null ? 0 : getExpiration().toEpochMilli());
+        return jsonObject;
     }
     
     public String toJson() {
-        return Misc.GSON.toJson(this);
+        return Misc.GSON.toJson(toJsonObject());
+    }
+    
+    public String toJsonPretty() {
+        return Misc.GSON_PRETTY.toJson(toJsonObject());
     }
     
     @Override
