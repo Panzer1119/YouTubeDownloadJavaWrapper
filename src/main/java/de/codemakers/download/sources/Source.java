@@ -41,7 +41,11 @@ public interface Source extends Serializable {
     }
     
     default boolean isPlaylist() {
-        return false;
+        return !isVideo();
+    }
+    
+    default boolean providesMultipleVideos() {
+        return isPlaylist();
     }
     
 }

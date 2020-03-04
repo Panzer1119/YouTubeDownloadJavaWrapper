@@ -27,7 +27,7 @@ public class YouTubeSource implements Source {
     
     private final String id;
     private transient String url;
-    private transient YouTubeSourceType youTubeSourceType = null;
+    private transient YouTubeSourceType youTubeSourceType = YouTubeSourceType.UNKNOWN;
     
     protected YouTubeSource(String id) {
         this(id, null);
@@ -66,6 +66,21 @@ public class YouTubeSource implements Source {
     
     public YouTubeSourceType getYouTubeSourceType() {
         return youTubeSourceType;
+    }
+    
+    @Override
+    public boolean isVideo() {
+        return getYouTubeSourceType().providesVideoId();
+    }
+    
+    @Override
+    public boolean isPlaylist() {
+        return getYouTubeSourceType().providesPlaylistId();
+    }
+    
+    @Override
+    public boolean providesMultipleVideos() {
+        return getYouTubeSourceType().providesMultipleVideos();
     }
     
     @Override
