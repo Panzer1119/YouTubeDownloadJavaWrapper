@@ -1382,35 +1382,35 @@ public class YouTubeDL {
         return downloadRFromFirstLine(source, VideoInstanceInfo::outputInfoToVideoInstanceInfo);
     }
     
-    protected static String downloadRFromFirstLine(YouTubeSource source) {
+    public static String downloadRFromFirstLine(YouTubeSource source) {
         return downloadRFromFirstLine(source, DownloadSettings.empty());
     }
     
-    protected static String downloadRFromFirstLine(YouTubeSource source, DownloadSettings settings) {
+    public static String downloadRFromFirstLine(YouTubeSource source, DownloadSettings settings) {
         return downloadRFromFirstLine(source, settings, null);
     }
     
-    protected static <R> R downloadRFromFirstLine(YouTubeSource source, ToughFunction<String, R> function) {
+    public static <R> R downloadRFromFirstLine(YouTubeSource source, ToughFunction<String, R> function) {
         return downloadRFromFirstLine(source, DownloadSettings.empty(), function);
     }
     
-    protected static <R> R downloadRFromFirstLine(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+    public static <R> R downloadRFromFirstLine(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
         return downloadRFromFirstLine(null, source, settings, function);
     }
     
-    protected static String downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source) {
+    public static String downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source) {
         return downloadRFromFirstLine(database, source, DownloadSettings.empty());
     }
     
-    protected static String downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings) {
+    public static String downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings) {
         return downloadRFromFirstLine(database, source, settings, null);
     }
     
-    protected static <R> R downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, ToughFunction<String, R> function) {
+    public static <R> R downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, ToughFunction<String, R> function) {
         return downloadRFromFirstLine(database, source, DownloadSettings.empty(), function);
     }
     
-    protected static <R> R downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+    public static <R> R downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
         try {
             final AtomicReference<String> atomicReference = new AtomicReference<>(null);
             if (!executeLineConsumingDownload(database, source, settings, (line) -> {
@@ -1431,35 +1431,35 @@ public class YouTubeDL {
         }
     }
     
-    protected static List<String> downloadRsFromLines(YouTubeSource source) {
+    public static List<String> downloadRsFromLines(YouTubeSource source) {
         return downloadRsFromLines(source, DownloadSettings.empty());
     }
     
-    protected static List<String> downloadRsFromLines(YouTubeSource source, DownloadSettings settings) {
+    public static List<String> downloadRsFromLines(YouTubeSource source, DownloadSettings settings) {
         return downloadRsFromLines(source, settings, null);
     }
     
-    protected static <R> List<R> downloadRsFromLines(YouTubeSource source, ToughFunction<String, R> function) {
+    public static <R> List<R> downloadRsFromLines(YouTubeSource source, ToughFunction<String, R> function) {
         return downloadRsFromLines(source, DownloadSettings.empty(), function);
     }
     
-    protected static <R> List<R> downloadRsFromLines(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+    public static <R> List<R> downloadRsFromLines(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
         return downloadRsFromLines(null, source, settings, function);
     }
     
-    protected static List<String> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source) {
+    public static List<String> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source) {
         return downloadRsFromLines(database, source, DownloadSettings.empty());
     }
     
-    protected static List<String> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings) {
+    public static List<String> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings) {
         return downloadRsFromLines(database, source, settings, null);
     }
     
-    protected static <R> List<R> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, ToughFunction<String, R> function) {
+    public static <R> List<R> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, ToughFunction<String, R> function) {
         return downloadRsFromLines(database, source, DownloadSettings.empty(), function);
     }
     
-    protected static <R> List<R> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+    public static <R> List<R> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
         try {
             final List<String> list = new CopyOnWriteArrayList<>();
             if (!executeLineConsumingDownload(database, source, settings, list::add)) {
