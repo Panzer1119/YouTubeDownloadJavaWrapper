@@ -740,12 +740,12 @@ public class YouTubeDL {
     public static final String ARGUMENT_VERBOSE = "--verbose";
     /**
      * Print downloaded pages encoded using base64
-     * to debug problems (very verbose)
+     * to debu g problems (very verbose)
      */
     public static final String ARGUMENT_DUMP_PAGES = "--dump-pages";
     /**
      * Write downloaded intermediary pages to
-     * files in the current directory to debug
+     * files in the current directory to debu g
      * problems
      */
     public static final String ARGUMENT_WRITE_PAGES = "--write-pages";
@@ -1184,6 +1184,7 @@ public class YouTubeDL {
         final boolean useExternalConfig = downloadSettings.isUsingExternalConfig();
         final boolean hasArguments = downloadSettings.hasArguments();
         final String sourceQuoted = downloadContainer.getSource().getSourceQuoted();
+        //FIXME What if there is already a "ARGUMENT_CONFIG_LOCATION" in the Argument Array?
         if (hasArguments) {
             if (useExternalConfig) {
                 final String[] output = new String[3 + downloadSettings.getArguments().length + 1];
@@ -1209,56 +1210,11 @@ public class YouTubeDL {
         }
     }
     
-    @Deprecated
-    public static String[] generateCommandStringArray(DownloadInfo downloadInfo) {
-        final boolean useConfig = downloadInfo.isUsingConfig();
-        final boolean hasArguments = downloadInfo.hasArguments();
-        if (hasArguments) {
-            if (useConfig) {
-                final String[] output = new String[3 + downloadInfo.getArguments().length + 1];
-                output[0] = PROGRAM_NAME;
-                output[1] = ARGUMENT_CONFIG_LOCATION;
-                output[2] = getConfigFileAbsoluteAndEscaped();
-                System.arraycopy(downloadInfo.getArguments(), 0, output, 3, downloadInfo.getArguments().length);
-                output[output.length - 1] = "\"" + downloadInfo.getUrl() + "\"";
-                return output;
-            } else {
-                final String[] output = new String[1 + downloadInfo.getArguments().length + 1];
-                output[0] = PROGRAM_NAME;
-                System.arraycopy(downloadInfo.getArguments(), 0, output, 1, downloadInfo.getArguments().length);
-                output[output.length - 1] = "\"" + downloadInfo.getUrl() + "\"";
-                return output;
-            }
-        } else {
-            if (useConfig) {
-                return new String[] {PROGRAM_NAME, ARGUMENT_CONFIG_LOCATION, getConfigFileAbsoluteAndEscaped(), "\"" + downloadInfo.getUrl() + "\""};
-            } else {
-                return new String[] {PROGRAM_NAME, "\"" + downloadInfo.getUrl() + "\""};
-            }
-        }
+    protected static Process createProcess(YouTubeSource source, DownloadSettings settings) throws Exception {
+        return createProcess(new YouTubeDownloadContainer(source, settings));
     }
     
-    @Deprecated
-    public static Process createProcess(Source source) throws Exception {
-        return createProcess(DIRECTORY, source);
-    }
-    
-    @Deprecated
-    public static Process createProcess(AdvancedFile directory, Source source) throws Exception {
-        return createProcess(directory, source, null);
-    }
-    
-    @Deprecated
-    public static Process createProcess(AdvancedFile directory, Source source, AdvancedFile logFile) throws Exception {
-        return createProcess(new DownloadInfo(directory, source, logFile));
-    }
-    
-    @Deprecated
-    public static Process createProcess(DownloadInfo downloadInfo) throws Exception {
-        return createProcessIntern(downloadInfo.getDirectoryAbsolute(), generateCommandStringArray(downloadInfo));
-    }
-    
-    public static Process createProcess(AbstractDownloadContainer downloadContainer) throws Exception {
+    protected static Process createProcess(AbstractDownloadContainer downloadContainer) throws Exception {
         return createProcessIntern(downloadContainer.getDownloadSettings().getOutputDirectory(), generateCommandStringArray(downloadContainer));
     }
     
@@ -1272,39 +1228,11 @@ public class YouTubeDL {
         return processBuilder.start();
     }
     
-    @Deprecated
-    public static boolean downloadDirect(DownloadInfo downloadInfo) throws Exception {
-        return downloadDirect(new DownloadProgress(downloadInfo));
-    }
-    
-    @Deprecated
-    public static boolean downloadDirect(DownloadProgress downloadProgress) throws Exception {
-        if (downloadProgress.isStarted() || downloadProgress.isAlive()) {
-            return false;
-        }
-        downloadProgress.start();
-        downloadProgress.setSuccessful(downloadDirectIntern(downloadProgress));
-        downloadProgress.setAlive(false);
-        System.out.println("FINISHED downloadProgress=" + downloadProgress + ", successful=" + downloadProgress.isSuccessful()); //TODO Debug only
-        return downloadProgress.isSuccessful();
-    }
-    
-    @Deprecated
-    private static boolean downloadDirectIntern(DownloadProgress downloadProgress) throws Exception {
-        final Process process = createProcess(downloadProgress.getDownloadInfo());
-        //TODO Implement the progress Stuff (Read output and set the progress value accordingly)
-        
-        if (true) {
-            return Misc.monitorProcess(process, downloadProgress) == 0;
-        }
-        return Misc.monitorProcessToFile(process, downloadProgress.getDownloadInfo().getLogFile(), false) == 0; //FIXME Remove the old thing
-    }
-    
-    public static String getIdFromYouTubeUrl(String url) { //FIXME What if i just supply the id? Maybe add an option to (direct) download by id?
+    public static final String getIdFromYouTubeUrl(String url) { //FIXME What if i just supply the id? Maybe add an option to (direct) download by id?
         return getIdFromYouTubeUrl(url, "");
     }
     
-    public static String getIdFromYouTubeUrl(String url, String defaultValue) {
+    public static final String getIdFromYouTubeUrl(String url, String defaultValue) {
         if (url == null || url.isEmpty()) {
             return defaultValue;
         }
@@ -1678,7 +1606,7 @@ public class YouTubeDL {
                     videoInstanceInfoAtomicReference.set(null);
                 }
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            System.out.println("downloadInfoEverything:exitValue=" + exitValue); //DEBUG Remove this
+            System.out.println("downloadInfoEverything: exitValue=" + exitValue); //DEBUG Remove this
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return;
             }
@@ -1689,28 +1617,46 @@ public class YouTubeDL {
         }
     }
     
-    public static boolean executeDownload(YouTubeSource source, DownloadSettings downloadSettings) {
-        return executeDownloadContainer(new YouTubeDownloadContainer(source, downloadSettings, null));
+    public static boolean downloadDirect(YouTubeSource source, DownloadSettings settings) {
+        return downloadDirect(new YouTubeDownloadContainer(source, settings, null));
     }
     
-    public static boolean executeDownloadContainer(YouTubeDownloadContainer downloadContainer) {
+    public static boolean downloadDirect(AbstractDownloadContainer downloadContainer) {
         if (downloadContainer == null) {
             return false;
         }
-        try {
-            if (downloadContainer.isUsingDownloadProgress() && !downloadContainer.getDownloadSettings().hasArgument(ARGUMENT_NEWLINE)) {
-                downloadContainer.getDownloadSettings().addArgument(ARGUMENT_NEWLINE);
-            }
-            final Process process = createProcess(downloadContainer);
-            if (process == null) {
-                Logger.logError("executeDownloadContainer:process is null"); //DEBUG ?
+        final boolean useDownloadProgress = downloadContainer.isUsingDownloadProgress();
+        if (useDownloadProgress) {
+            if (downloadContainer.getDownloadProgress().isStarted() || downloadContainer.getDownloadProgress().isAlive()) {
                 return false;
             }
-            return Misc.monitorProcess(process, downloadContainer) == 0;
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-            return false;
+            downloadContainer.getDownloadProgress().start();
         }
+        boolean success;
+        try {
+            success = executeDownloadContainer(downloadContainer);
+            if (useDownloadProgress) {
+                downloadContainer.getDownloadProgress().setSuccessful(success);
+            }
+        } catch (Exception ex) {
+            success = false;
+            Logger.handleError(ex);
+        }
+        if (useDownloadProgress) {
+            downloadContainer.getDownloadProgress().setAlive(false);
+        }
+        return success;
+    }
+    
+    protected static boolean executeDownload(YouTubeSource source, DownloadSettings settings) throws Exception {
+        return executeDownloadContainer(new YouTubeDownloadContainer(source, settings, null));
+    }
+    
+    private static boolean executeDownloadContainer(AbstractDownloadContainer downloadContainer) throws Exception {
+        if (downloadContainer.isUsingDownloadProgress() && !downloadContainer.getDownloadSettings().hasArgument(ARGUMENT_NEWLINE)) {
+            downloadContainer.getDownloadSettings().addArgument(ARGUMENT_NEWLINE);
+        }
+        return Misc.monitorProcess(createProcess(downloadContainer), downloadContainer) == 0;
     }
     
     public static VideoInstanceInfo downloadVideoInstanceInfo(YouTubeSource source) {
@@ -1734,7 +1680,7 @@ public class YouTubeDL {
             final AtomicReference<R> atomicReference = new AtomicReference<>(null);
             final AtomicBoolean errored = new AtomicBoolean(false);
             final int exitValue = Misc.monitorProcess(createProcess(downloadContainer), (normal) -> atomicReference.set(function.applyWithoutException(normal)), (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            System.out.println("downloadRFromFirstLine:exitValue=" + exitValue); //DEBUG Remove this
+            System.out.println("downloadRFromFirstLine: exitValue=" + exitValue); //DEBUG Remove this
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return;
             }
@@ -1744,12 +1690,5 @@ public class YouTubeDL {
             return null;
         }
     }
-    
-    @Deprecated
-    private static final String OUTPUT_TEMPLATE_EXTRAS = "\"id={%(id)s},uploader={%(uploader)s},uploaderId={%(uploader_id)s},title={%(title)s},altTitle={%(alt_title)s},duration={%(duration)s},uploadDate={%(upload_date)s},format={%(format)s},width={%(width)s},height={%(height)s},fps={%(fps)s},asr={%(asr)s},playlist={%(playlist)s},playlistId={%(playlist_id)s},playlistTitle={%(playlist_title)s},playlistIndex={%(playlist_index)s},playlistUploader={%(playlist_uploader)s},playlistUploaderId={%(playlist_uploader_id)s}\"";
-    @Deprecated
-    private static final String PATTERN_OUTPUT_EXTRAS_STRING = "id=\\{([a-zA-Z0-9_-]+)\\},uploader=\\{(.*)\\},uploaderId=\\{(.*)\\},title=\\{(.*)\\},altTitle=\\{(.*)\\},duration=\\{((?:NA)|(?:\\d+))\\},uploadDate=\\{((?:NA)|(?:\\d+))\\},format=\\{(.*)\\},width=\\{((?:NA)|(?:\\d+))\\},height=\\{((?:NA)|(?:\\d+))\\},fps=\\{((?:NA)|(?:\\d+))\\},asr=\\{((?:NA)|(?:\\d+))\\},playlist=\\{(.*)\\},playlistId=\\{(.*)\\},playlistTitle=\\{(.*)\\},playlistIndex=\\{((?:NA)|(?:\\d+))\\},playlistUploader=\\{(.*)\\},playlistUploaderId=\\{(.*)\\}";
-    @Deprecated
-    private static final Pattern PATTERN_OUTPUT_EXTRAS = Pattern.compile(PATTERN_OUTPUT_EXTRAS_STRING);
     
 }
