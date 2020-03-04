@@ -17,19 +17,10 @@
 
 package de.codemakers.download;
 
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
-import de.codemakers.base.multiplets.Doublet;
-import de.codemakers.download.sources.Source;
-import de.codemakers.download.sources.YouTubeSource;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-
 public class FileInfoTest {
     
+    /*
+    @Deprecated
     public static void main(String[] args) throws Exception {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
         final String url = args[0];
@@ -49,5 +40,6 @@ public class FileInfoTest {
         final long duration = System.currentTimeMillis() - start;
         Logger.log("Time taken: " + (duration / 1000) + " seconds");
     }
+    */
     
 }

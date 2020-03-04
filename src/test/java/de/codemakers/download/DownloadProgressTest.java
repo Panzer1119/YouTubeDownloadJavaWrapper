@@ -17,15 +17,9 @@
 
 package de.codemakers.download;
 
-import de.codemakers.base.Standard;
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
-import de.codemakers.io.file.AdvancedFile;
-
-import java.util.Arrays;
-
 public class DownloadProgressTest {
     
+    /*
     public static final AdvancedFile DIRECTORY_YOUTUBE = new AdvancedFile("test", "youtube");
     
     static {
@@ -38,6 +32,7 @@ public class DownloadProgressTest {
         YouTubeDL.setLogsDirectory(logsDirectory);
     }
     
+    @Deprecated
     public static void main(String[] args) {
         final String url = args[0];
         Logger.log("url=" + url);
@@ -51,5 +46,6 @@ public class DownloadProgressTest {
             DownloadManager.getInstance().stop();
         });
     }
+    */
     
 }
