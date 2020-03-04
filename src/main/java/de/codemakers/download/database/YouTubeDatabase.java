@@ -1020,7 +1020,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return false;
         }
         synchronized (preparedStatement_addAuthorizationToken) {
-            if (!setPreparedStatement(preparedStatement_addAuthorizationToken, authorizationToken.getToken(), authorizationToken.getLevel().getLevel(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli())) {
+            if (!setPreparedStatement(preparedStatement_addAuthorizationToken, authorizationToken.getToken(), authorizationToken.getLevel().name(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli())) {
                 return false;
             }
             return Standard.silentError(() -> preparedStatement_addAuthorizationToken.executeUpdate()) > 0;
@@ -1034,7 +1034,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return false;
         }
         synchronized (preparedStatement_setAuthorizationTokenByToken) {
-            if (!setPreparedStatement(preparedStatement_setAuthorizationTokenByToken, authorizationToken.getToken(), authorizationToken.getLevel().getLevel(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli(), authorizationToken.getUsed(), oldToken)) {
+            if (!setPreparedStatement(preparedStatement_setAuthorizationTokenByToken, authorizationToken.getToken(), authorizationToken.getLevel().name(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli(), authorizationToken.getUsed(), oldToken)) {
                 return false;
             }
             return Standard.silentError(() -> preparedStatement_setAuthorizationTokenByToken.executeUpdate()) > 0;
@@ -1335,7 +1335,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (resultSet == null) {
             return null;
         }
-        final AuthorizationToken authorizationToken = Standard.silentError(() -> new AuthorizationToken(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN), AuthorizationToken.AuthorizationTokenLevel.ofLevel(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_LEVEL)), Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_CREATED)), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_EXPIRATION) == 0 ? null : Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_EXPIRATION))));
+        final AuthorizationToken authorizationToken = Standard.silentError(() -> new AuthorizationToken(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN), AuthorizationToken.AuthorizationTokenLevel.valueOf(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_LEVEL)), Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_CREATED)), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_EXPIRATION) == 0 ? null : Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_EXPIRATION))));
         if (authorizationToken != null) {
             Standard.silentError(() -> authorizationToken.setUsed(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_USED)));
         }
