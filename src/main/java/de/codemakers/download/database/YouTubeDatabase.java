@@ -1025,7 +1025,61 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             }
             return Standard.silentError(() -> preparedStatement_addAuthorizationToken.executeUpdate()) > 0;
         }
-        
+    }
+    
+    @Override
+    public boolean addPlaylist(YouTubePlaylist playlist) {
+        if (!isConnected() || playlist == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addPlaylist) {
+            if (!setPreparedStatement(preparedStatement_addPlaylist, playlist.getPlaylistId(), playlist.getTitle(), playlist.getPlaylist(), playlist.getUploaderId())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addPlaylist.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean addVideoToPlaylist(YouTubePlaylist playlist, YouTubeVideo video, int index) {
+        if (!isConnected() || playlist == null || video == null) {
+            return false;
+        }
+        if (playlist.containsVideo(video)) {
+            return true;
+        }
+        synchronized (preparedStatement_addPlaylistVideo) {
+            if (!setPreparedStatement(preparedStatement_addPlaylistVideo, playlist.getPlaylistId(), video.getVideoId(), index)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addPlaylistVideo.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean addQueuedVideo(QueuedYouTubeVideo queuedVideo) {
+        if (!isConnected() || queuedVideo == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addQueuedVideo) {
+            if (!setPreparedStatement(preparedStatement_addQueuedVideo, queuedVideo.getId(), queuedVideo.getVideoId(), queuedVideo.getPriority(), queuedVideo.getRequestedAsTimestamp(), queuedVideo.getRequesterId(), queuedVideo.getFileType(), queuedVideo.getArguments(), queuedVideo.getConfigFile(), queuedVideo.getOutputDirectory())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addQueuedVideo.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean addVideo(YouTubeVideo video) {
+        if (!isConnected() || video == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addVideo) {
+            if (!setPreparedStatement(preparedStatement_addVideo, video.getVideoId(), video.getChannelId(), video.getUploaderId(), video.getTitle(), video.getAltTitle(), video.getDurationMillis(), video.getUploadDateAsLong())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addVideo.executeUpdate()) > 0;
+        }
     }
     
     @Override
@@ -1055,6 +1109,19 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public boolean setPlaylistVideo(YouTubePlaylist playlist, YouTubeVideo video, int index) {
+        if (!isConnected() || playlist == null || video == null || !playlist.containsVideo(video)) {
+            return false;
+        }
+        synchronized (preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId) {
+            if (!setPreparedStatement(preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId, playlist.getPlaylistId(), video.getVideoId(), index, playlist.getPlaylistId(), video.getVideoId())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
     public boolean setVideoByVideoId(YouTubeVideo video, String videoId) {
         if (!isConnected() || video == null || videoId == null || videoId.isEmpty()) {
             return false;
@@ -1067,13 +1134,15 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
+    /*
     @Override
     public boolean setVideosByPlaylistId(List<YouTubeVideo> videos, String playlistId) {
         if (!isConnected() || videos == null || playlistId == null || playlistId.isEmpty()) {
             return false;
         }
-        throw new NotYetImplementedRuntimeException("YouTubeDatabase:setVideosByPlaylistId");
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase::setVideosByPlaylistId");
     }
+    */
     
     @Override
     public boolean setPlaylistByPlaylistId(YouTubePlaylist playlist, String playlistId) {
@@ -1088,13 +1157,15 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
+    /*
     @Override
     public boolean setPlaylistsByVideoId(List<YouTubePlaylist> playlists, String videoId) {
         if (!isConnected() || playlists == null || videoId == null || videoId.isEmpty()) {
             return false;
         }
-        throw new NotYetImplementedRuntimeException("YouTubeDatabase:setPlaylistsByVideoId");
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase::setPlaylistsByVideoId");
     }
+    */
     
     @Override
     public boolean setMediaFileByVideoIdAndFile(MediaFile mediaFile, String videoId, String file) {
@@ -1114,7 +1185,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || mediaFiles == null || videoId == null || videoId.isEmpty()) {
             return false;
         }
-        throw new NotYetImplementedRuntimeException("YouTubeDatabase:setMediaFilesByVideoId");
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase::setMediaFilesByVideoId");
     }
     
     @Override
@@ -1135,7 +1206,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (!isConnected() || extraFiles == null || videoId == null || videoId.isEmpty()) {
             return false;
         }
-        throw new NotYetImplementedRuntimeException("YouTubeDatabase:setExtraFilesByVideoId");
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase::setExtraFilesByVideoId");
     }
     
     @Override
@@ -1204,6 +1275,16 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public boolean removeAllAuthorizationTokenByTokens() {
+        if (!isConnected()) {
+            return false;
+        }
+        synchronized (preparedStatement_removeAllAuthorizationTokens) {
+            return Standard.silentError(() -> preparedStatement_removeAllAuthorizationTokens.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
     public boolean removeAuthorizationTokenByToken(String token) {
         if (!isConnected() || token == null || token.isEmpty()) {
             return false;
@@ -1213,6 +1294,68 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                 return false;
             }
             return Standard.silentError(() -> preparedStatement_removeAuthorizationTokenByToken.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean removeVideoFromPlaylist(YouTubePlaylist playlist, YouTubeVideo video) {
+        if (!isConnected() || playlist == null || video == null) {
+            return false;
+        }
+        synchronized (preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId) {
+            if (!setPreparedStatement(preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId, playlist.getPlaylistId(), video.getVideoId())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean removeQueuedVideoById(int id) {
+        if (!isConnected() || id < 0) {
+            return false;
+        }
+        synchronized (preparedStatement_removeQueuedVideoById) {
+            if (!setPreparedStatement(preparedStatement_removeQueuedVideoById, id)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removeQueuedVideoById.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean removeAllQueuedVideos() {
+        if (!isConnected()) {
+            return false;
+        }
+        synchronized (preparedStatement_removeAllQueuedVideos) {
+            return Standard.silentError(() -> preparedStatement_removeAllQueuedVideos.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean removeQueuedVideosByVideoId(String videoId) {
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_removeQueuedVideosByVideoId) {
+            if (!setPreparedStatement(preparedStatement_removeQueuedVideosByVideoId, videoId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removeQueuedVideosByVideoId.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean removeQueuedVideosByRequesterId(int requesterId) {
+        if (!isConnected() || requesterId < 0) {
+            return false;
+        }
+        synchronized (preparedStatement_removeQueuedVideosByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_removeQueuedVideosByRequesterId, requesterId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removeQueuedVideosByRequesterId.executeUpdate()) > 0;
         }
     }
     
@@ -1402,7 +1545,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new QueuedYouTubeVideo(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY), QueuedVideoState.ofState(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE))));
+        return Standard.silentError(() -> new QueuedYouTubeVideo(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_FILE_TYPE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY), QueuedVideoState.ofState(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE))));
     }
     
     protected static List<QueuedYouTubeVideo> resultSetToQueuedYouTubeVideos(ResultSet resultSet) {
