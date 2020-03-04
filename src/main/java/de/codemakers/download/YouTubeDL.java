@@ -1228,25 +1228,6 @@ public class YouTubeDL {
     }
     
     @Deprecated
-    public static List<String> downloadIdsDirect(Source source) {
-        final DownloadInfo downloadInfo = new DownloadInfo(source);
-        downloadInfo.setUseConfig(false);
-        downloadInfo.setArguments(ARGUMENT_GET_ID);
-        final List<String> ids = new ArrayList<>();
-        try {
-            final AtomicBoolean errored = new AtomicBoolean(false);
-            final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), ids::add, (error) -> errored.set(true));
-            if (exitValue != 0) { //TODO What todo if "errored" is true?
-                return null;
-            }
-            return ids;
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-            return null;
-        }
-    }
-    
-    @Deprecated
     public static List<VideoInfo> downloadVideoInfosDirect(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
@@ -1371,11 +1352,15 @@ public class YouTubeDL {
         return Misc.monitorProcess(createProcess(downloadContainer), downloadContainer) == 0;
     }
     
-    public static List<String> downloadVideoIdsFromPlaylistURL(String playlistUrl) {
-        if (playlistUrl == null || playlistUrl.isEmpty()) {
+    public static List<String> downloadVideoIdsFromURL(String url) {
+        if (url == null || url.isEmpty()) {
             return null;
         }
-        return downloadRsFromLines(YouTubeSource.ofUrl(playlistUrl), DownloadSettings.empty().setArguments(ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_ID));
+        final YouTubeSource source = YouTubeSource.ofUrl(url);
+        if (!source.providesMultipleVideos()) {
+            throw new IllegalArgumentException("downloadVideoIdsFromURL: \"url\" has to be a Channel, a Playlist or a User URL");
+        }
+        return downloadRsFromLines(source, DownloadSettings.empty().setArguments(ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_ID));
     }
     
     public static VideoInstanceInfo downloadVideoInstanceInfo(YouTubeSource source) { //TODO IMPORTANT Download VideoInstanceInfo for every MediaFile and then always (create playlist if not exists and) add the video to the playlist if it is not already in there (Database) (But getting the Index requires the information for a video, so always add all videos from a playlist to it in the database if a method detects a playlist is being download instead of a video??)
