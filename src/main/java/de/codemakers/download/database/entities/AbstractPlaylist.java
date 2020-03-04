@@ -93,6 +93,30 @@ public abstract class AbstractPlaylist<T extends AbstractPlaylist, M extends Abs
         return useDatabaseOrNull((database) -> database.getVideoIdsByPlaylistId(getPlaylistId()));
     }
     
+    public boolean addVideos(List<V> videos) {
+        return useDatabaseOrFalse((database) -> database.addPlaylistToVideos(this, videos));
+    }
+    
+    public boolean addVideoIds(List<String> videoIds) {
+        return useDatabaseOrFalse((database) -> database.addPlaylistToVideos(getPlaylistId(), videoIds));
+    }
+    
+    public boolean addVideo(V video) {
+        return useDatabaseOrFalse((database) -> database.addVideoToPlaylist(this, video));
+    }
+    
+    public boolean addVideoId(String videoId) {
+        return useDatabaseOrFalse((database) -> database.addVideoToPlaylist(getPlaylistId(), videoId));
+    }
+    
+    public boolean addVideo(V video, int index) {
+        return useDatabaseOrFalse((database) -> database.addVideoToPlaylist(this, video, index));
+    }
+    
+    public boolean addVideoId(String videoId, int index) {
+        return useDatabaseOrFalse((database) -> database.addVideoToPlaylist(getPlaylistId(), videoId, index));
+    }
+    
     public boolean containsVideo(V video) {
         if (video == null) {
             return false;
