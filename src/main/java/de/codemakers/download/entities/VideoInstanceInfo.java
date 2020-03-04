@@ -33,6 +33,7 @@ public class VideoInstanceInfo {
     protected static final String OUTPUT_FORMAT_EVERYTHING = new String(new AdvancedFile(YouTubeDL.INTERN_FOLDER, "youtube-dl_output_format_everything.txt").readBytesWithoutException());
     protected static final String OUTPUT_FORMAT_EVERYTHING_REGEX = new String(new AdvancedFile(YouTubeDL.INTERN_FOLDER, "youtube-dl_output_format_everything_regex.txt").readBytesWithoutException());
     protected static final Pattern PATTERN_OUTPUT_FORMAT_EVERYTHING = Pattern.compile(OUTPUT_FORMAT_EVERYTHING_REGEX);
+    public static final DownloadSettings DOWNLOAD_SETTINGS = DownloadSettings.empty().setArguments(YouTubeDL.ARGUMENT_GET_FILENAME, YouTubeDL.ARGUMENT_OUTPUT, "\"" + OUTPUT_FORMAT_EVERYTHING + "\"");
     
     protected String id = null;
     protected String title = null;

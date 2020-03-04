@@ -1280,7 +1280,7 @@ public class YouTubeDL {
     }
     
     public static VideoInstanceInfo downloadVideoInstanceInfo(YouTubeSource source) { //TODO IMPORTANT Download VideoInstanceInfo for every MediaFile and then always (create playlist if not exists and) add the video to the playlist if it is not already in there (Database) (But getting the Index requires the information for a video, so always add all videos from a playlist to it in the database if a method detects a playlist is being download instead of a video??)
-        return downloadRFromFirstLine(source, VideoInstanceInfo::outputInfoToVideoInstanceInfo);
+        return downloadRFromFirstLine(source, VideoInstanceInfo.DOWNLOAD_SETTINGS, VideoInstanceInfo::outputInfoToVideoInstanceInfo);
     }
     
     public static String downloadRFromFirstLine(YouTubeSource source) {
