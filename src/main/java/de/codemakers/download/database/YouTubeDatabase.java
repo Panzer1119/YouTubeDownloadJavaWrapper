@@ -1061,7 +1061,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return false;
         }
         synchronized (preparedStatement_addQueuedVideo) {
-            if (!setPreparedStatement(preparedStatement_addQueuedVideo, queuedVideo.getVideoId(), queuedVideo.getPriority(), queuedVideo.getRequestedAsTimestamp(), queuedVideo.getRequesterId(), queuedVideo.getFileType(), queuedVideo.getArguments(), queuedVideo.getConfigFile(), queuedVideo.getOutputDirectory())) {
+            if (!setPreparedStatement(preparedStatement_addQueuedVideo, queuedVideo.getVideoId(), queuedVideo.getPriority(), queuedVideo.getRequestedAsTimestamp(), queuedVideo.getRequesterId(), queuedVideo.getFileType(), queuedVideo.getArguments(), queuedVideo.getConfigFile(), queuedVideo.getOutputDirectory(), queuedVideo.getState().name())) {
                 return false;
             }
             final boolean success = Standard.silentError(() -> preparedStatement_addQueuedVideo.executeUpdate()) > 0;
@@ -1399,7 +1399,6 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                     throw new IllegalArgumentException(String.format("The Class \"%s\" is not yet supported by \"setPreparedStatement\"!", object.getClass().getName()));
                 }
             }
-            Logger.logDebug("setPreparedStatement:preparedStatement=" + preparedStatement); //TODO DEBUG Remove this!
             return true;
         } catch (Exception ex) {
             Logger.handleError(ex);
