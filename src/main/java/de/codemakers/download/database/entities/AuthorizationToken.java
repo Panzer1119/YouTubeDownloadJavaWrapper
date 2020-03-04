@@ -17,6 +17,8 @@
 
 package de.codemakers.download.database.entities;
 
+import com.google.gson.JsonObject;
+import de.codemakers.download.util.Misc;
 import de.codemakers.security.util.RandomUtil;
 
 import java.time.Duration;
@@ -136,6 +138,14 @@ public class AuthorizationToken implements Comparable<AuthorizationToken> {
             return null;
         }
         return new AuthorizationToken(generateRandomToken(TOKEN_LENGTH_GRANTER), AuthorizationTokenLevel.GRANTER, Instant.now(), expiration);
+    }
+    
+    public JsonObject toJsonObject() {
+        return Misc.GSON.fromJson(toJson(), JsonObject.class);
+    }
+    
+    public String toJson() {
+        return Misc.GSON.toJson(this);
     }
     
     @Override
