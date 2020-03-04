@@ -19,11 +19,9 @@ package de.codemakers.download;
 
 import de.codemakers.base.Standard;
 import de.codemakers.base.logger.Logger;
-import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
-import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.entities.AbstractDownloadContainer;
 import de.codemakers.download.entities.DownloadSettings;
@@ -36,12 +34,11 @@ import de.codemakers.download.util.Misc;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1178,7 +1175,7 @@ public class YouTubeDL {
         LOGS_DIRECTORY = logsDirectory;
     }
     
-    public static String[] generateCommandStringArray(AbstractDownloadContainer downloadContainer) {
+    public static String[] generateCommandStringArray(AbstractDownloadContainer downloadContainer) { //FIXME IMPORTANT What is with "ARGUMENT_IGNORE_ERRORS"?
         final DownloadSettings downloadSettings = downloadContainer.getDownloadSettings();
         final boolean useExternalConfig = downloadSettings.isUsingExternalConfig();
         final boolean hasArguments = downloadSettings.hasArguments();
@@ -1225,89 +1222,6 @@ public class YouTubeDL {
         directory.mkdirsWithoutException();
         processBuilder.directory(directory.toFile());
         return processBuilder.start();
-    }
-    
-    @Deprecated
-    public static List<VideoInfo> downloadVideoInfosDirect(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
-        final DownloadInfo downloadInfo = new DownloadInfo(source);
-        downloadInfo.setUseConfig(false);
-        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_TITLE, ARGUMENT_GET_ID, ARGUMENT_GET_DURATION);
-        final List<VideoInfo> videoInfos = new ArrayList<>();
-        try {
-            final AtomicBoolean errored = new AtomicBoolean(false);
-            final AtomicInteger counter = new AtomicInteger(0);
-            final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), (normal) -> {
-                switch (counter.get()) {
-                    case 0: //Title
-                        videoInfos.add(videoInfoGenerator.getWithoutException().setTitle(normal));
-                        break;
-                    case 1: //ID
-                        videoInfos.get(videoInfos.size() - 1).setId(normal);
-                        counter.set(-1); //FIXME Duration is not downloaded, when using --flat-playlist
-                        break;
-                    case 2: //Duration
-                        videoInfos.get(videoInfos.size() - 1).setDuration(normal);
-                        counter.set(-1);
-                        break;
-                }
-                counter.incrementAndGet();
-            }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
-                return videoInfos;
-            }
-            return videoInfos;
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-            return null;
-        }
-    }
-    
-    @Deprecated
-    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(ToughSupplier<ExecutorService> executorServiceSupplier, Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
-        final DownloadInfo downloadInfo = new DownloadInfo(source);
-        downloadInfo.setUseConfig(false);
-        downloadInfo.setArguments(ARGUMENT_IGNORE_ERRORS, ARGUMENT_IGNORE_CONFIG, ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_TITLE, ARGUMENT_GET_ID);
-        final List<FileInfo> fileInfos = new ArrayList<>();
-        try {
-            final AtomicBoolean errored = new AtomicBoolean(false);
-            final AtomicInteger counter = new AtomicInteger(0);
-            final AtomicReference<String> title = new AtomicReference<>(null);
-            final int exitValue = Misc.monitorProcess(createProcess(downloadInfo), (normal) -> {
-                switch (counter.get()) {
-                    case 0: //Title
-                        title.set(normal);
-                        //videoInfos.put(videoInfoGenerator.getWithoutException().setTitle(normal)); //TODO Remove this
-                        break;
-                    case 1: //ID
-                        final FileInfo fileInfo = fileInfoGenerator.getWithoutException();
-                        fileInfo.getVideoInfo().setId(normal);
-                        if (title.get() != null) {
-                            fileInfo.getVideoInfo().setTitle(title.get());
-                            title.set(null);
-                        }
-                        fileInfos.add(fileInfo);
-                        //videoInfos.get(videoInfos.size() - 1).setId(normal);
-                        counter.set(-1); //FIXME Duration is not downloaded, when using --flat-playlist
-                        break;
-                    case 2: //Duration
-                        //videoInfos.get(videoInfos.size() - 1).setDuration(normal); //TODO Remove this
-                        counter.set(-1);
-                        break;
-                }
-                counter.incrementAndGet();
-            }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
-                //return videoInfos;
-            }
-            
-            final Future<List<FileInfo>> future = downloadFileInfosAsync(executorServiceSupplier, fileInfos);
-            
-            //return videoInfos;
-            return new Doublet<>(fileInfos, future);
-        } catch (Exception ex) {
-            Logger.handleError(ex);
-            return null;
-        }
     }
     
     public static boolean downloadDirect(YouTubeSource source, DownloadSettings settings) {
