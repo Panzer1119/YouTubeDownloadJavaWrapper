@@ -21,12 +21,14 @@ import de.codemakers.base.Standard;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.multiplets.Doublet;
 import de.codemakers.base.util.TimeUtil;
+import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.entities.AbstractDownloadContainer;
 import de.codemakers.download.entities.DownloadSettings;
 import de.codemakers.download.entities.VideoInstanceInfo;
+import de.codemakers.download.entities.impl.YouTubeDLDownloadProgress;
 import de.codemakers.download.entities.impl.YouTubeDownloadContainer;
 import de.codemakers.download.sources.Source;
 import de.codemakers.download.sources.YouTubeSource;
@@ -35,10 +37,9 @@ import de.codemakers.io.file.AdvancedFile;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1246,11 +1247,6 @@ public class YouTubeDL {
     }
     
     @Deprecated
-    public static List<VideoInfo> downloadVideoInfosDirect(Source source) {
-        return downloadVideoInfosDirect(source, VideoInfo::new);
-    }
-    
-    @Deprecated
     public static List<VideoInfo> downloadVideoInfosDirect(Source source, ToughSupplier<VideoInfo> videoInfoGenerator) {
         final DownloadInfo downloadInfo = new DownloadInfo(source);
         downloadInfo.setUseConfig(false);
@@ -1283,40 +1279,6 @@ public class YouTubeDL {
             Logger.handleError(ex);
             return null;
         }
-    }
-    
-    @Deprecated
-    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source) {
-        return downloadFileInfosFromListAndThenAsync(source, false);
-    }
-    
-    @Deprecated
-    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
-        return downloadFileInfosFromListAndThenAsync(source, fileInfoGenerator, false);
-    }
-    
-    @Deprecated
-    public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, boolean getIndex) {
-        final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = downloadFileInfosAndThenAsync(source);
-        //addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex); //FIXME
-        return doublet;
-    }
-    
-    @Deprecated
-    public static final Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosFromListAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator, boolean getIndex) {
-        final Doublet<List<FileInfo>, Future<List<FileInfo>>> doublet = downloadFileInfosAndThenAsync(source, fileInfoGenerator);
-        //addPlaylistInformationToFileInfos(doublet.getA(), source, getIndex); //FIXME
-        return doublet;
-    }
-    
-    @Deprecated
-    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(Source source) {
-        return downloadFileInfosAndThenAsync(source, () -> new FileInfo(new VideoInfo()));
-    }
-    
-    @Deprecated
-    public static Doublet<List<FileInfo>, Future<List<FileInfo>>> downloadFileInfosAndThenAsync(Source source, ToughSupplier<FileInfo> fileInfoGenerator) {
-        return downloadFileInfosAndThenAsync(Misc.EXECUTOR_SERVICE_TOUGH_SUPPLIER, source, fileInfoGenerator);
     }
     
     @Deprecated
@@ -1367,24 +1329,6 @@ public class YouTubeDL {
         }
     }
     
-    @Deprecated
-    private static Future<List<FileInfo>> downloadFileInfosAsync(ToughSupplier<ExecutorService> executorServiceSupplier, List<FileInfo> fileInfos) {
-        FutureTask<List<FileInfo>> futureTask = new FutureTask<>(() -> downloadFileInfosExtras(executorServiceSupplier, fileInfos));
-        Standard.async(futureTask::run); //TODO Async extra info loading stuff
-        return futureTask;
-    }
-    
-    @Deprecated
-    private static List<FileInfo> downloadFileInfosExtras(ToughSupplier<ExecutorService> executorServiceSupplier, List<FileInfo> fileInfos) {
-        final ExecutorService executorService = executorServiceSupplier.getWithoutException();
-        //fileInfos.forEach((videoInfo) -> executorService.submit(() -> downloadFileInfoExtras(videoInfo)));
-        fileInfos.forEach((videoInfo) -> executorService.submit(() -> downloadInfoEverythingAndAddToFileInfo(videoInfo)));
-        executorService.shutdown();
-        Standard.silentError(() -> executorService.awaitTermination(10, TimeUnit.MINUTES));
-        executorService.shutdownNow();
-        return fileInfos;
-    }
-    
     public static boolean downloadDirect(YouTubeSource source, DownloadSettings settings) {
         return downloadDirect(new YouTubeDownloadContainer(source, settings, null));
     }
@@ -1427,27 +1371,47 @@ public class YouTubeDL {
         return Misc.monitorProcess(createProcess(downloadContainer), downloadContainer) == 0;
     }
     
+    public static List<String> downloadVideoIdsFromPlaylistURL(String playlistUrl) {
+        if (playlistUrl == null || playlistUrl.isEmpty()) {
+            return null;
+        }
+        return downloadRFromFirstLine(YouTubeSource.ofUrl(playlistUrl), new DownloadSettings().setArguments(ARGUMENT_FLAT_PLAYLIST, ARGUMENT_GET_ID), null);
+    }
+    
     public static VideoInstanceInfo downloadVideoInstanceInfo(YouTubeSource source) { //TODO IMPORTANT Download VideoInstanceInfo for every MediaFile and then always (create playlist if not exists and) add the video to the playlist if it is not already in there (Database) (But getting the Index requires the information for a video, so always add all videos from a playlist to it in the database if a method detects a playlist is being download instead of a video??)
         return downloadRFromFirstLine(source, VideoInstanceInfo::outputInfoToVideoInstanceInfo);
     }
     
+    @Deprecated
     protected static <R> R downloadRFromFirstLine(YouTubeSource source, ToughFunction<String, R> function) {
         return downloadRFromFirstLine(source, DownloadSettings.empty(), function);
     }
     
+    @Deprecated
     protected static <R> R downloadRFromFirstLine(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
         return downloadRFromFirstLine(null, source, settings, function);
     }
     
+    @Deprecated
+    protected static String downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings) {
+        return downloadRFromFirstLine(database, source, settings, null);
+    }
+    
+    @Deprecated
     protected static <R> R downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
-        if (source == null || function == null) {
+        if (source == null) {
             return null;
         }
         final YouTubeDownloadContainer downloadContainer = new YouTubeDownloadContainer(database, source, settings, null);
         try {
             final AtomicReference<R> atomicReference = new AtomicReference<>(null);
             final AtomicBoolean errored = new AtomicBoolean(false);
-            final int exitValue = Misc.monitorProcess(createProcess(downloadContainer), (normal) -> atomicReference.set(function.applyWithoutException(normal)), (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
+            final int exitValue = Misc.monitorProcess(createProcess(downloadContainer), (normal) -> {
+                if (atomicReference.get() != null) {
+                    return;
+                }
+                atomicReference.set(function == null ? (R) normal : function.applyWithoutException(normal));
+            }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return;
             }
@@ -1456,6 +1420,99 @@ public class YouTubeDL {
             Logger.handleError(ex);
             return null;
         }
+    }
+    
+    @Deprecated
+    protected static <R> List<R> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+        if (source == null) {
+            return null;
+        }
+        final YouTubeDownloadContainer downloadContainer = new YouTubeDownloadContainer(database, source, settings, null);
+        try {
+            final List<R> rs = new CopyOnWriteArrayList<>();
+            final AtomicBoolean errored = new AtomicBoolean(false);
+            final int exitValue = Misc.monitorProcess(createProcess(downloadContainer), (normal) -> rs.add(function == null ? (R) normal : function.applyWithoutException(normal)), (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
+            if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
+                //return;
+            }
+            return rs;
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    protected static String downloadRFromLine(YouTubeSource source, DownloadSettings settings) {
+        return downloadRFromLine(source, settings, null);
+    }
+    
+    protected static <R> R downloadRFromLine(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+        return downloadRFromLine(null, source, settings, function);
+    }
+    
+    protected static String downloadRFromLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings) {
+        return downloadRFromLine(database, source, settings, null);
+    }
+    
+    protected static <R> R downloadRFromLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+        try {
+            final AtomicReference<String> atomicReference = new AtomicReference<>(null);
+            if (!executeLineDownload(database, source, settings, (line) -> {
+                if (atomicReference.get() == null) {
+                    atomicReference.set(line);
+                }
+            })) {
+                //TODO FIXME What if it returns false, but has something in the atomic reference?
+                //return null;
+            }
+            if (atomicReference.get() == null) {
+                return null;
+            }
+            return function == null ? (R) atomicReference.get() : function.applyWithoutException(atomicReference.get());
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    protected static List<String> downloadRsFromLine(YouTubeSource source, DownloadSettings settings) {
+        return downloadRsFromLine(source, settings, null);
+    }
+    
+    protected static <R> List<R> downloadRsFromLine(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+        return downloadRsFromLine(null, source, settings, function);
+    }
+    
+    protected static List<String> downloadRsFromLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings) {
+        return downloadRsFromLine(database, source, settings, null);
+    }
+    
+    protected static <R> List<R> downloadRsFromLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
+        try {
+            final List<String> list = new CopyOnWriteArrayList<>();
+            if (!executeLineDownload(database, source, settings, list::add)) {
+                //TODO FIXME What if it returns false, but has something in the atomic reference?
+                //return null;
+            }
+            return function == null ? (List<R>) list : list.stream().map(function::applyWithoutException).collect(Collectors.toList());
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return null;
+        }
+    }
+    
+    private static boolean executeLineDownload(YouTubeSource source, DownloadSettings settings, ToughConsumer<String> lineConsumer) throws Exception {
+        return executeLineDownload(null, source, settings, lineConsumer);
+    }
+    
+    private static boolean executeLineDownload(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughConsumer<String> lineConsumer) throws Exception {
+        return executeDownloadContainer(new YouTubeDownloadContainer(database, source, settings, lineConsumer == null ? null : new YouTubeDLDownloadProgress(0) {
+            @Override
+            public boolean nextLine(String line) {
+                lineConsumer.acceptWithoutException(line);
+                return true;
+            }
+        }));
     }
     
 }

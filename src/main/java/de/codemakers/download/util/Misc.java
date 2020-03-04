@@ -49,7 +49,8 @@ public class Misc {
     public static final AdvancedFile DEFAULT_APP_DATA_DATABASES_DIRECTORY = OSUtil.getAppDataSubDirectory(DEFAULT_APP_DATA_DATABASES_DIRECTORY_NAME);
     public static final String DEFAULT_SETTINGS_FILE_NAME = "settings.txt";
     
-    public static final ToughSupplier<ExecutorService> EXECUTOR_SERVICE_TOUGH_SUPPLIER = () -> Executors.newFixedThreadPool(Math.min(Runtime.getRuntime().availableProcessors(), 8)); //TODO Make the count of threads changable?
+    //TODO Remove this?
+    public static final ToughSupplier<ExecutorService> EXECUTOR_SERVICE_TOUGH_SUPPLIER = () -> Executors.newFixedThreadPool(Math.min(Runtime.getRuntime().availableProcessors(), 8)); //TODO Make the count of threads changeable?
     
     static {
         DEFAULT_APP_DATA_DIRECTORY.mkdirsWithoutException();
