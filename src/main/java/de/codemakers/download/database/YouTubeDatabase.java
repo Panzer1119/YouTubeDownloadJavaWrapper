@@ -1041,15 +1041,13 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
-    public boolean addVideoToPlaylist(YouTubePlaylist playlist, YouTubeVideo video, int index) {
-        if (!isConnected() || playlist == null || video == null) {
+    public boolean addVideoToPlaylist(String playlistId, String videoId, int index) {
+        if (!isConnected() || playlistId == null || playlistId.isEmpty() || videoId == null || videoId.isEmpty()) {
             return false;
         }
-        if (playlist.containsVideo(video)) {
-            return true;
-        }
+        //TODO Only add, if it's not already in?
         synchronized (preparedStatement_addPlaylistVideo) {
-            if (!setPreparedStatement(preparedStatement_addPlaylistVideo, playlist.getPlaylistId(), video.getVideoId(), index)) {
+            if (!setPreparedStatement(preparedStatement_addPlaylistVideo, playlistId, videoId, index)) {
                 return false;
             }
             return Standard.silentError(() -> preparedStatement_addPlaylistVideo.executeUpdate()) > 0;

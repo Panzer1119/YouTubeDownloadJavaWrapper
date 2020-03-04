@@ -22,6 +22,7 @@ import de.codemakers.download.database.entities.impl.ExtraFile;
 import de.codemakers.download.database.entities.impl.MediaFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractDatabase<T extends AbstractDatabase, M extends AbstractFile, E extends AbstractFile, V extends AbstractVideo, P extends AbstractPlaylist, Q extends AbstractQueuedVideo, CH extends AbstractChannel, U extends AbstractUploader, R extends AbstractRequester, C extends AbstractConnector> {
     
@@ -154,7 +155,76 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
         return addVideoToPlaylist(playlist, video, -1);
     }
     
-    public abstract boolean addVideoToPlaylist(P playlist, V video, int index);
+    public boolean addVideoToPlaylist(String playlistId, String videoId) {
+        return addVideoToPlaylist(playlistId, videoId, -1);
+    }
+    
+    public boolean addVideoToPlaylist(P playlist, V video, int index) {
+        if (playlist == null || video == null) {
+            return false;
+        }
+        return addVideoToPlaylist(playlist.getPlaylistId(), video.getVideoId(), index);
+    }
+    
+    public abstract boolean addVideoToPlaylist(String playlistId, String videoId, int index);
+    
+    public boolean addVideoToPlaylists(V video, List<P> playlists) {
+        if (video == null || playlists == null) {
+            return false;
+        }
+        if (playlists.isEmpty()) {
+            return true;
+        }
+        return addVideoToPlaylists(video.getVideoId(), playlists.stream().map(P::getPlaylistId).collect(Collectors.toList()));
+    }
+    
+    public boolean addVideoToPlaylists(String videoId, List<String> playlistIds) {
+        if (videoId == null || playlistIds == null) {
+            return false;
+        }
+        if (playlistIds.isEmpty()) {
+            return true;
+        }
+        boolean bad = false;
+        for (String playlistId : playlistIds) {
+            if (playlistId == null || playlistId.isEmpty()) {
+                continue;
+            }
+            if (!addVideoToPlaylist(playlistId, videoId)) {
+                bad = true;
+            }
+        }
+        return !bad;
+    }
+    
+    public boolean addPlaylistToVideos(P playlist, List<V> videos) {
+        if (playlist == null || videos == null) {
+            return false;
+        }
+        if (videos.isEmpty()) {
+            return true;
+        }
+        return addVideoToPlaylists(playlist.getPlaylistId(), videos.stream().map(V::getVideoId).collect(Collectors.toList()));
+    }
+    
+    public boolean addPlaylistToVideos(String playlistId, List<String> videoIds) {
+        if (playlistId == null || videoIds == null) {
+            return false;
+        }
+        if (videoIds.isEmpty()) {
+            return true;
+        }
+        boolean bad = false;
+        for (String videoId : videoIds) {
+            if (videoId == null || videoId.isEmpty()) {
+                continue;
+            }
+            if (!addVideoToPlaylist(playlistId, videoId)) {
+                bad = true;
+            }
+        }
+        return !bad;
+    }
     
     public abstract boolean addQueuedVideo(Q queuedVideo);
     
