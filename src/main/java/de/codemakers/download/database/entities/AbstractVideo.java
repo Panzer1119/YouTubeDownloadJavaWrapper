@@ -130,6 +130,14 @@ public abstract class AbstractVideo<T extends AbstractVideo, M extends AbstractF
         return useDatabaseOrFalse((database) -> database.addVideoToPlaylist(playlistId, getVideoId()));
     }
     
+    public boolean addToPlaylist(P playlist, int index) {
+        return useDatabaseOrFalse((database) -> database.addVideoToPlaylist(playlist, this, index));
+    }
+    
+    public boolean addToPlaylistId(String playlistId, int index) {
+        return useDatabaseOrFalse((database) -> database.addVideoToPlaylist(playlistId, getVideoId(), index));
+    }
+    
     public boolean isInPlaylist(P playlist) {
         if (playlist == null) {
             return false;
