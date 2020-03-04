@@ -1399,6 +1399,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                     throw new IllegalArgumentException(String.format("The Class \"%s\" is not yet supported by \"setPreparedStatement\"!", object.getClass().getName()));
                 }
             }
+            Logger.logDebug("setPreparedStatement:preparedStatement=" + preparedStatement); //TODO DEBUG Remove this!
             return true;
         } catch (Exception ex) {
             Logger.handleError(ex);
