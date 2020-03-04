@@ -32,6 +32,8 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
     protected String videoId = null;
     protected int priority = Integer.MIN_VALUE;
     protected Instant requested = null;
+    protected int requesterId = -1;
+    protected String fileType = null;
     protected String arguments = null;
     protected String configFile = null;
     protected String outputDirectory = null;
@@ -44,16 +46,18 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
         super();
     }
     
-    public AbstractQueuedVideo(int id, String videoId, int priority, Timestamp requested, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
-        this(id, videoId, priority, requested.toInstant(), arguments, configFile, outputDirectory, state);
+    public AbstractQueuedVideo(int id, String videoId, int priority, Timestamp requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
+        this(id, videoId, priority, requested.toInstant(), requesterId, fileType, arguments, configFile, outputDirectory, state);
     }
     
-    public AbstractQueuedVideo(int id, String videoId, int priority, Instant requested, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
+    public AbstractQueuedVideo(int id, String videoId, int priority, Instant requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
         super();
         this.id = id;
         this.videoId = videoId;
         this.priority = priority;
         this.requested = requested;
+        this.requesterId = requesterId;
+        this.fileType = fileType;
         this.arguments = arguments;
         this.configFile = configFile;
         this.outputDirectory = outputDirectory;
@@ -102,6 +106,24 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
     public T setRequested(Instant requested) {
         this.requested = requested;
         return (T) this;
+    }
+    
+    public int getRequesterId() {
+        return requesterId;
+    }
+    
+    public AbstractQueuedVideo setRequesterId(int requesterId) {
+        this.requesterId = requesterId;
+        return this;
+    }
+    
+    public String getFileType() {
+        return fileType;
+    }
+    
+    public AbstractQueuedVideo setFileType(String fileType) {
+        this.fileType = fileType;
+        return this;
     }
     
     public String getArgumentsOrEmptyString() {
@@ -201,7 +223,7 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
     
     @Override
     public String toString() {
-        return "AbstractQueuedVideo{" + "id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + ", state=" + state + ", configFileResolved='" + configFileResolved + '\'' + ", outputDirectoryResolved='" + outputDirectoryResolved + '\'' + '}';
+        return "AbstractQueuedVideo{" + "id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", requesterId=" + requesterId + ", fileType='" + fileType + '\'' + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + ", state=" + state + ", configFileResolved='" + configFileResolved + '\'' + ", outputDirectoryResolved='" + outputDirectoryResolved + '\'' + '}';
     }
     
 }

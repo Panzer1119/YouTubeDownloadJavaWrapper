@@ -30,12 +30,12 @@ public class QueuedYouTubeVideo extends AbstractQueuedVideo<QueuedYouTubeVideo, 
         super();
     }
     
-    public QueuedYouTubeVideo(int id, String videoId, int priority, Timestamp requested, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
-        super(id, videoId, priority, requested, arguments, configFile, outputDirectory, state);
+    public QueuedYouTubeVideo(int id, String videoId, int priority, Timestamp requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
+        super(id, videoId, priority, requested, requesterId, fileType, arguments, configFile, outputDirectory, state);
     }
     
-    public QueuedYouTubeVideo(int id, String videoId, int priority, Instant requested, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
-        super(id, videoId, priority, requested, arguments, configFile, outputDirectory, state);
+    public QueuedYouTubeVideo(int id, String videoId, int priority, Instant requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
+        super(id, videoId, priority, requested, requesterId, fileType, arguments, configFile, outputDirectory, state);
     }
     
     @Override
@@ -48,6 +48,8 @@ public class QueuedYouTubeVideo extends AbstractQueuedVideo<QueuedYouTubeVideo, 
         setVideoId(queuedYouTubeVideo.getVideoId());
         setPriority(queuedYouTubeVideo.getPriority());
         setRequested(queuedYouTubeVideo.getRequested());
+        setRequesterId(queuedYouTubeVideo.getRequesterId());
+        setFileType(queuedYouTubeVideo.getFileType());
         setArguments(queuedYouTubeVideo.getArguments());
         setConfigFile(queuedYouTubeVideo.getConfigFile());
         setOutputDirectory(queuedYouTubeVideo.getOutputDirectory());
@@ -56,7 +58,7 @@ public class QueuedYouTubeVideo extends AbstractQueuedVideo<QueuedYouTubeVideo, 
     
     @Override
     public String toString() {
-        return "QueuedYouTubeVideo{" + "id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + ", state=" + state + ", configFileResolved='" + configFileResolved + '\'' + ", outputDirectoryResolved='" + outputDirectoryResolved + '\'' + '}';
+        return "QueuedYouTubeVideo{" + "id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", requesterId=" + requesterId + ", fileType='" + fileType + '\'' + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + ", state=" + state + ", configFileResolved='" + configFileResolved + '\'' + ", outputDirectoryResolved='" + outputDirectoryResolved + '\'' + '}';
     }
     
 }
