@@ -230,6 +230,12 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract boolean addVideo(V video);
     
+    public abstract boolean addChannel(CH channel);
+    
+    public abstract boolean addUploader(U uploader);
+    
+    public abstract boolean addRequester(R requester);
+    
     // Sets
     
     public abstract boolean setAuthorizationTokenByToken(AuthorizationToken authorizationToken, String oldToken);

@@ -492,19 +492,36 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // //
     }
     
-    public boolean addVideoMetadataIfNotExisting(String videoId) {
-        return addVideoMetadataIfNotExisting(YouTubeDL.downloadVideoInstanceInfo(YouTubeSource.ofId(videoId)));
+    public boolean prepareVideo(String videoId) {
+        return prepareVideo(YouTubeDL.downloadVideoInstanceInfo(YouTubeSource.ofId(videoId)));
     }
     
-    public boolean addVideoMetadataIfNotExisting(VideoInstanceInfo videoInstanceInfo) {
+    public boolean prepareVideo(VideoInstanceInfo videoInstanceInfo) {
         if (videoInstanceInfo == null ) {
             return false;
         }
-        final YouTubeVideo video = getVideoByVideoId(videoInstanceInfo.getId());
+        final String videoId = videoInstanceInfo.getId();
+        final YouTubeVideo video = getVideoByVideoId(videoId);
         if (video != null) {
             return false;
         }
-        return addVideo(new YouTubeVideo(videoInstanceInfo.getId(), videoInstanceInfo.getChannel_id(), videoInstanceInfo.getUploader_id(), videoInstanceInfo.getTitle(), videoInstanceInfo.getAlt_title(), videoInstanceInfo.getDurationAsMillis(), videoInstanceInfo.getUploadDate()));
+        final String channelId = videoInstanceInfo.getChannel_id();
+        final YouTubeChannel channel = getChannelByChannelId(channelId);
+        if (channel == null) {
+            if (!addChannel(new YouTubeChannel(channelId, VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getChannel())))) {
+                Logger.logWarning(String.format("Could not create %s \"%s\" for \"%s\"", YouTubeChannel.class.getSimpleName(), channelId, videoInstanceInfo));
+                return false;
+            }
+        }
+        final String uploaderId = videoInstanceInfo.getUploader_id();
+        final YouTubeUploader uploader = getUploaderByUploaderId(uploaderId);
+        if (uploader == null) {
+            if (!addUploader(new YouTubeUploader(uploaderId, VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getUploader())))) {
+                Logger.logWarning(String.format("Could not create %s \"%s\" for \"%s\"", YouTubeUploader.class.getSimpleName(), uploaderId, videoInstanceInfo));
+                return false;
+            }
+        }
+        return addVideo(new YouTubeVideo(videoId, channelId, uploaderId, VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getTitle()), VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getAlt_title()), videoInstanceInfo.getDurationAsMillis(), videoInstanceInfo.getUploadDate()));
     }
     
     @Override
@@ -1098,6 +1115,45 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                 return false;
             }
             return Standard.silentError(() -> preparedStatement_addVideo.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean addChannel(YouTubeChannel channel) {
+        if (!isConnected() || channel == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addChannel) {
+            if (!setPreparedStatement(preparedStatement_addChannel, channel.getChannelId(), channel.getName())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addChannel.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean addUploader(YouTubeUploader uploader) {
+        if (!isConnected() || uploader == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addUploader) {
+            if (!setPreparedStatement(preparedStatement_addUploader, uploader.getUploaderId(), uploader.getName())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addUploader.executeUpdate()) > 0;
+        }
+    }
+    
+    @Override
+    public boolean addRequester(YouTubeRequester requester) {
+        if (!isConnected() || requester == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addRequester) {
+            if (!setPreparedStatement(preparedStatement_addRequester, requester.getTag(), requester.getName())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addRequester.executeUpdate()) > 0;
         }
     }
     

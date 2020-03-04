@@ -322,13 +322,11 @@ public class YouTubeDatabaseConstants {
     public static final String QUERY_TABLE_PLAYLIST_VIDEOS_INSERT = String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?);", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_INDEX);
     // Table: Requesters
     /**
-     * 1. Argument: Requester ID
+     * 1. Argument: Tag
      * <br>
-     * 2. Argument: Tag
-     * <br>
-     * 3. Argument: Name
+     * 2. Argument: Name
      */
-    public static final String QUERY_TABLE_REQUESTERS_INSERT = String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?);", IDENTIFIER_TABLE_REQUESTERS, IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID, IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG, IDENTIFIER_TABLE_REQUESTERS_COLUMN_NAME);
+    public static final String QUERY_TABLE_REQUESTERS_INSERT = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);", IDENTIFIER_TABLE_REQUESTERS, IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG, IDENTIFIER_TABLE_REQUESTERS_COLUMN_NAME);
     // Table: Uploaders
     /**
      * 1. Argument: Uploader ID
