@@ -1214,13 +1214,15 @@ public class YouTubeDL {
         return createProcessIntern(downloadContainer.getDownloadSettings().getOutputDirectory(), generateCommandStringArray(downloadContainer));
     }
     
-    private static Process createProcessIntern(AdvancedFile directory, String[] command) throws Exception {
+    private static Process createProcessIntern(AdvancedFile outputDirectory, String[] command) throws Exception {
         final ProcessBuilder processBuilder = new ProcessBuilder(command);
         //System.out.println("command=" + Arrays.toString(command)); //TODO DEBUG Remove this
         System.out.println("Full command: " + Arrays.asList(command).stream().collect(Collectors.joining(" ", "\"", "\""))); //TODO DEBUG Remove this
         //System.out.println("processBuilder=" + processBuilder); //TODO DEBUG Remove this
-        directory.mkdirsWithoutException();
-        processBuilder.directory(directory.toFile());
+        if (outputDirectory != null) {
+            outputDirectory.mkdirsWithoutException();
+            processBuilder.directory(outputDirectory.toFile());
+        }
         return processBuilder.start();
     }
     
