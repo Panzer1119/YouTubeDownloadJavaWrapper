@@ -1220,9 +1220,9 @@ public class YouTubeDL {
     
     private static Process createProcessIntern(AdvancedFile directory, String[] command) throws Exception {
         final ProcessBuilder processBuilder = new ProcessBuilder(command);
-        System.out.println("command=" + Arrays.toString(command)); //TODO Debug only
-        System.out.println("Full command: " + Arrays.asList(command).stream().collect(Collectors.joining(" ", "\"", "\""))); //TODO Debug only
-        System.out.println("processBuilder=" + processBuilder); //TODO Debug only
+        System.out.println("command=" + Arrays.toString(command)); //TODO DEBUG Remove this
+        System.out.println("Full command: " + Arrays.asList(command).stream().collect(Collectors.joining(" ", "\"", "\""))); //TODO DEBUG Remove this
+        System.out.println("processBuilder=" + processBuilder); //TODO DEBUG Remove this
         directory.mkdirsWithoutException();
         processBuilder.directory(directory.toFile());
         return processBuilder.start();
@@ -1295,7 +1295,6 @@ public class YouTubeDL {
                 }
                 counter.incrementAndGet();
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            System.out.println("downloadVideoInfosDirect: exitValue=" + exitValue);
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 return videoInfos;
             }
@@ -1447,7 +1446,6 @@ public class YouTubeDL {
                 }
                 counter.incrementAndGet();
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            System.out.println("downloadVideoInfosDirect: exitValue=" + exitValue);
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return videoInfos;
             }
@@ -1549,7 +1547,6 @@ public class YouTubeDL {
                     //Logger.logWarning(String.format("WTF (%s) IT DIDN'T MATCH: \"%s\"", fileInfo.getVideoInfo().getId(), normal)); //TODO Remove this?
                 }
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            System.out.println("downloadVideoInfoExtras: exitValue=" + exitValue); //DEBUG Remove this
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return;
             }
@@ -1606,7 +1603,6 @@ public class YouTubeDL {
                     videoInstanceInfoAtomicReference.set(null);
                 }
             }, (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            System.out.println("downloadInfoEverything: exitValue=" + exitValue); //DEBUG Remove this
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return;
             }
@@ -1680,7 +1676,6 @@ public class YouTubeDL {
             final AtomicReference<R> atomicReference = new AtomicReference<>(null);
             final AtomicBoolean errored = new AtomicBoolean(false);
             final int exitValue = Misc.monitorProcess(createProcess(downloadContainer), (normal) -> atomicReference.set(function.applyWithoutException(normal)), (error) -> errored.set(true)); //TODO What if a playlist is private etc.? Throw an Error indicating a private Playlist etc.?
-            System.out.println("downloadRFromFirstLine: exitValue=" + exitValue); //DEBUG Remove this
             if (exitValue != 0 || errored.get()) { //TODO What todo if "errored" is true?
                 //return;
             }

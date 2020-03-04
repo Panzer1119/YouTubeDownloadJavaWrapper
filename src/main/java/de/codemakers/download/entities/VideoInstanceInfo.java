@@ -1013,7 +1013,7 @@ public class VideoInstanceInfo {
         }
         outputInfo = outputInfo.replaceAll("\"", "\\\"").replaceAll("(?:\\{\\{\\{###\\{\\{\\{)|(?:\\}\\}\\}###\\}\\}\\})", "\"").replaceAll("\\=", ":");
         if (!PATTERN_OUTPUT_FORMAT_EVERYTHING.matcher(outputInfo).matches()) {
-            Logger.logWarning(String.format("outputInfoToJsonObject: Didn't match \"%s\"", outputInfo)); //DEBUG
+            Logger.logWarning(String.format("outputInfoToJsonObject: Didn't match \"%s\"", outputInfo)); //DEBUG Remove this?
             return null; //TODO Hmm notify someone, if this doesn't match?
         }
         outputInfo = outputInfo.replaceAll(",\"is_live\":NA", ",\"is_live\":false");
