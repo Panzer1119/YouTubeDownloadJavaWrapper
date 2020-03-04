@@ -34,16 +34,24 @@ package de.codemakers.download.entities;/*
 
 import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
-
-import java.util.regex.Matcher;
+import de.codemakers.download.YouTubeDL;
+import de.codemakers.download.sources.YouTubeSource;
 
 public class VideoInstanceInfoTest {
     
     public static void main(String[] args) {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
+        /*
         final String input = args[0];
         final Matcher matcher = VideoInstanceInfo.PATTERN_OUTPUT_FORMAT_EVERYTHING.matcher(input);
         Logger.log("matcher.matches()=" + matcher.matches());
+        */
+        final String videoId = args[0];
+        Logger.log("videoId=" + videoId);
+        final YouTubeSource source = YouTubeSource.ofId(videoId);
+        Logger.log("source=" + source);
+        final VideoInstanceInfo videoInstanceInfo = YouTubeDL.downloadVideoInstanceInfo(source);
+        Logger.log("videoInstanceInfo=" + videoInstanceInfo);
     }
     
 }
