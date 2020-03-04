@@ -1060,10 +1060,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return false;
         }
         synchronized (preparedStatement_addQueuedVideo) {
-            if (!setPreparedStatement(preparedStatement_addQueuedVideo, queuedVideo.getId(), queuedVideo.getVideoId(), queuedVideo.getPriority(), queuedVideo.getRequestedAsTimestamp(), queuedVideo.getRequesterId(), queuedVideo.getFileType(), queuedVideo.getArguments(), queuedVideo.getConfigFile(), queuedVideo.getOutputDirectory())) {
+            if (!setPreparedStatement(preparedStatement_addQueuedVideo, queuedVideo.getVideoId(), queuedVideo.getPriority(), queuedVideo.getRequestedAsTimestamp(), queuedVideo.getRequesterId(), queuedVideo.getFileType(), queuedVideo.getArguments(), queuedVideo.getConfigFile(), queuedVideo.getOutputDirectory())) {
                 return false;
             }
-            return Standard.silentError(() -> preparedStatement_addQueuedVideo.executeUpdate()) > 0;
+            final boolean success = Standard.silentError(() -> preparedStatement_addQueuedVideo.executeUpdate()) > 0;
+            //queuedVideo.reload(); //FIXME IMPORTANT How to get the (random) generated ID for the Request?
+            return success;
         }
     }
     

@@ -338,27 +338,25 @@ public class YouTubeDatabaseConstants {
     public static final String QUERY_TABLE_UPLOADERS_INSERT = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);", IDENTIFIER_TABLE_UPLOADERS, IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID, IDENTIFIER_TABLE_UPLOADERS_COLUMN_NAME);
     // Table: Video Queue
     /**
-     * 1. Argument: ID
+     * 1. Argument: Video ID
      * <br>
-     * 2. Argument: Video ID
+     * 2. Argument: Priority
      * <br>
-     * 3. Argument: Priority
+     * 3. Argument: Requested
      * <br>
-     * 4. Argument: Requested
+     * 4. Argument: Requester ID
      * <br>
-     * 5. Argument: Requester ID
+     * 5. Argument: File Type
      * <br>
-     * 6. Argument: File Type
+     * 6. Argument: Arguments
      * <br>
-     * 7. Argument: Arguments
+     * 7. Argument: Config File
      * <br>
-     * 8. Argument: Config File
+     * 8. Argument: Output Directory
      * <br>
-     * 9. Argument: Output Directory
-     * <br>
-     * 10. Argument: State
+     * 9. Argument: State
      */
-    public static final String QUERY_TABLE_VIDEO_QUEUE_INSERT = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTER_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_FILE_TYPE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE);
+    public static final String QUERY_TABLE_VIDEO_QUEUE_INSERT = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTER_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_FILE_TYPE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE);
     // Table: Videos
     /**
      * 1. Argument: Video ID
