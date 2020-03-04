@@ -22,9 +22,12 @@ import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.entities.AuthorizationToken;
 import de.codemakers.download.database.entities.QueuedVideoState;
 import de.codemakers.download.database.entities.impl.*;
+import de.codemakers.download.entities.VideoInstanceInfo;
+import de.codemakers.download.sources.YouTubeSource;
 import de.codemakers.io.IOUtil;
 
 import java.sql.PreparedStatement;
@@ -487,6 +490,21 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_removeVideosByUploaderId);
         //
         // //
+    }
+    
+    public boolean addVideoMetadataIfNotExisting(String videoId) {
+        return addVideoMetadataIfNotExisting(YouTubeDL.downloadVideoInstanceInfo(YouTubeSource.ofId(videoId)));
+    }
+    
+    public boolean addVideoMetadataIfNotExisting(VideoInstanceInfo videoInstanceInfo) {
+        if (videoInstanceInfo == null ) {
+            return false;
+        }
+        final YouTubeVideo video = getVideoByVideoId(videoInstanceInfo.getId());
+        if (video != null) {
+            return false;
+        }
+        return addVideo(new YouTubeVideo(videoInstanceInfo.getId(), videoInstanceInfo.getChannel_id(), videoInstanceInfo.getUploader_id(), videoInstanceInfo.getTitle(), videoInstanceInfo.getAlt_title(), videoInstanceInfo.getDurationAsMillis(), videoInstanceInfo.getUploadDate()));
     }
     
     @Override
