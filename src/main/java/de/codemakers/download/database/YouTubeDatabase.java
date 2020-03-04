@@ -30,6 +30,7 @@ import de.codemakers.io.IOUtil;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -1379,8 +1380,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                 final Object object = arguments[i + offset];
                 final int index = i + 1 + offset;
                 if (object == null) {
-                    offset++;
-                    preparedStatement.setNull(index, (Integer) arguments[i + offset + 1]);
+                    //offset++;
+                    //preparedStatement.setNull(index, (Integer) arguments[i + offset + 1]);
+                    preparedStatement.setNull(index, Types.NULL);
                 } else if (object instanceof String) {
                     preparedStatement.setString(index, (String) object);
                 } else if (object instanceof Integer) {
@@ -1397,6 +1399,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                     throw new IllegalArgumentException(String.format("The Class \"%s\" is not yet supported by \"setPreparedStatement\"!", object.getClass().getName()));
                 }
             }
+            Logger.logDebug("setPreparedStatement:preparedStatement=" + preparedStatement); //TODO DEBUG Remove this!
             return true;
         } catch (Exception ex) {
             Logger.handleError(ex);
