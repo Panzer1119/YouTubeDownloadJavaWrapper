@@ -62,6 +62,13 @@ public class YouTubeVideo extends AbstractVideo<YouTubeVideo, MediaFile, ExtraFi
         return this;
     }
     
+    public Long getUploadDateAsLong() {
+        if (uploadDate == null) {
+            return 0L;
+        }
+        return Long.parseLong(getUploadDateAsString());
+    }
+    
     public String getUploadDateAsString() {
         if (uploadDate == null) {
             return null;

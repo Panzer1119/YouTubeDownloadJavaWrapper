@@ -148,21 +148,35 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract boolean addAuthorizationToken(AuthorizationToken authorizationToken);
     
+    public abstract boolean addPlaylist(P playlist);
+    
+    public boolean addVideoToPlaylist(P playlist, V video) {
+        return addVideoToPlaylist(playlist, video, -1);
+    }
+    
+    public abstract boolean addVideoToPlaylist(P playlist, V video, int index);
+    
+    public abstract boolean addQueuedVideo(Q queuedVideo);
+    
+    public abstract boolean addVideo(V video);
+    
     // Sets
     
     public abstract boolean setAuthorizationTokenByToken(AuthorizationToken authorizationToken, String oldToken);
     
     public abstract boolean setAuthorizationTokenTimesUsedByToken(String token, int timesUsed);
     
+    public abstract boolean setPlaylistVideo(P playlist, V video, int index);
+    
     public abstract boolean setVideoByVideoId(V video, String videoId);
     
-    public abstract boolean setVideosByPlaylistId(List<V> videos, String playlistId);
+    //public abstract boolean setVideosByPlaylistId(List<V> videos, String playlistId);
     
     //public abstract boolean setVideoIdsByPlaylistId(List<String> videoIds, String playlistId);
     
     public abstract boolean setPlaylistByPlaylistId(P playlist, String playlistId);
     
-    public abstract boolean setPlaylistsByVideoId(List<P> playlists, String videoId);
+    //public abstract boolean setPlaylistsByVideoId(List<P> playlists, String videoId);
     
     //public abstract boolean setPlaylistIdsByVideoId(List<String> playlistIds, String videoId);
     
@@ -188,7 +202,19 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     // Removes
     
+    public abstract boolean removeAllAuthorizationTokenByTokens();
+    
     public abstract boolean removeAuthorizationTokenByToken(String token);
+    
+    public abstract boolean removeVideoFromPlaylist(P playlist, V video);
+    
+    public abstract boolean removeQueuedVideoById(int id);
+    
+    public abstract boolean removeAllQueuedVideos();
+    
+    public abstract boolean removeQueuedVideosByVideoId(String videoId);
+    
+    public abstract boolean removeQueuedVideosByRequesterId(int requesterId);
     
     //
     
