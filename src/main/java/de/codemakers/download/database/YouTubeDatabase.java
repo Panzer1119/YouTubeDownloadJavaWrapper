@@ -23,6 +23,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.YouTubeDL;
+import de.codemakers.download.database.entities.AbstractEntity;
 import de.codemakers.download.database.entities.AuthorizationToken;
 import de.codemakers.download.database.entities.QueuedVideoState;
 import de.codemakers.download.database.entities.impl.*;
@@ -35,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -502,40 +504,6 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
-    @Deprecated
-    public boolean prepareVideo(String videoId) {
-        return prepareVideo(YouTubeDL.downloadVideoInstanceInfo(YouTubeSource.ofId(videoId)));
-    }
-    
-    @Deprecated
-    public boolean prepareVideo(VideoInstanceInfo videoInstanceInfo) {
-        if (videoInstanceInfo == null) {
-            return false;
-        }
-        final String videoId = videoInstanceInfo.getId();
-        final YouTubeVideo video = getVideoByVideoId(videoId);
-        if (video != null) {
-            return false;
-        }
-        final String channelId = videoInstanceInfo.getChannel_id();
-        final YouTubeChannel channel = getChannelByChannelId(channelId);
-        if (channel == null) {
-            if (!addChannel(new YouTubeChannel(channelId, VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getChannel())))) {
-                Logger.logWarning(String.format("Could not create %s \"%s\" for \"%s\"", YouTubeChannel.class.getSimpleName(), channelId, videoInstanceInfo));
-                return false;
-            }
-        }
-        final String uploaderId = videoInstanceInfo.getUploader_id();
-        final YouTubeUploader uploader = getUploaderByUploaderId(uploaderId);
-        if (uploader == null) {
-            if (!addUploader(new YouTubeUploader(uploaderId, VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getUploader())))) {
-                Logger.logWarning(String.format("Could not create %s \"%s\" for \"%s\"", YouTubeUploader.class.getSimpleName(), uploaderId, videoInstanceInfo));
-                return false;
-            }
-        }
-        return addVideo(new YouTubeVideo(videoId, channelId, uploaderId, VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getTitle()), VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getAlt_title()), videoInstanceInfo.getDurationAsMillis(), videoInstanceInfo.getUploadDate()));
-    }
-    
     @Override
     public List<AuthorizationToken> getAllAuthorizationTokens() {
         if (!isConnected()) {
@@ -626,6 +594,19 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public boolean hasVideo(String videoId) {
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getVideoByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getVideoByVideoId, videoId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getVideoByVideoId::executeQuery, ResultSet::next);
+        }
+    }
+    
+    @Override
     public YouTubeVideo getVideoByVideoId(String videoId) {
         if (!isConnected() || videoId == null || videoId.isEmpty()) {
             return null;
@@ -634,7 +615,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getVideoByVideoId, videoId)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getVideoByVideoId::executeQuery, YouTubeDatabase::resultSetToYouTubeVideo);
+            return useResultSetAndClose(preparedStatement_getVideoByVideoId::executeQuery, this::resultSetToYouTubeVideo);
         }
     }
     
@@ -644,7 +625,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return null;
         }
         synchronized (preparedStatement_getAllVideos) {
-            return useResultSetAndClose(preparedStatement_getAllVideos::executeQuery, YouTubeDatabase::resultSetToYouTubeVideos);
+            return useResultSetAndClose(preparedStatement_getAllVideos::executeQuery, this::resultSetToYouTubeVideos);
         }
     }
     
@@ -692,7 +673,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getPlaylistByPlaylistId, playlistId)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getPlaylistByPlaylistId::executeQuery, YouTubeDatabase::resultSetToYouTubePlaylist);
+            return useResultSetAndClose(preparedStatement_getPlaylistByPlaylistId::executeQuery, this::resultSetToYouTubePlaylist);
         }
     }
     
@@ -702,7 +683,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return null;
         }
         synchronized (preparedStatement_getAllPlaylists) {
-            return useResultSetAndClose(preparedStatement_getAllPlaylists::executeQuery, YouTubeDatabase::resultSetToYouTubePlaylists);
+            return useResultSetAndClose(preparedStatement_getAllPlaylists::executeQuery, this::resultSetToYouTubePlaylists);
         }
     }
     
@@ -776,7 +757,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getMediaFileByVideoIdAndFile, videoId)) {
                 return null; //TODO Hmm Should this be an empty list?
             }
-            return useResultSetAndClose(preparedStatement_getMediaFileByVideoIdAndFile::executeQuery, YouTubeDatabase::resultSetToMediaFile);
+            return useResultSetAndClose(preparedStatement_getMediaFileByVideoIdAndFile::executeQuery, this::resultSetToMediaFile);
         }
     }
     
@@ -789,7 +770,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getMediaFilesByVideoId, videoId)) {
                 return null; //TODO Hmm Should this be an empty list?
             }
-            return useResultSetAndClose(preparedStatement_getMediaFilesByVideoId::executeQuery, YouTubeDatabase::resultSetToMediaFiles);
+            return useResultSetAndClose(preparedStatement_getMediaFilesByVideoId::executeQuery, this::resultSetToMediaFiles);
         }
     }
     
@@ -802,7 +783,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getExtraFileByVideoIdAndFile, videoId)) {
                 return null; //TODO Hmm Should this be an empty list?
             }
-            return useResultSetAndClose(preparedStatement_getExtraFileByVideoIdAndFile::executeQuery, YouTubeDatabase::resultSetToExtraFile);
+            return useResultSetAndClose(preparedStatement_getExtraFileByVideoIdAndFile::executeQuery, this::resultSetToExtraFile);
         }
     }
     
@@ -815,7 +796,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getExtraFilesByVideoId, videoId)) {
                 return null; //TODO Hmm Should this be an empty list?
             }
-            return useResultSetAndClose(preparedStatement_getExtraFilesByVideoId::executeQuery, YouTubeDatabase::resultSetToExtraFiles);
+            return useResultSetAndClose(preparedStatement_getExtraFilesByVideoId::executeQuery, this::resultSetToExtraFiles);
         }
     }
     
@@ -825,7 +806,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return null;
         }
         synchronized (preparedStatement_getAllChannels) {
-            return useResultSetAndClose(preparedStatement_getAllChannels::executeQuery, YouTubeDatabase::resultSetToChannels);
+            return useResultSetAndClose(preparedStatement_getAllChannels::executeQuery, this::resultSetToChannels);
         }
     }
     
@@ -848,7 +829,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getChannelByChannelId, channelId)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getChannelByChannelId::executeQuery, YouTubeDatabase::resultSetToChannel);
+            return useResultSetAndClose(preparedStatement_getChannelByChannelId::executeQuery, this::resultSetToChannel);
         }
     }
     
@@ -861,7 +842,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getVideosByChannelId, channelId)) {
                 return null; //TODO Hmm Should this be an empty list?
             }
-            return useResultSetAndClose(preparedStatement_getVideosByChannelId::executeQuery, YouTubeDatabase::resultSetToYouTubeVideos);
+            return useResultSetAndClose(preparedStatement_getVideosByChannelId::executeQuery, this::resultSetToYouTubeVideos);
         }
     }
     
@@ -896,7 +877,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return null;
         }
         synchronized (preparedStatement_getAllUploaders) {
-            return useResultSetAndClose(preparedStatement_getAllUploaders::executeQuery, YouTubeDatabase::resultSetToUploaders);
+            return useResultSetAndClose(preparedStatement_getAllUploaders::executeQuery, this::resultSetToUploaders);
         }
     }
     
@@ -919,7 +900,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getUploaderByUploaderId, uploaderId)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getUploaderByUploaderId::executeQuery, YouTubeDatabase::resultSetToUploader);
+            return useResultSetAndClose(preparedStatement_getUploaderByUploaderId::executeQuery, this::resultSetToUploader);
         }
     }
     
@@ -932,7 +913,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getVideosByUploaderId, uploaderId)) {
                 return null; //TODO Hmm Should this be an empty list?
             }
-            return useResultSetAndClose(preparedStatement_getVideosByUploaderId::executeQuery, YouTubeDatabase::resultSetToYouTubeVideos);
+            return useResultSetAndClose(preparedStatement_getVideosByUploaderId::executeQuery, this::resultSetToYouTubeVideos);
         }
     }
     
@@ -970,7 +951,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getPlaylistsByUploaderId, uploaderId)) {
                 return null; //TODO Hmm Should this be an empty list?
             }
-            return useResultSetAndClose(preparedStatement_getPlaylistsByUploaderId::executeQuery, YouTubeDatabase::resultSetToYouTubePlaylists);
+            return useResultSetAndClose(preparedStatement_getPlaylistsByUploaderId::executeQuery, this::resultSetToYouTubePlaylists);
         }
     }
     
@@ -996,7 +977,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getQueuedVideoById, id)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getQueuedVideoById::executeQuery, YouTubeDatabase::resultSetToQueuedYouTubeVideo);
+            return useResultSetAndClose(preparedStatement_getQueuedVideoById::executeQuery, this::resultSetToQueuedYouTubeVideo);
         }
     }
     
@@ -1006,7 +987,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return null;
         }
         synchronized (preparedStatement_getAllQueuedVideos) {
-            return useResultSetAndClose(preparedStatement_getAllQueuedVideos::executeQuery, YouTubeDatabase::resultSetToQueuedYouTubeVideos);
+            return useResultSetAndClose(preparedStatement_getAllQueuedVideos::executeQuery, this::resultSetToQueuedYouTubeVideos);
         }
     }
     
@@ -1019,7 +1000,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getQueuedVideosByVideoId, videoId)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getQueuedVideosByVideoId::executeQuery, YouTubeDatabase::resultSetToQueuedYouTubeVideos);
+            return useResultSetAndClose(preparedStatement_getQueuedVideosByVideoId::executeQuery, this::resultSetToQueuedYouTubeVideos);
         }
     }
     
@@ -1032,7 +1013,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getQueuedVideosByRequesterId, requesterId)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getQueuedVideosByRequesterId::executeQuery, YouTubeDatabase::resultSetToQueuedYouTubeVideos);
+            return useResultSetAndClose(preparedStatement_getQueuedVideosByRequesterId::executeQuery, this::resultSetToQueuedYouTubeVideos);
         }
     }
     
@@ -1055,7 +1036,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return null;
         }
         synchronized (preparedStatement_getNextQueuedVideo) {
-            return useResultSetAndClose(preparedStatement_getNextQueuedVideo::executeQuery, YouTubeDatabase::resultSetToQueuedYouTubeVideo);
+            return useResultSetAndClose(preparedStatement_getNextQueuedVideo::executeQuery, this::resultSetToQueuedYouTubeVideo);
         }
     }
     
@@ -1065,7 +1046,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return null;
         }
         synchronized (preparedStatement_getNextQueuedVideos) {
-            return useResultSetAndClose(preparedStatement_getNextQueuedVideos::executeQuery, YouTubeDatabase::resultSetToQueuedYouTubeVideos);
+            return useResultSetAndClose(preparedStatement_getNextQueuedVideos::executeQuery, this::resultSetToQueuedYouTubeVideos);
         }
     }
     
@@ -1075,7 +1056,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return null;
         }
         synchronized (preparedStatement_getAllRequesters) {
-            return useResultSetAndClose(preparedStatement_getAllRequesters::executeQuery, YouTubeDatabase::resultSetToRequesters);
+            return useResultSetAndClose(preparedStatement_getAllRequesters::executeQuery, this::resultSetToRequesters);
         }
     }
     
@@ -1098,7 +1079,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getRequesterByRequesterId, requesterId)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getRequesterByRequesterId::executeQuery, YouTubeDatabase::resultSetToRequester);
+            return useResultSetAndClose(preparedStatement_getRequesterByRequesterId::executeQuery, this::resultSetToRequester);
         }
     }
     
@@ -1111,8 +1092,48 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getRequesterByTag, tag)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getRequesterByTag::executeQuery, YouTubeDatabase::resultSetToRequester);
+            return useResultSetAndClose(preparedStatement_getRequesterByTag::executeQuery, this::resultSetToRequester);
         }
+    }
+    
+    @Override
+    public YouTubeChannel createChannel(String channelId, String name) {
+        final YouTubeChannel channel = new YouTubeChannel(channelId, name);
+        channel.setDatabase(this);
+        if (!addChannel(channel)) {
+            return null;
+        }
+        return channel;
+    }
+    
+    @Override
+    public YouTubeUploader createUploader(String uploaderId, String name) {
+        final YouTubeUploader uploader = new YouTubeUploader(uploaderId, name);
+        uploader.setDatabase(this);
+        if (!addUploader(uploader)) {
+            return null;
+        }
+        return uploader;
+    }
+    
+    @Override
+    public YouTubeRequester createRequester(String tag, String name) {
+        final YouTubeRequester requester = new YouTubeRequester(tag, name);
+        requester.setDatabase(this);
+        if (!addRequester(requester)) {
+            return null;
+        }
+        return requester;
+    }
+    
+    @Override
+    public YouTubeVideo createVideo(String videoId, String channelId, String uploaderId, String title, String altTitle, long duration, long uploadDate) {
+        final YouTubeVideo video = new YouTubeVideo(videoId, channelId, uploaderId, title, altTitle, duration, uploadDate);
+        video.setDatabase(this);
+        if (!addVideo(video)) {
+            return null;
+        }
+        return video;
     }
     
     @Override
@@ -1224,6 +1245,71 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             requester.setRequesterId(id);
             return success;
         }
+    }
+    
+    public YouTubeVideo updateVideoInstanceInfo(String videoId) {
+        return updateVideoInstanceInfo(videoId, false);
+    }
+    
+    public YouTubeVideo updateVideoInstanceInfo(String videoId, boolean overwrite) {
+        return updateVideoInstanceInfo(YouTubeDL.downloadVideoInstanceInfo(YouTubeSource.ofId(videoId)), overwrite);
+    }
+    
+    @Override
+    public YouTubeVideo updateVideoInstanceInfo(VideoInstanceInfo videoInstanceInfo, boolean overwrite) {
+        if (videoInstanceInfo == null) {
+            return null;
+        }
+        final String videoId = videoInstanceInfo.getId();
+        //
+        final String channelId = videoInstanceInfo.getChannel_id();
+        final String channel = VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getChannel());
+        //
+        final String uploaderId = videoInstanceInfo.getUploader_id();
+        final String uploader = VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getUploader());
+        //
+        final String title = VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getTitle());
+        final String altTitle = VideoInstanceInfo.resolveStringFromYouTubeDLToString(videoInstanceInfo.getAlt_title());
+        //
+        final long duration = videoInstanceInfo.getDurationAsMillis();
+        final long uploadDateLong = videoInstanceInfo.getUploadDateAsLong();
+        final LocalDate uploadDate = videoInstanceInfo.getUploadDate();
+        final YouTubeVideo youTubeVideo = getVideoByVideoId(videoId);
+        if (youTubeVideo != null) {
+            if (overwrite) {
+                youTubeVideo.setChannelId(channelId);
+                youTubeVideo.setUploaderId(uploaderId);
+                youTubeVideo.setTitle(title);
+                youTubeVideo.setAltTitle(altTitle);
+                youTubeVideo.setDurationMillis(duration);
+                youTubeVideo.setUploadDate(uploadDate);
+                youTubeVideo.save();
+            }
+            return youTubeVideo;
+        }
+        YouTubeChannel youTubeChannel = getChannelByChannelId(channelId);
+        if (youTubeChannel == null && (youTubeChannel = createChannel(channelId, channel)) == null) {
+            Logger.logWarning(String.format("Could not create %s \"%s\" for \"%s\"", YouTubeChannel.class.getSimpleName(), channelId, videoInstanceInfo));
+            return null;
+        }
+        if (overwrite) {
+            if (youTubeChannel.getName() == null) {
+                youTubeChannel.setName(channel);
+            }
+            youTubeChannel.save();
+        }
+        YouTubeUploader youTubeUploader = getUploaderByUploaderId(uploaderId);
+        if (youTubeUploader == null && (youTubeUploader = createUploader(uploaderId, uploader)) == null) {
+            Logger.logWarning(String.format("Could not create %s \"%s\" for \"%s\"", YouTubeUploader.class.getSimpleName(), uploaderId, videoInstanceInfo));
+            return null;
+        }
+        if (overwrite) {
+            if (youTubeUploader.getName() == null) {
+                youTubeUploader.setName(uploader);
+            }
+            youTubeUploader.save();
+        }
+        return createVideo(videoId, channelId, uploaderId, title, altTitle, duration, uploadDateLong);
     }
     
     @Override
@@ -1550,6 +1636,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
+    private <T extends AbstractEntity<T, YouTubeDatabase>> T setDatabase(T entity) {
+        return setDatabase(entity, this);
+    }
+    
+    private static <T extends AbstractEntity<T, YouTubeDatabase>> T setDatabase(T entity, YouTubeDatabase database) {
+        return entity == null || database == null ? entity : entity.setDatabase(database);
+    }
+    
     protected static <R> R useResultSetAndClose(ToughSupplier<ResultSet> toughSupplier, ToughFunction<ResultSet, R> toughFunction) {
         if (toughSupplier == null || toughFunction == null) {
             return null;
@@ -1645,14 +1739,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return authorizationTokens;
     }
     
-    protected static YouTubeVideo resultSetToYouTubeVideo(ResultSet resultSet) {
+    protected YouTubeVideo resultSetToYouTubeVideo(ResultSet resultSet) {
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new YouTubeVideo(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOADER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE)));
+        return setDatabase(Standard.silentError(() -> new YouTubeVideo(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_CHANNEL_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOADER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_TITLE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_ALT_TITLE), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_DURATION), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEOS_COLUMN_UPLOAD_DATE))));
     }
     
-    protected static List<YouTubeVideo> resultSetToYouTubeVideos(ResultSet resultSet) {
+    protected List<YouTubeVideo> resultSetToYouTubeVideos(ResultSet resultSet) {
         if (resultSet == null) {
             return null; //TODO Hmm Should this be an empty list?
         }
@@ -1666,14 +1760,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return youTubeVideos;
     }
     
-    protected static YouTubePlaylist resultSetToYouTubePlaylist(ResultSet resultSet) {
+    protected YouTubePlaylist resultSetToYouTubePlaylist(ResultSet resultSet) {
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new YouTubePlaylist(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_TITLE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_PLAYLIST), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_UPLOADER_ID)));
+        return setDatabase(Standard.silentError(() -> new YouTubePlaylist(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_TITLE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_PLAYLIST), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLISTS_COLUMN_UPLOADER_ID))));
     }
     
-    protected static List<YouTubePlaylist> resultSetToYouTubePlaylists(ResultSet resultSet) {
+    protected List<YouTubePlaylist> resultSetToYouTubePlaylists(ResultSet resultSet) {
         if (resultSet == null) {
             return null; //TODO Hmm Should this be an empty list?
         }
@@ -1687,14 +1781,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return youTubePlaylists;
     }
     
-    protected static QueuedYouTubeVideo resultSetToQueuedYouTubeVideo(ResultSet resultSet) {
+    protected QueuedYouTubeVideo resultSetToQueuedYouTubeVideo(ResultSet resultSet) {
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new QueuedYouTubeVideo(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED).toInstant(), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_FILE_TYPE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY), QueuedVideoState.ofState(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE))));
+        return setDatabase(Standard.silentError(() -> new QueuedYouTubeVideo(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED).toInstant(), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_FILE_TYPE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY), QueuedVideoState.ofState(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE)))));
     }
     
-    protected static List<QueuedYouTubeVideo> resultSetToQueuedYouTubeVideos(ResultSet resultSet) {
+    protected List<QueuedYouTubeVideo> resultSetToQueuedYouTubeVideos(ResultSet resultSet) {
         if (resultSet == null) {
             return null; //TODO Hmm Should this be an empty list?
         }
@@ -1708,14 +1802,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return queuedYouTubeVideos;
     }
     
-    protected static MediaFile resultSetToMediaFile(ResultSet resultSet) {
+    protected MediaFile resultSetToMediaFile(ResultSet resultSet) {
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new MediaFile(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VIDEO_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE_TYPE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FORMAT), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VCODEC), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ACODEC), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_WIDTH), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_HEIGHT), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FPS), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ASR)));
+        return setDatabase(Standard.silentError(() -> new MediaFile(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VIDEO_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FILE_TYPE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FORMAT), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_VCODEC), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ACODEC), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_WIDTH), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_HEIGHT), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_FPS), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_MEDIA_FILES_COLUMN_ASR))));
     }
     
-    protected static List<MediaFile> resultSetToMediaFiles(ResultSet resultSet) {
+    protected List<MediaFile> resultSetToMediaFiles(ResultSet resultSet) {
         if (resultSet == null) {
             return null; //TODO Hmm Should this be an empty list?
         }
@@ -1729,14 +1823,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return mediaFiles;
     }
     
-    protected static ExtraFile resultSetToExtraFile(ResultSet resultSet) {
+    protected ExtraFile resultSetToExtraFile(ResultSet resultSet) {
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new ExtraFile(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_VIDEO_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE_TYPE)));
+        return setDatabase(Standard.silentError(() -> new ExtraFile(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_VIDEO_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_EXTRA_FILES_COLUMN_FILE_TYPE))));
     }
     
-    protected static List<ExtraFile> resultSetToExtraFiles(ResultSet resultSet) {
+    protected List<ExtraFile> resultSetToExtraFiles(ResultSet resultSet) {
         if (resultSet == null) {
             return null; //TODO Hmm Should this be an empty list?
         }
@@ -1750,14 +1844,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return extraFiles;
     }
     
-    protected static YouTubeChannel resultSetToChannel(ResultSet resultSet) {
+    protected YouTubeChannel resultSetToChannel(ResultSet resultSet) {
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new YouTubeChannel(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNELS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNELS_COLUMN_NAME)));
+        return setDatabase(Standard.silentError(() -> new YouTubeChannel(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNELS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNELS_COLUMN_NAME))));
     }
     
-    protected static List<YouTubeChannel> resultSetToChannels(ResultSet resultSet) {
+    protected List<YouTubeChannel> resultSetToChannels(ResultSet resultSet) {
         if (resultSet == null) {
             return null; //TODO Hmm Should this be an empty list?
         }
@@ -1771,14 +1865,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return youTubeChannels;
     }
     
-    protected static YouTubeUploader resultSetToUploader(ResultSet resultSet) {
+    protected YouTubeUploader resultSetToUploader(ResultSet resultSet) {
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new YouTubeUploader(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADERS_COLUMN_NAME)));
+        return setDatabase(Standard.silentError(() -> new YouTubeUploader(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADERS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADERS_COLUMN_NAME))));
     }
     
-    protected static List<YouTubeUploader> resultSetToUploaders(ResultSet resultSet) {
+    protected List<YouTubeUploader> resultSetToUploaders(ResultSet resultSet) {
         if (resultSet == null) {
             return null; //TODO Hmm Should this be an empty list?
         }
@@ -1792,14 +1886,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return youTubeUploaders;
     }
     
-    protected static YouTubeRequester resultSetToRequester(ResultSet resultSet) {
+    protected YouTubeRequester resultSetToRequester(ResultSet resultSet) {
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new YouTubeRequester(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_NAME)));
+        return setDatabase(Standard.silentError(() -> new YouTubeRequester(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_TAG), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTERS_COLUMN_NAME))));
     }
     
-    protected static List<YouTubeRequester> resultSetToRequesters(ResultSet resultSet) {
+    protected List<YouTubeRequester> resultSetToRequesters(ResultSet resultSet) {
         if (resultSet == null) {
             return null; //TODO Hmm Should this be an empty list?
         }

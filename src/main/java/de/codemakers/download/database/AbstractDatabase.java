@@ -20,6 +20,7 @@ package de.codemakers.download.database;
 import de.codemakers.download.database.entities.*;
 import de.codemakers.download.database.entities.impl.ExtraFile;
 import de.codemakers.download.database.entities.impl.MediaFile;
+import de.codemakers.download.entities.VideoInstanceInfo;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,6 +73,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract boolean hasRequester(int requesterId);
     
     public abstract boolean hasQueuedVideo(int queuedVideoId);
+    
+    public abstract boolean hasVideo(String videoId);
     
     public abstract V getVideoByVideoId(String videoId);
     
@@ -156,6 +159,14 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract R getRequesterByTag(String tag);
     
     // Adds
+    
+    public abstract CH createChannel(String channelId, String name);
+    
+    public abstract U createUploader(String uploaderId, String name);
+    
+    public abstract R createRequester(String tag, String name);
+    
+    public abstract V createVideo(String videoId, String channelId, String uploaderId, String title, String altTitle, long duration, long uploadDate);
     
     public abstract boolean addAuthorizationToken(AuthorizationToken authorizationToken);
     
@@ -247,6 +258,12 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract boolean addRequester(R requester);
     
     // Sets
+    
+    public V updateVideoInstanceInfo(VideoInstanceInfo videoInstanceInfo) {
+        return updateVideoInstanceInfo(videoInstanceInfo, false);
+    }
+    
+    public abstract V updateVideoInstanceInfo(VideoInstanceInfo videoInstanceInfo, boolean overwrite);
     
     public abstract boolean setAuthorizationTokenByToken(AuthorizationToken authorizationToken, String oldToken);
     
