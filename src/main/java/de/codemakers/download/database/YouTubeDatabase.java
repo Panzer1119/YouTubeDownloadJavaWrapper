@@ -495,6 +495,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // //
     }
     
+    @Override
     public int getLastInsertId() { //TODO Test this
         synchronized (preparedStatement_getLastInsertId) {
             return useResultSetAndClose(preparedStatement_getLastInsertId::executeQuery, (resultSet) -> resultSet.getInt(1));

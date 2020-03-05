@@ -53,6 +53,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     // Gets
     
+    public abstract int getLastInsertId();
+    
     public abstract List<AuthorizationToken> getAllAuthorizationTokens();
     
     public abstract AuthorizationToken getAuthorizationTokenByToken(String token);
