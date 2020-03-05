@@ -28,26 +28,26 @@ import java.util.Objects;
 
 public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D extends AbstractDatabase, V extends AbstractVideo> extends AbstractEntity<T, D> {
     
-    protected int id = -1;
-    protected String videoId = null;
-    protected int priority = Integer.MIN_VALUE;
-    protected Instant requested = null;
-    protected int requesterId = -1;
-    protected String fileType = null;
-    protected String arguments = null;
-    protected String configFile = null;
-    protected String outputDirectory = null;
-    protected QueuedVideoState state = null;
+    protected int id;
+    protected String videoId;
+    protected int priority;
+    protected Instant requested;
+    protected int requesterId;
+    protected String fileType;
+    protected String arguments;
+    protected String configFile;
+    protected String outputDirectory;
+    protected QueuedVideoState state;
     //
     protected transient String configFileResolved = null;
     protected transient String outputDirectoryResolved = null;
     
     public AbstractQueuedVideo() {
-        super();
+        this(null, Integer.MIN_VALUE, Instant.now(), -1, "B", null, null, null, QueuedVideoState.UNKNOWN);
     }
     
-    public AbstractQueuedVideo(int id, String videoId, int priority, Timestamp requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
-        this(id, videoId, priority, requested.toInstant(), requesterId, fileType, arguments, configFile, outputDirectory, state);
+    public AbstractQueuedVideo(String videoId, int priority, Instant requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
+        this(-1, videoId, priority, requested, requesterId, fileType, arguments, configFile, outputDirectory, state);
     }
     
     public AbstractQueuedVideo(int id, String videoId, int priority, Instant requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
@@ -213,11 +213,17 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
     
     @Override
     protected T getFromDatabase() {
+        if (id == -1) {
+            return null;
+        }
         return (T) useDatabaseOrNull((database) -> database.getQueuedVideoById(getId()));
     }
     
     @Override
     public boolean save() {
+        if (id == -1 || !useDatabaseOrFalse((database) -> database.hasQueuedVideo(id))) {
+            return useDatabaseOrFalse((database) -> database.addQueuedVideo(this));
+        }
         return useDatabaseOrFalse((database) -> database.setQueuedVideoById(this, getId()));
     }
     
