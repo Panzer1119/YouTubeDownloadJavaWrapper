@@ -28,6 +28,10 @@ public class YouTubeRequester extends AbstractRequester<YouTubeRequester, YouTub
         super();
     }
     
+    public YouTubeRequester(String tag, String name) {
+        super(tag, name);
+    }
+    
     public YouTubeRequester(int requesterId, String tag, String name) {
         super(requesterId, tag, name);
     }
