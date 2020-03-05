@@ -509,7 +509,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Deprecated
     public boolean prepareVideo(VideoInstanceInfo videoInstanceInfo) {
-        if (videoInstanceInfo == null ) {
+        if (videoInstanceInfo == null) {
             return false;
         }
         final String videoId = videoInstanceInfo.getId();
@@ -569,6 +569,59 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                 return false;
             }
             return useResultSetAndClose(preparedStatement_getAuthorizationTokenByToken::executeQuery, ResultSet::next);
+        }
+    }
+    
+    @Override
+    public boolean hasChannel(String channelId) {
+        if (!isConnected() || channelId == null || channelId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getChannelByChannelId) {
+            if (!setPreparedStatement(preparedStatement_getChannelByChannelId, channelId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getChannelByChannelId::executeQuery, ResultSet::next);
+        }
+        
+    }
+    
+    @Override
+    public boolean hasUploader(String uploaderId) {
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getUploaderByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getUploaderByUploaderId, uploaderId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getUploaderByUploaderId::executeQuery, ResultSet::next);
+        }
+    }
+    
+    @Override
+    public boolean hasRequester(int requesterId) {
+        if (!isConnected() || requesterId < -1) {
+            return false;
+        }
+        synchronized (preparedStatement_getRequesterByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_getRequesterByRequesterId, requesterId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getRequesterByRequesterId::executeQuery, ResultSet::next);
+        }
+    }
+    
+    @Override
+    public boolean hasQueuedVideo(int queuedVideoId) {
+        if (!isConnected() || queuedVideoId < 0) {
+            return false;
+        }
+        synchronized (preparedStatement_getQueuedVideoById) {
+            if (!setPreparedStatement(preparedStatement_getQueuedVideoById, queuedVideoId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getQueuedVideoById::executeQuery, ResultSet::next);
         }
     }
     
@@ -1112,7 +1165,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                 return false;
             }
             final boolean success = Standard.silentError(() -> preparedStatement_addQueuedVideo.executeUpdate()) > 0;
-            //queuedVideo.reload(); //FIXME IMPORTANT How to get the (random) generated ID for the Request?
+            final int id = getLastInsertId();
+            queuedVideo.setId(id);
             return success;
         }
     }
@@ -1165,7 +1219,10 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_addRequester, requester.getTag(), requester.getName())) {
                 return false;
             }
-            return Standard.silentError(() -> preparedStatement_addRequester.executeUpdate()) > 0;
+            final boolean success = Standard.silentError(() -> preparedStatement_addRequester.executeUpdate()) > 0;
+            final int id = getLastInsertId();
+            requester.setRequesterId(id);
+            return success;
         }
     }
     
@@ -1634,7 +1691,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (resultSet == null) {
             return null;
         }
-        return Standard.silentError(() -> new QueuedYouTubeVideo(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_FILE_TYPE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY), QueuedVideoState.ofState(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE))));
+        return Standard.silentError(() -> new QueuedYouTubeVideo(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED).toInstant(), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_FILE_TYPE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY), QueuedVideoState.ofState(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE))));
     }
     
     protected static List<QueuedYouTubeVideo> resultSetToQueuedYouTubeVideos(ResultSet resultSet) {
