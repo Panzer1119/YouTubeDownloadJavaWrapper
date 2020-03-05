@@ -20,8 +20,6 @@ package de.codemakers.download.database.entities.impl;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.AbstractRequester;
 
-import java.util.List;
-
 public class YouTubeRequester extends AbstractRequester<YouTubeRequester, YouTubeDatabase, QueuedYouTubeVideo> {
     
     public YouTubeRequester() {
@@ -34,16 +32,6 @@ public class YouTubeRequester extends AbstractRequester<YouTubeRequester, YouTub
     
     public YouTubeRequester(int requesterId, String tag, String name) {
         super(requesterId, tag, name);
-    }
-    
-    @Override
-    public List<QueuedYouTubeVideo> getQueuedVideos() {
-        return useDatabaseOrNull((database) -> database.getQueuedVideosByRequesterId(getRequesterId()));
-    }
-    
-    @Override
-    public List<String> getQueuedVideoIds() {
-        return useDatabaseOrNull((database) -> database.getQueuedVideoIdsByRequesterId(getRequesterId()));
     }
     
     @Override

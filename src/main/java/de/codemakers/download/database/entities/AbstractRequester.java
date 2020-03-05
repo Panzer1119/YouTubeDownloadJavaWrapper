@@ -84,9 +84,13 @@ public abstract class AbstractRequester<T extends AbstractRequester, D extends A
         return useDatabaseOrFalse((database) -> database.setRequesterByRequesterId(this, getRequesterId()));
     }
     
-    public abstract List<Q> getQueuedVideos();
+    public List<Q> getQueuedVideos() {
+        return useDatabaseOrNull((database) -> database.getQueuedVideosByRequesterId(getRequesterId()));
+    }
     
-    public abstract List<String> getQueuedVideoIds();
+    public List<String> getQueuedVideoIds() {
+        return useDatabaseOrNull((database) -> database.getQueuedVideoIdsByRequesterId(getRequesterId()));
+    }
     
     @Override
     public String toString() {
