@@ -29,6 +29,14 @@ public class QueuedYouTubeVideo extends AbstractQueuedVideo<QueuedYouTubeVideo, 
         super();
     }
     
+    public QueuedYouTubeVideo(String videoId, int priority, int requesterId, String fileType) {
+        this(videoId, priority, requesterId, fileType, null, null, null);
+    }
+    
+    public QueuedYouTubeVideo(String videoId, int priority, int requesterId, String fileType, String arguments, String configFile, String outputDirectory) {
+        this(videoId, priority, Instant.now(), requesterId, fileType, arguments, configFile, outputDirectory, QueuedVideoState.QUEUED);
+    }
+    
     public QueuedYouTubeVideo(String videoId, int priority, Instant requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
         super(videoId, priority, requested, requesterId, fileType, arguments, configFile, outputDirectory, state);
     }
