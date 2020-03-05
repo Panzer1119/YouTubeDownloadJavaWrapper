@@ -22,6 +22,7 @@ import de.codemakers.download.database.entities.impl.ExtraFile;
 import de.codemakers.download.database.entities.impl.MediaFile;
 import de.codemakers.download.entities.VideoInstanceInfo;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -167,6 +168,16 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     public abstract R createRequester(String tag, String name);
     
     public abstract V createVideo(String videoId, String channelId, String uploaderId, String title, String altTitle, long duration, long uploadDate);
+    
+    public Q createQueuedVideo(String videoId, int priority, int requesterId, String fileType) {
+        return createQueuedVideo(videoId, priority, requesterId, fileType, null, null, null);
+    }
+    
+    public Q createQueuedVideo(String videoId, int priority, int requesterId, String fileType, String arguments, String configFile, String outputDirectory) {
+        return createQueuedVideo(videoId, priority, Instant.now(), requesterId, fileType, arguments, configFile, outputDirectory, QueuedVideoState.QUEUED);
+    }
+    
+    public abstract Q createQueuedVideo(String videoId, int priority, Instant requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state);
     
     public abstract boolean addAuthorizationToken(AuthorizationToken authorizationToken);
     

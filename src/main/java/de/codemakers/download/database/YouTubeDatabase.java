@@ -1137,6 +1137,16 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
+    public QueuedYouTubeVideo createQueuedVideo(String videoId, int priority, Instant requested, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
+        final QueuedYouTubeVideo queuedYouTubeVideo = new QueuedYouTubeVideo(videoId, priority, requested, requesterId, fileType, arguments, configFile, outputDirectory, state);
+        queuedYouTubeVideo.setDatabase(this);
+        if (!addQueuedVideo(queuedYouTubeVideo)) {
+            return null;
+        }
+        return queuedYouTubeVideo;
+    }
+    
+    @Override
     public boolean addAuthorizationToken(AuthorizationToken authorizationToken) {
         if (!isConnected() || authorizationToken == null) {
             return false;
