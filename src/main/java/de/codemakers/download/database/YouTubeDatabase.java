@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, QueuedYouTubeVideo, YouTubeChannel, YouTubeUploader, YouTubeRequester, C> {
     
     // // Selects / Gets
+    private transient PreparedStatement preparedStatement_getLastInsertId = null;
     // Table: Authorization Tokens
     private transient PreparedStatement preparedStatement_getAllAuthorizationTokens = null;
     private transient PreparedStatement preparedStatement_getAuthorizationTokenByToken = null;
@@ -218,6 +219,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     private void createStatements() {
         // // Selects / Gets
+        preparedStatement_getLastInsertId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_SELECT_LAST_INSERT_ID);
         // Table: Authorization Tokens
         preparedStatement_getAllAuthorizationTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_ALL);
         preparedStatement_getAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_BY_TOKEN);
@@ -356,6 +358,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     private void closeStatements() {
         // // Selects / Gets
+        IOUtil.closeQuietly(preparedStatement_getLastInsertId);
         // Table: Authorization Tokens
         IOUtil.closeQuietly(preparedStatement_getAllAuthorizationTokens);
         IOUtil.closeQuietly(preparedStatement_getAuthorizationTokenByToken);
@@ -492,10 +495,18 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // //
     }
     
+    public int getLastInsertId() { //TODO Test this
+        synchronized (preparedStatement_getLastInsertId) {
+            return useResultSetAndClose(preparedStatement_getLastInsertId::executeQuery, (resultSet) -> resultSet.getInt(1));
+        }
+    }
+    
+    @Deprecated
     public boolean prepareVideo(String videoId) {
         return prepareVideo(YouTubeDL.downloadVideoInstanceInfo(YouTubeSource.ofId(videoId)));
     }
     
+    @Deprecated
     public boolean prepareVideo(VideoInstanceInfo videoInstanceInfo) {
         if (videoInstanceInfo == null ) {
             return false;

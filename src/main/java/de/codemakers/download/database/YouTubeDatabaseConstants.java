@@ -99,6 +99,7 @@ public class YouTubeDatabaseConstants {
     // //
     // // // Queries
     // // Selects
+    public static final String QUERY_SELECT_LAST_INSERT_ID = "SELECT LAST_INSERT_ID();";
     // Table: Authorization Tokens
     /**
      * No arguments
