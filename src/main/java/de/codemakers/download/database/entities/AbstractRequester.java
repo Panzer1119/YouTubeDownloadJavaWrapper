@@ -32,7 +32,7 @@ public abstract class AbstractRequester<T extends AbstractRequester, D extends A
     }
     
     public AbstractRequester(String tag, String name) {
-        this(-1, tag, name);
+        this(-2, tag, name);
     }
     
     public AbstractRequester(int requesterId, String tag, String name) {
@@ -70,12 +70,15 @@ public abstract class AbstractRequester<T extends AbstractRequester, D extends A
     
     @Override
     protected T getFromDatabase() {
+        if (requesterId == -2) {
+            return null;
+        }
         return (T) useDatabaseOrNull((database) -> database.getRequesterByRequesterId(getRequesterId()));
     }
     
     @Override
     public boolean save() {
-        if (requesterId == -1 || !useDatabaseOrFalse((database) -> database.hasRequester(getRequesterId()))) {
+        if (requesterId == -2 || !useDatabaseOrFalse((database) -> database.hasRequester(getRequesterId()))) {
             return useDatabaseOrFalse((database) -> database.addRequester(this));
         }
         return useDatabaseOrFalse((database) -> database.setRequesterByRequesterId(this, getRequesterId()));
