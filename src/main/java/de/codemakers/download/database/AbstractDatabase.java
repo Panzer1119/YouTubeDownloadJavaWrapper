@@ -63,6 +63,14 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     public abstract boolean hasAuthorizationToken(String token);
     
+    public abstract boolean hasChannel(String channelId);
+    
+    public abstract boolean hasUploader(String uploaderId);
+    
+    public abstract boolean hasRequester(int requesterId);
+    
+    public abstract boolean hasQueuedVideo(int queuedVideoId);
+    
     public abstract V getVideoByVideoId(String videoId);
     
     public abstract List<V> getAllVideos();
