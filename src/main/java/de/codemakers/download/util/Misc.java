@@ -15,7 +15,7 @@
  *
  */
 
-package de.codemakers.download;
+package de.codemakers.download.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,22 +23,24 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
-import de.codemakers.download.database.entities.Video;
+import de.codemakers.download.YouTubeDL;
+import de.codemakers.download.entities.AbstractDownloadContainer;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Misc {
+    
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_UPLOAD_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
     
     public static final Gson GSON = new GsonBuilder().create();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
@@ -49,7 +51,8 @@ public class Misc {
     public static final AdvancedFile DEFAULT_APP_DATA_DATABASES_DIRECTORY = OSUtil.getAppDataSubDirectory(DEFAULT_APP_DATA_DATABASES_DIRECTORY_NAME);
     public static final String DEFAULT_SETTINGS_FILE_NAME = "settings.txt";
     
-    public static final ToughSupplier<ExecutorService> EXECUTOR_SERVICE_TOUGH_SUPPLIER = () -> Executors.newFixedThreadPool(Math.min(Runtime.getRuntime().availableProcessors(), 8)); //TODO Make the count of threads changable?
+    //TODO Remove this?
+    public static final ToughSupplier<ExecutorService> EXECUTOR_SERVICE_TOUGH_SUPPLIER = () -> Executors.newFixedThreadPool(Math.min(Runtime.getRuntime().availableProcessors(), 8)); //TODO Make the count of threads changeable?
     
     static {
         DEFAULT_APP_DATA_DIRECTORY.mkdirsWithoutException();
@@ -66,6 +69,9 @@ public class Misc {
     
     private static final Pattern PATTERN_DOWNLOAD_PROGRESS = Pattern.compile("\\[download\\] +(\\d+(?:,|.\\d*)?)% of [0-9.,]+[a-zA-Z]+ at [0-9.,]+[a-zA-Z]+\\/s ETA.*");
     
+    /*
+    //FIXME
+    @Deprecated //TODO ?
     public static int monitorProcess(Process process, DownloadProgress downloadProgress) {
         Objects.requireNonNull(downloadProgress, "downloadProgress");
         final int exitValue = monitorProcess(process, (normal) -> {
@@ -87,6 +93,7 @@ public class Misc {
         Arrays.fill(downloadProgress.getProgresses(), 1.0F); //FIXME Good? Because what if something failed and has not finished? Than this overrides it...
         return exitValue;
     }
+    */
     
     public static int monitorProcessDefault(Process process) {
         return monitorProcessNothing(process);
@@ -124,6 +131,26 @@ public class Misc {
     
     public static int monitorProcessDebug(Process process) {
         return monitorProcess(process, System.out::println, System.err::println);
+    }
+    
+    public static int monitorProcess(Process process, AbstractDownloadContainer downloadContainer) {
+        Objects.requireNonNull(downloadContainer, "downloadContainer");
+        final int exitValue = monitorProcess(process, (normal) -> {
+            if (downloadContainer.isUsingDownloadProgress()) {
+                downloadContainer.getDownloadProgress().nextLine(normal);
+            }
+            if (downloadContainer.getDownloadSettings().isLogging()) {
+                downloadContainer.getDownloadSettings().log(normal);
+            }
+        }, (error) -> {
+            if (downloadContainer.getDownloadSettings().isLogging()) {
+                downloadContainer.getDownloadSettings().logError(error);
+            }
+        });
+        if (downloadContainer.isUsingDownloadProgress()) {
+            //Arrays.fill(downloadContainer.getDownloadProgress().getProgresses(), 1.0F); //FIXME Good? Because what if something failed and has not finished? Than this overrides it...
+        }
+        return exitValue;
     }
     
     public static int monitorProcess(Process process, ToughConsumer<String> normal) {
@@ -194,14 +221,14 @@ public class Misc {
         if (localDate == null) {
             return "--";
         }
-        return localDate.format(Video.DATE_TIME_FORMATTER_UPLOAD_DATE);
+        return localDate.format(DATE_TIME_FORMATTER_UPLOAD_DATE);
     }
     
     public static LocalDate stringToLocalDate(String uploadDate) {
         if (uploadDate == null || uploadDate.equals("NA") || uploadDate.isEmpty()) {
             return null;
         }
-        return LocalDate.parse(uploadDate, Video.DATE_TIME_FORMATTER_UPLOAD_DATE);
+        return LocalDate.parse(uploadDate, DATE_TIME_FORMATTER_UPLOAD_DATE);
     }
     
 }

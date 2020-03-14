@@ -24,8 +24,28 @@ public interface Source extends Serializable {
     
     String getSource();
     
+    default String getSourceQuoted() {
+        final String source = getSource();
+        if (source == null) {
+            return null;
+        }
+        return "\"" + source + "\"";
+    }
+    
     default String getId() {
         return null;
+    }
+    
+    default boolean isVideo() {
+        return true;
+    }
+    
+    default boolean isPlaylist() {
+        return !isVideo();
+    }
+    
+    default boolean providesMultipleVideos() {
+        return isPlaylist();
     }
     
 }

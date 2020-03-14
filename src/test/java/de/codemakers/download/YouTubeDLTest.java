@@ -17,14 +17,12 @@
 
 package de.codemakers.download;
 
-import de.codemakers.io.file.AdvancedFile;
-
-import java.util.concurrent.TimeUnit;
-
-public class YouTubeDLTest {
+public class YouTubeDLTest { //TODO FIXME
     
+    /*
     public static final AdvancedFile DIRECTORY_YOUTUBE = new AdvancedFile("test", "youtube");
     
+    @Deprecated
     public static void main(String[] args) {
         final AdvancedFile logFile = new AdvancedFile(DIRECTORY_YOUTUBE, YouTubeDL.DEFAULT_LOG_NAME);
         YouTubeDL.setLogFile(logFile);
@@ -43,5 +41,6 @@ public class YouTubeDLTest {
         System.out.println("downloadProgress_2=" + downloadProgress_2);
         DownloadManager.getInstance().stop(3, TimeUnit.MINUTES);
     }
+    */
     
 }

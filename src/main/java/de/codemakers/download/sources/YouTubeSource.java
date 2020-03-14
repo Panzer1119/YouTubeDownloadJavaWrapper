@@ -21,12 +21,13 @@ import de.codemakers.download.YouTubeDL;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
 
 public class YouTubeSource implements Source {
     
     private final String id;
     private transient String url;
-    private transient YouTubeSourceType youTubeSourceType = null;
+    private transient YouTubeSourceType youTubeSourceType = YouTubeSourceType.UNKNOWN;
     
     protected YouTubeSource(String id) {
         this(id, null);
@@ -68,6 +69,21 @@ public class YouTubeSource implements Source {
     }
     
     @Override
+    public boolean isVideo() {
+        return getYouTubeSourceType().providesVideoId();
+    }
+    
+    @Override
+    public boolean isPlaylist() {
+        return getYouTubeSourceType().providesPlaylistId();
+    }
+    
+    @Override
+    public boolean providesMultipleVideos() {
+        return getYouTubeSourceType().providesMultipleVideos();
+    }
+    
+    @Override
     public String getSource() {
         final String temp = getUrl();
         if (temp == null) {
@@ -81,19 +97,37 @@ public class YouTubeSource implements Source {
         return "YouTubeSource{" + "id='" + id + '\'' + ", url='" + url + '\'' + ", youTubeSourceType=" + youTubeSourceType + '}';
     }
     
-    public static YouTubeSource ofId(String id) {
+    public static final YouTubeSource ofId(String id) {
         return new YouTubeSource(id);
     }
     
-    public static YouTubeSource ofUrl(String url) {
-        return new YouTubeSource(YouTubeDL.getIdFromYouTubeUrl(url), url);
+    public static final YouTubeSource ofUrl(String url) {
+        return new YouTubeSource(getIdFromYouTubeUrl(url), url);
     }
     
-    public static YouTubeSource ofString(String source) {
+    public static final YouTubeSource ofString(String source) {
         if (YouTubeDL.PATTERN_YOUTUBE_URL.matcher(source).matches()) {
             return ofUrl(source);
         }
         return ofId(source);
+    }
+    
+    public static final String getIdFromYouTubeUrl(String url) {
+        return getIdFromYouTubeUrl(url, "");
+    }
+    
+    public static final String getIdFromYouTubeUrl(String url, String defaultValue) {
+        if (url == null || url.isEmpty()) {
+            return defaultValue;
+        }
+        final Matcher matcher = YouTubeDL.PATTERN_YOUTUBE_URL.matcher(url);
+        if (!matcher.matches()) {
+            return defaultValue;
+        }
+        if (matcher.group(1) == null || matcher.group(1).isEmpty()) {
+            return matcher.group(2);
+        }
+        return matcher.group(1);
     }
     
 }

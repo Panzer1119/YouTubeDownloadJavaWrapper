@@ -17,13 +17,10 @@
 
 package de.codemakers.download.database;
 
-import de.codemakers.base.logger.LogLevel;
-import de.codemakers.base.logger.Logger;
-import de.codemakers.download.database.entities.QueuedVideo;
-
 public class MySQLDatabaseTest {
     
     public static void main(String[] args) throws Exception {
+        /*
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE);
         final MySQLConnector mySQLConnector = new MySQLConnector(args[0], args[1]);
         Logger.log("mySQLConnector=" + mySQLConnector);
@@ -38,6 +35,7 @@ public class MySQLDatabaseTest {
         Thread.sleep(1000);
         database.stop();
         Logger.log("database=" + database);
+        */
     }
     
 }

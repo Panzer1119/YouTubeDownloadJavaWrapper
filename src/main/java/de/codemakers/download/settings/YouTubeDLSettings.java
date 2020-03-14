@@ -19,7 +19,7 @@ package de.codemakers.download.settings;
 
 import de.codemakers.base.util.DefaultSettings;
 import de.codemakers.base.util.Settings;
-import de.codemakers.download.Misc;
+import de.codemakers.download.util.Misc;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.util.Properties;
