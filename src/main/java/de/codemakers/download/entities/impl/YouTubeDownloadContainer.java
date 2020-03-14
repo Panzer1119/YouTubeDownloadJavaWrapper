@@ -17,14 +17,11 @@
 
 package de.codemakers.download.entities.impl;
 
-import de.codemakers.download.database.YouTubeDatabase;
-import de.codemakers.download.database.entities.impl.YouTubePlaylist;
-import de.codemakers.download.database.entities.impl.YouTubeVideo;
 import de.codemakers.download.entities.AbstractDownloadContainer;
 import de.codemakers.download.entities.DownloadSettings;
 import de.codemakers.download.sources.YouTubeSource;
 
-public class YouTubeDownloadContainer extends AbstractDownloadContainer<YouTubeDatabase, YouTubeSource, YouTubeDLDownloadProgress, YouTubeVideo, YouTubePlaylist> {
+public class YouTubeDownloadContainer<D, V, P> extends AbstractDownloadContainer<D, YouTubeSource, YouTubeDLDownloadProgress, V, P> {
     
     public YouTubeDownloadContainer(YouTubeSource source, DownloadSettings downloadSettings) {
         super(source, downloadSettings, downloadSettings.getExpectedDownloads() > 0 ? new YouTubeDLDownloadProgress(downloadSettings.getExpectedDownloads()) : null);
@@ -34,11 +31,11 @@ public class YouTubeDownloadContainer extends AbstractDownloadContainer<YouTubeD
         super(source, downloadSettings, downloadProgress);
     }
     
-    public YouTubeDownloadContainer(YouTubeDatabase database, YouTubeSource source, DownloadSettings downloadSettings) {
+    public YouTubeDownloadContainer(D database, YouTubeSource source, DownloadSettings downloadSettings) {
         super(database, source, downloadSettings, downloadSettings.getExpectedDownloads() > 0 ? new YouTubeDLDownloadProgress(downloadSettings.getExpectedDownloads()) : null);
     }
     
-    public YouTubeDownloadContainer(YouTubeDatabase database, YouTubeSource source, DownloadSettings downloadSettings, YouTubeDLDownloadProgress downloadProgress) {
+    public YouTubeDownloadContainer(D database, YouTubeSource source, DownloadSettings downloadSettings, YouTubeDLDownloadProgress downloadProgress) {
         super(database, source, downloadSettings, downloadProgress);
     }
     

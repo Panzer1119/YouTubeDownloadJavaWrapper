@@ -22,7 +22,6 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughFunction;
-import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.entities.AbstractDownloadContainer;
 import de.codemakers.download.entities.DownloadSettings;
 import de.codemakers.download.entities.VideoInstanceInfo;
@@ -1296,25 +1295,9 @@ public class YouTubeDL {
     }
     
     public static <R> R downloadRFromFirstLine(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
-        return downloadRFromFirstLine(null, source, settings, function);
-    }
-    
-    public static String downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source) {
-        return downloadRFromFirstLine(database, source, DownloadSettings.empty());
-    }
-    
-    public static String downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings) {
-        return downloadRFromFirstLine(database, source, settings, null);
-    }
-    
-    public static <R> R downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, ToughFunction<String, R> function) {
-        return downloadRFromFirstLine(database, source, DownloadSettings.empty(), function);
-    }
-    
-    public static <R> R downloadRFromFirstLine(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
         try {
             final AtomicReference<String> atomicReference = new AtomicReference<>(null);
-            if (!executeLineConsumingDownload(database, source, settings, (line) -> {
+            if (!executeLineConsumingDownload(source, settings, (line) -> {
                 if (atomicReference.get() == null) {
                     atomicReference.set(line);
                 }
@@ -1345,25 +1328,9 @@ public class YouTubeDL {
     }
     
     public static <R> List<R> downloadRsFromLines(YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
-        return downloadRsFromLines(null, source, settings, function);
-    }
-    
-    public static List<String> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source) {
-        return downloadRsFromLines(database, source, DownloadSettings.empty());
-    }
-    
-    public static List<String> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings) {
-        return downloadRsFromLines(database, source, settings, null);
-    }
-    
-    public static <R> List<R> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, ToughFunction<String, R> function) {
-        return downloadRsFromLines(database, source, DownloadSettings.empty(), function);
-    }
-    
-    public static <R> List<R> downloadRsFromLines(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughFunction<String, R> function) {
         try {
             final List<String> list = new CopyOnWriteArrayList<>();
-            if (!executeLineConsumingDownload(database, source, settings, list::add)) {
+            if (!executeLineConsumingDownload(source, settings, list::add)) {
                 //TODO FIXME What if it returns false, but has something in the atomic reference?
                 //return null;
             }
@@ -1375,11 +1342,7 @@ public class YouTubeDL {
     }
     
     private static boolean executeLineConsumingDownload(YouTubeSource source, DownloadSettings settings, ToughConsumer<String> lineConsumer) throws Exception {
-        return executeLineConsumingDownload(null, source, settings, lineConsumer);
-    }
-    
-    private static boolean executeLineConsumingDownload(YouTubeDatabase database, YouTubeSource source, DownloadSettings settings, ToughConsumer<String> lineConsumer) throws Exception {
-        return executeDownloadContainer(new YouTubeDownloadContainer(database, source, settings, lineConsumer == null ? null : new YouTubeDLDownloadProgress(0) {
+        return executeDownloadContainer(new YouTubeDownloadContainer(source, settings, lineConsumer == null ? null : new YouTubeDLDownloadProgress(0) {
             @Override
             public boolean nextLine(String line) {
                 lineConsumer.acceptWithoutException(line);

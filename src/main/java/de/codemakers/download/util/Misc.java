@@ -24,7 +24,6 @@ import de.codemakers.base.os.OSUtil;
 import de.codemakers.base.util.tough.ToughConsumer;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.YouTubeDL;
-import de.codemakers.download.database.entities.impl.YouTubeVideo;
 import de.codemakers.download.entities.AbstractDownloadContainer;
 import de.codemakers.io.file.AdvancedFile;
 
@@ -32,6 +31,7 @@ import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +39,8 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 public class Misc {
+    
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_UPLOAD_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
     
     public static final Gson GSON = new GsonBuilder().create();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
@@ -219,14 +221,14 @@ public class Misc {
         if (localDate == null) {
             return "--";
         }
-        return localDate.format(YouTubeVideo.DATE_TIME_FORMATTER_UPLOAD_DATE);
+        return localDate.format(DATE_TIME_FORMATTER_UPLOAD_DATE);
     }
     
     public static LocalDate stringToLocalDate(String uploadDate) {
         if (uploadDate == null || uploadDate.equals("NA") || uploadDate.isEmpty()) {
             return null;
         }
-        return LocalDate.parse(uploadDate, YouTubeVideo.DATE_TIME_FORMATTER_UPLOAD_DATE);
+        return LocalDate.parse(uploadDate, DATE_TIME_FORMATTER_UPLOAD_DATE);
     }
     
 }

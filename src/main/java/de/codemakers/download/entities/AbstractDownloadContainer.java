@@ -18,15 +18,11 @@
 package de.codemakers.download.entities;
 
 import de.codemakers.base.util.tough.ToughFunction;
-import de.codemakers.download.database.AbstractDatabase;
-import de.codemakers.download.database.entities.AbstractPlaylist;
-import de.codemakers.download.database.entities.AbstractVideo;
 import de.codemakers.download.sources.Source;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public abstract class AbstractDownloadContainer<D extends AbstractDatabase, S extends Source, PR extends AbstractDownloadProgress, V extends AbstractVideo, P extends AbstractPlaylist> {
+public abstract class AbstractDownloadContainer<D, S extends Source, PR extends AbstractDownloadProgress, V, P> {
     
     protected final D database;
     protected final S source;
@@ -70,20 +66,6 @@ public abstract class AbstractDownloadContainer<D extends AbstractDatabase, S ex
     
     public PR getDownloadProgress() {
         return downloadProgress;
-    }
-    
-    public V asVideo() {
-        if (!getSource().isVideo()) {
-            throw new NoSuchElementException(getClass().getSimpleName() + " is not a Video");
-        }
-        return (V) useDatabaseOrNull((database) -> database.getVideoByVideoId(source.getId()));
-    }
-    
-    public P asPlaylist() {
-        if (!getSource().isVideo()) {
-            throw new NoSuchElementException(getClass().getSimpleName() + " is not a Playlist");
-        }
-        return (P) useDatabaseOrNull((database) -> database.getPlaylistByPlaylistId(source.getId()));
     }
     
     @Override
