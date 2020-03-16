@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'de.codemakers.download'
-version 'v1.8.0_172-alpha.1'
+version 'v1.8.0_172-alpha.4'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -14,6 +14,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Panzer1119:CJP-Base:v1.8.0_172-alpha.46' //14.03.2020 21:46
+    implementation 'com.github.Panzer1119:CJP-Base:v1.8.0_172-alpha.47' //14.03.2020 22:51
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
